@@ -9,7 +9,7 @@ class MorseDisplayTest {
         assertEquals("▬\u202F▬\u202F▬", MorseDisplay.pretty("---"))
 
     @Test fun letters_and_words_have_wide_gaps() =
-        assertEquals("•\u202F▬  ▬   /   •", MorseDisplay.pretty(".- - / ."))
+        assertEquals("•\u202F▬   ▬     /     •", MorseDisplay.pretty(".- - / ."))
 
     @Test fun empty_stays_empty() = assertEquals("", MorseDisplay.pretty(""))
 }

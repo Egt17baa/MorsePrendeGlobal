@@ -122,8 +122,10 @@ private fun MissionRow(node: MissionNode, x: Float, prevX: Float?, onMission: (S
         val width = maxWidth
         Canvas(Modifier.fillMaxSize()) {
             if (prevX != null) {
+                // El tramo empieza bajo el nodo anterior (fuera de esta fila) para que el camino sea continuo.
+                val startY = -(rowHeight - 12.dp - nodeSize).toPx()
                 val path = Path().apply {
-                    moveTo(prevX * size.width, 0f)
+                    moveTo(prevX * size.width, startY)
                     cubicTo(prevX * size.width, size.height * 0.3f, x * size.width, size.height * 0.2f, x * size.width, size.height * 0.45f)
                 }
                 drawPath(path, trail, style = Stroke(width = 6f, pathEffect = PathEffect.dashPathEffect(floatArrayOf(18f, 14f))))
@@ -193,7 +195,7 @@ private fun HubBottomBar(newCards: Int, callbacks: HubCallbacks) {
             selected = false,
             onClick = callbacks.onLibrary,
             icon = {
-                BadgedBox(badge = { if (newCards > 0) Badge { Text(newCards.toString()) } }) { Text("📖") }
+                BadgedBox(badge = { if (newCards > 0) Badge(containerColor = Coral) { Text(newCards.toString()) } }) { Text("📖") }
             },
             label = { Text(stringResource(R.string.hub_library)) },
         )

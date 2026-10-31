@@ -135,7 +135,7 @@ private fun SendPanel(e: Exercise.Send, state: MissionUiState, actions: MissionA
     }
     Text(stringResource(R.string.mission_send_title), style = MaterialTheme.typography.titleLarge)
     Card(Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(Modifier.fillMaxWidth().padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
             Text(e.target, fontSize = 48.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
             val showHelp = state.showPattern && e.target.any { it in state.newChars }
             if (showHelp) {

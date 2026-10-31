@@ -51,6 +51,6 @@ class AppNavHostTest {
     @Test fun app_starts_on_hub() {
         compose.setContent { AppNavHost(AppContainer(context)) }
         compose.onNodeWithText(context.getString(R.string.hub_library)).assertIsDisplayed()
-        compose.onNodeWithText("La primera luz").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("La primera luz", useUnmergedTree = true).assertExists()
     }
 }

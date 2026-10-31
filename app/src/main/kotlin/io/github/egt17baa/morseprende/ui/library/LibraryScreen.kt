@@ -101,14 +101,14 @@ private fun CardRow(item: LibraryItem, onOpen: (String) -> Unit) {
                     Text(stringResource(R.string.library_unlock_with, it), style = MaterialTheme.typography.bodySmall)
                 }
             }
-            if (item.isNew) Badge { Text(stringResource(R.string.library_new)) }
+            if (item.isNew) Badge(containerColor = Coral, contentColor = SeaNight) { Text(stringResource(R.string.library_new)) }
         }
     }
 }
 
 @Composable
 private fun CardDetail(card: LibraryCard) {
-    CardIcon(card.icon, Modifier.size(72.dp))
+    CardIcon(card.icon, iconSize = 72.dp)
     Text(card.body, style = MaterialTheme.typography.bodyLarge)
     Card(colors = CardDefaults.cardColors(containerColor = Coral), modifier = Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp)) {
@@ -120,8 +120,8 @@ private fun CardDetail(card: LibraryCard) {
 
 /** Iconos propios de las fichas, dibujados con trazos sencillos. */
 @Composable
-private fun CardIcon(icon: String, modifier: Modifier = Modifier.size(40.dp)) {
-    Canvas(modifier) {
+private fun CardIcon(icon: String, modifier: Modifier = Modifier, iconSize: androidx.compose.ui.unit.Dp = 40.dp) {
+    Canvas(modifier.size(iconSize)) {
         val stroke = Stroke(width = size.minDimension / 14)
         when (icon) {
             "lighthouse" -> drawLighthouse(stroke)

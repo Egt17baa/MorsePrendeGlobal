@@ -4,8 +4,9 @@ package io.github.egt17baa.morseprende.translator
 object MorseDisplay {
     fun pretty(morse: String): String = morse
         .split(" / ")
-        .joinToString("   /   ") { word ->
-            word.split(' ').joinToString("  ") { letter ->
+        .joinToString("     /     ") { word ->
+            // Tres espacios entre letras: si no, "T O" (▬ ▬▬▬) parece una sola letra de rayas.
+            word.split(' ').joinToString("   ") { letter ->
                 // Espacio estrecho sin salto de línea: "---" no parece una barra y la letra no se parte.
                 letter.map { if (it == '.') '•' else if (it == '-') '▬' else it }.joinToString("\u202F")
             }
