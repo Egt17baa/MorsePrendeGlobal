@@ -6,10 +6,14 @@ import org.junit.Test
 import java.io.File
 
 /** Valida los ficheros de contenido reales que se empaquetan en la app. */
+object RealContent {
+    val dir = File("../app/src/main/assets/content/es")
+    val chapter1: Chapter by lazy { ContentParser.chapter(File(dir, "chapter1.json").readText()) }
+}
+
 class RealContentTest {
 
-    private val dir = File("../app/src/main/assets/content/es")
-    private val chapter1 by lazy { ContentParser.chapter(File(dir, "chapter1.json").readText()) }
+    private val chapter1 get() = RealContent.chapter1
 
     @Test fun real_chapter1_is_valid() {
         assertEquals(emptyList<String>(), ContentValidator.validate(listOf(chapter1), emptyList()))
