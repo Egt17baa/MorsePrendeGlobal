@@ -26,4 +26,10 @@ class AppNavHostTest {
         compose.onNodeWithText(context.getString(R.string.home_settings)).performScrollTo().performClick()
         compose.onNodeWithText(context.getString(R.string.settings_title)).assertIsDisplayed()
     }
+
+    @Test fun home_navigates_to_translator() {
+        compose.setContent { AppNavHost(AppContainer(context)) }
+        compose.onNodeWithText(context.getString(R.string.home_translator)).performScrollTo().performClick()
+        compose.onNodeWithText(context.getString(R.string.translator_title)).assertIsDisplayed()
+    }
 }

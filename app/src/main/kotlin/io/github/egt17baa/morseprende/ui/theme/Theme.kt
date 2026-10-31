@@ -17,6 +17,17 @@ private val DarkColors = darkColorScheme(
     onSurface = Sand,
     surfaceVariant = SeaMist,
     onSurfaceVariant = Sand.copy(alpha = 0.8f),
+    primaryContainer = SeaMist,
+    onPrimaryContainer = BeamCream,
+    secondaryContainer = SeaMist,
+    onSecondaryContainer = BeamCream,
+    surfaceContainerLowest = SeaNight,
+    surfaceContainerLow = SeaDeep,
+    surfaceContainer = SeaDeep,
+    surfaceContainerHigh = SeaDeep,
+    surfaceContainerHighest = SeaMist,
+    outline = SeaMist,
+    outlineVariant = SeaMist,
 )
 
 private val LightColors = lightColorScheme(
@@ -30,6 +41,17 @@ private val LightColors = lightColorScheme(
     onSurface = SeaNight,
     surfaceVariant = Sand,
     onSurfaceVariant = SeaDeep,
+    primaryContainer = BeamCream,
+    onPrimaryContainer = SeaNight,
+    secondaryContainer = BeamCream,
+    onSecondaryContainer = SeaNight,
+    surfaceContainerLowest = White,
+    surfaceContainerLow = White,
+    surfaceContainer = White,
+    surfaceContainerHigh = White,
+    surfaceContainerHighest = Sand,
+    outline = Lagoon,
+    outlineVariant = Sand,
 )
 
 @Composable

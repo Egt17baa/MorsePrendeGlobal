@@ -10,6 +10,31 @@
     <string name="home_campaign_soon">Campaña del faro: próximamente</string>
     <string name="home_campaign_soon_body">Pronto llegarán los barcos, los espías… y algo más allá de las estrellas.</string>
 
+    <!-- Traductor -->
+    <string name="translator_title">Traductor</string>
+    <string name="translator_input_text">Texto</string>
+    <string name="translator_input_morse">Morse</string>
+    <string name="translator_morse_hint">Puntos (.) y rayas (-). Un espacio entre letras y / entre palabras.</string>
+    <string name="translator_counter">%1$d/%2$d</string>
+    <string name="translator_output_morse">En Morse</string>
+    <string name="translator_output_text">En texto</string>
+    <string name="translator_swap">Invertir</string>
+    <string name="translator_copy">Copiar</string>
+    <string name="translator_unsupported">Sin código Morse (se omiten): %1$s</string>
+    <string name="translator_speed_limited">Velocidad limitada a 7 PPM por seguridad con los destellos. Puedes cambiarlo en Ajustes.</string>
+    <string name="translator_outputs">Emitir por</string>
+    <string name="translator_play">Reproducir</string>
+    <string name="translator_stop">Detener</string>
+    <string name="translator_clear">Borrar</string>
+    <string name="output_sound">Sonido</string>
+    <string name="output_vibration">Vibración</string>
+    <string name="output_torch">Linterna</string>
+    <string name="output_screen">Pantalla</string>
+    <string name="flash_warning_title">Destellos de luz</string>
+    <string name="flash_warning_text">Esta opción emite destellos de luz. Si tienes epilepsia fotosensible o eres sensible a las luces intermitentes, no la uses. Por defecto la velocidad se limita a unos 3 destellos por segundo.</string>
+    <string name="flash_warning_accept">Entiendo, activar</string>
+    <string name="flash_warning_cancel">Cancelar</string>
+
     <!-- Ajustes -->
     <string name="settings_title">Ajustes</string>
     <string name="settings_speed_section">Velocidad</string>

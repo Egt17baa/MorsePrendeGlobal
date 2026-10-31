@@ -10,6 +10,8 @@ import androidx.navigation.compose.rememberNavController
 import io.github.egt17baa.morseprende.AppContainer
 import io.github.egt17baa.morseprende.settings.SettingsScreen
 import io.github.egt17baa.morseprende.settings.SettingsViewModel
+import io.github.egt17baa.morseprende.translator.TranslatorScreen
+import io.github.egt17baa.morseprende.translator.TranslatorViewModel
 import io.github.egt17baa.morseprende.ui.home.HomeScreen
 
 object Routes {
@@ -24,9 +26,17 @@ fun AppNavHost(container: AppContainer) {
     NavHost(navController = nav, startDestination = Routes.HOME) {
         composable(Routes.HOME) {
             HomeScreen(
-                onTranslator = { },
+                onTranslator = { nav.navigate(Routes.TRANSLATOR) },
                 onSettings = { nav.navigate(Routes.SETTINGS) },
             )
+        }
+        composable(Routes.TRANSLATOR) {
+            val vm: TranslatorViewModel = viewModel(
+                factory = viewModelFactory {
+                    initializer { TranslatorViewModel(container.settings, container.outputs, container.torchAvailable) }
+                },
+            )
+            TranslatorScreen(vm, onBack = { nav.popBackStack() })
         }
         composable(Routes.SETTINGS) {
             val vm: SettingsViewModel = viewModel(
