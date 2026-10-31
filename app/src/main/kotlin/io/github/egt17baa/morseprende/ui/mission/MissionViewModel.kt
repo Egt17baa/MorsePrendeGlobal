@@ -1,0 +1,266 @@
+package io.github.egt17baa.morseprende.ui.mission
+
+import android.os.SystemClock
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import io.github.egt17baa.morseprende.core.KeyerDecoder
+import io.github.egt17baa.morseprende.core.KeyerEvent
+import io.github.egt17baa.morseprende.core.MorseCodec
+import io.github.egt17baa.morseprende.core.MorseTiming
+import io.github.egt17baa.morseprende.data.ContentSource
+import io.github.egt17baa.morseprende.data.progress.ProgressRepository
+import io.github.egt17baa.morseprende.game.content.Mission
+import io.github.egt17baa.morseprende.game.mission.Exercise
+import io.github.egt17baa.morseprende.game.mission.MissionPlanner
+import io.github.egt17baa.morseprende.game.mission.MissionSession
+import io.github.egt17baa.morseprende.playback.OutputFactory
+import io.github.egt17baa.morseprende.playback.OutputKind
+import io.github.egt17baa.morseprende.playback.Sidetone
+import io.github.egt17baa.morseprende.playback.SidetoneFactory
+import io.github.egt17baa.morseprende.playback.SignalPlayer
+import io.github.egt17baa.morseprende.settings.AppSettings
+import io.github.egt17baa.morseprende.settings.SettingsRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlin.random.Random
+
+/**
+ * Una partida de una misión: briefing, ejercicios (escuchar, recibir, enviar con el manipulador,
+ * mensaje final) y debriefing. El progreso solo se guarda al terminar; abandonar no guarda nada.
+ */
+class MissionViewModel(
+    private val missionId: String,
+    content: ContentSource,
+    private val progress: ProgressRepository,
+    settings: SettingsRepository,
+    private val outputs: OutputFactory,
+    private val sidetoneFactory: SidetoneFactory,
+    random: Random = Random.Default,
+    playerScope: CoroutineScope? = null,
+    private val clock: () -> Long = { SystemClock.uptimeMillis() },
+) : ViewModel() {
+
+    private val settings: StateFlow<AppSettings> = settings.settings.stateIn(viewModelScope, SharingStarted.Eagerly, AppSettings())
+    private val player = SignalPlayer(playerScope ?: viewModelScope)
+    private val ui = MutableStateFlow(MissionUiState())
+
+    val state: StateFlow<MissionUiState> = combine(ui, player.isPlaying, this.settings) { s, playing, prefs ->
+        s.copy(isPlaying = playing, keyerMode = prefs.keyerMode)
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, ui.value)
+
+    private val mission: Mission?
+    private val session: MissionSession?
+    private var keyer = KeyerDecoder(DEFAULT_UNIT_MS)
+    private var sidetone: Sidetone? = null
+    private var pendingAdvance = false
+    private var recorded = false
+
+    init {
+        val loaded = runCatching {
+            val chapters = content.chapters()
+            val chapter = chapters.first { ch -> ch.missions.any { it.id == missionId } }
+            val m = chapter.missions.first { it.id == missionId }
+            m to MissionSession(MissionPlanner.plan(m, chapter, random))
+        }
+        mission = loaded.getOrNull()?.first
+        session = loaded.getOrNull()?.second
+        if (mission == null || session == null) {
+            // Contenido roto (ContentLoadException), misión inexistente o cualquier otro fallo de
+            // carga: se muestra un error en vez de cerrar la app.
+            ui.value = MissionUiState(phase = MissionPhase.ERROR)
+        } else {
+            ui.value = MissionUiState(
+                title = mission.title,
+                briefing = mission.briefing,
+                debriefing = mission.debriefing,
+                exerciseCount = session.exercises.size,
+                newChars = mission.newChars.toSet(),
+            )
+        }
+    }
+
+    fun start() {
+        if (session == null || ui.value.phase != MissionPhase.BRIEFING) return
+        val prefs = settings.value
+        keyer = KeyerDecoder(1200L / prefs.effectiveWpm)
+        sidetone = sidetoneFactory.create(prefs)
+        ui.update { it.copy(phase = MissionPhase.EXERCISE) }
+        enterExercise()
+    }
+
+    fun replay() {
+        val text = when (val e = session?.current) {
+            is Exercise.Listen -> e.chars.joinToString(" ")
+            is Exercise.ReceiveChoice -> e.answer
+            is Exercise.ReceiveTyped -> e.answer
+            is Exercise.Send -> e.target
+            is Exercise.FinalMessage -> e.message.text
+            null -> return
+        }
+        val prefs = settings.value
+        val signals = MorseTiming(prefs.charWpm, prefs.effectiveWpm).signalsFor(MorseCodec.encode(text).morse)
+        player.play(signals, listOf(outputs.create(OutputKind.SOUND, prefs)))
+    }
+
+    fun continueListen() {
+        val s = session ?: return
+        if (s.current !is Exercise.Listen) return
+        s.continueListen()
+        enterExercise()
+    }
+
+    fun answer(text: String) {
+        val s = session ?: return
+        if (ui.value.feedback != null) return
+        when (s.current) {
+            is Exercise.ReceiveChoice, is Exercise.ReceiveTyped, is Exercise.FinalMessage -> Unit
+            else -> return
+        }
+        val result = s.answer(text)
+        pendingAdvance = result.advanced
+        ui.update { it.copy(feedback = Feedback(result.correct, result.expected), hintLevel = s.hintLevel) }
+    }
+
+    fun keyDown() {
+        if (!acceptsKeying()) return
+        keyer.press(clock())
+        sidetone?.keyDown()
+    }
+
+    fun keyUp() {
+        if (!acceptsKeying()) return
+        sidetone?.keyUp()
+        keyer.release(clock())
+        syncKeyer()
+    }
+
+    /** La UI lo llama cada ~20 ms durante un ejercicio de enviar: cierra letras y palabras. */
+    fun tick() {
+        if (!acceptsKeying()) return
+        when (val event = keyer.poll(clock())) {
+            is KeyerEvent.LetterEnded -> appendLetter(event)
+            KeyerEvent.WordEnded -> appendSpace()
+            null -> Unit
+        }
+        syncKeyer()
+    }
+
+    fun dot() = appendElement('.')
+
+    fun dash() = appendElement('-')
+
+    fun nextLetter() {
+        if (!acceptsKeying()) return
+        val event = keyer.commitLetter()
+        if (event != null) appendLetter(event) else appendSpace()
+        syncKeyer()
+    }
+
+    fun deleteLast() {
+        if (!acceptsKeying()) return
+        if (keyer.pending.isNotEmpty()) {
+            keyer.reset()
+        } else {
+            ui.update { it.copy(sentText = it.sentText.dropLast(1)) }
+        }
+        syncKeyer()
+    }
+
+    fun submitSend() {
+        val s = session ?: return
+        if (!acceptsKeying()) return
+        keyer.commitLetter()?.let(::appendLetter)
+        val result = s.send(ui.value.sentText.trim())
+        pendingAdvance = result.advanced
+        keyer.reset()
+        ui.update {
+            it.copy(feedback = Feedback(result.correct, result.expected), attemptsLeft = result.attemptsLeft, keyerPending = "")
+        }
+    }
+
+    /** Quita el feedback y pasa al siguiente ejercicio (o repite el actual si toca). */
+    fun next() {
+        if (ui.value.phase != MissionPhase.EXERCISE || ui.value.feedback == null) return
+        ui.update { it.copy(feedback = null, sentText = "", keyerPending = "") }
+        if (pendingAdvance) {
+            pendingAdvance = false
+            enterExercise()
+        }
+    }
+
+    /** Salir a mitad: se apaga todo y no se guarda nada. */
+    fun abandon() {
+        player.stop()
+        sidetone?.close()
+        keyer.reset()
+    }
+
+    override fun onCleared() = abandon()
+
+    private fun enterExercise() {
+        val s = session ?: return
+        player.stop()
+        keyer.reset()
+        if (s.isFinished) {
+            finish()
+            return
+        }
+        val exercise = s.current
+        ui.update {
+            it.copy(
+                exercise = exercise, exerciseIndex = s.index, feedback = null, sentText = "", keyerPending = "",
+                attemptsLeft = MissionSession.SEND_ATTEMPTS, hintLevel = s.hintLevel,
+            )
+        }
+        if (exercise is Exercise.ReceiveChoice || exercise is Exercise.ReceiveTyped || exercise is Exercise.FinalMessage) {
+            replay()
+        }
+    }
+
+    private fun finish() {
+        val s = session ?: return
+        val result = s.result()
+        sidetone?.close()
+        ui.update { it.copy(phase = MissionPhase.DEBRIEFING, exercise = null, stars = result.stars) }
+        if (recorded) return
+        recorded = true
+        viewModelScope.launch {
+            val previous = progress.progress.first()[missionId]?.bestStars ?: 0
+            ui.update { it.copy(previousBest = previous) }
+            progress.recordResult(missionId, result.stars, System.currentTimeMillis())
+        }
+    }
+
+    private fun acceptsKeying(): Boolean =
+        ui.value.phase == MissionPhase.EXERCISE && session?.current is Exercise.Send && ui.value.feedback == null
+
+    private fun appendElement(element: Char) {
+        if (!acceptsKeying()) return
+        keyer.appendElement(element)
+        syncKeyer()
+    }
+
+    private fun appendLetter(event: KeyerEvent.LetterEnded) {
+        ui.update { it.copy(sentText = it.sentText + (event.char ?: UNKNOWN_CHAR)) }
+    }
+
+    private fun appendSpace() {
+        ui.update { if (it.sentText.isEmpty() || it.sentText.endsWith(' ')) it else it.copy(sentText = it.sentText + ' ') }
+    }
+
+    private fun syncKeyer() {
+        ui.update { it.copy(keyerPending = keyer.pending) }
+    }
+
+    private companion object {
+        const val DEFAULT_UNIT_MS = 120L
+        const val UNKNOWN_CHAR = '?'
+    }
+}
