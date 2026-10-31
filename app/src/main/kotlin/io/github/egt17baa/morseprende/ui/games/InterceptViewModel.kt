@@ -23,9 +23,17 @@ data class InterceptUiState(
 
 class InterceptViewModel(deps: GameDeps) : GameViewModelBase(deps, GameId.INTERCEPT) {
 
-    private val ui = MutableStateFlow(InterceptUiState(phase = if (unlocked) GamePhase.READY else GamePhase.LOCKED))
+    private val ui = MutableStateFlow(InterceptUiState(phase = idlePhase()))
     val state: StateFlow<InterceptUiState> = ui.asStateFlow()
     private var game: InterceptGame? = null
+
+    init {
+        observeProgress()
+    }
+
+    override fun onProgressChanged() {
+        ui.update { if (it.phase == GamePhase.PLAYING || it.phase == GamePhase.OVER) it else it.copy(phase = idlePhase()) }
+    }
 
     fun start() {
         if (!unlocked) {
@@ -33,7 +41,8 @@ class InterceptViewModel(deps: GameDeps) : GameViewModelBase(deps, GameId.INTERC
             return
         }
         beginGame()
-        val g = InterceptGame(chapterWords, learned, settings.value.charWpm, deps.random)
+        // Empieza a la velocidad efectiva (con las pausas largas entre letras), como las misiones.
+        val g = InterceptGame(chapterWords, learned, settings.value.effectiveWpm, deps.random)
         game = g
         ui.value = InterceptUiState(phase = GamePhase.PLAYING, word = g.currentWord, wpm = g.wpm, maxWpm = g.maxWpm, canRepeat = true)
         playCurrent()
@@ -78,6 +87,7 @@ class InterceptViewModel(deps: GameDeps) : GameViewModelBase(deps, GameId.INTERC
 
     private fun playCurrent() {
         val g = game ?: return
-        playSound(g.currentWord, g.wpm)
+        val prefs = settings.value
+        playSound(g.currentWord, wpm = maxOf(prefs.charWpm, g.wpm), effectiveWpm = g.wpm)
     }
 }

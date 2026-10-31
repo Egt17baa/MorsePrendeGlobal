@@ -40,6 +40,7 @@ fun InterceptContent(
 ) {
     GameScaffold(stringResource(R.string.game_intercept), onBack) {
         when (state.phase) {
+            GamePhase.LOADING -> Unit
             GamePhase.LOCKED -> LockedPanel()
             GamePhase.READY -> StartPanel(stringResource(R.string.game_intercept_desc), onStart)
             GamePhase.OVER -> GameOverPanel(

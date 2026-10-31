@@ -48,6 +48,7 @@ fun StormScreen(viewModel: StormViewModel, onBack: () -> Unit) {
 fun StormContent(state: StormUiState, onStart: () -> Unit, onInput: (Char) -> Unit, onBack: () -> Unit) {
     GameScaffold(stringResource(R.string.game_storm), onBack) {
         when (state.phase) {
+            GamePhase.LOADING -> Unit
             GamePhase.LOCKED -> LockedPanel()
             GamePhase.READY -> StartPanel(stringResource(R.string.game_storm_desc), onStart)
             GamePhase.OVER -> GameOverPanel(state.score, state.isNewRecord, onStart, onBack)

@@ -29,7 +29,7 @@ class StatsRepositoriesTest {
     @Test fun char_stats_apply_leitner() = runTest {
         val repo = RoomCharStatsRepository(db)
         repo.record(listOf(CharOutcome('S', true), CharOutcome('S', true), CharOutcome('O', false)))
-        assertEquals(mapOf('S' to 3, 'O' to 1), repo.boxes.first())
+        assertEquals(mapOf('S' to 2, 'O' to 1), repo.boxes.first())
         repo.record(listOf(CharOutcome('S', false)))
         assertEquals(1, repo.boxes.first()['S'])
     }
@@ -57,5 +57,15 @@ class StatsRepositoriesTest {
         repo.recordGame(GameId.INTERCEPT, 3, 14)
         repo.recordGame(GameId.INTERCEPT, 2, 12)
         assertEquals(14, repo.records.first().getValue(GameId.INTERCEPT).bestExtra)
+    }
+
+    @Test fun char_stats_gentle_mode() = runTest {
+        val repo = RoomCharStatsRepository(db)
+        repo.record(listOf(CharOutcome('S', true)))
+        repo.record(listOf(CharOutcome('S', true)))
+        repo.record(listOf(CharOutcome('S', true), CharOutcome('S', false)), gentle = true)
+        assertEquals(3, repo.boxes.first()['S'])
+        repo.record(listOf(CharOutcome('S', false)), gentle = true)
+        assertEquals(2, repo.boxes.first()['S'])
     }
 }

@@ -14,6 +14,7 @@ sealed interface StormEvent {
     data class Spawned(val char: Char) : StormEvent
     data class Hit(val char: Char) : StormEvent
     data class Splash(val char: Char) : StormEvent
+    data class Miss(val char: Char) : StormEvent
     data object GameOver : StormEvent
 }
 
@@ -70,9 +71,19 @@ class StormGame(
         return events
     }
 
+    /**
+     * Pulsar una letra elimina su señal más baja. Pulsar una letra que no está en el cielo cuesta
+     * una vida (y cuenta como fallo de la señal más baja): así no se puede ganar aporreando botones.
+     */
     fun input(c: Char, now: Long): List<StormEvent> {
-        if (isOver) return emptyList()
-        val target = live.filter { it.char == c }.maxByOrNull { it.progress(now) } ?: return emptyList()
+        if (isOver || live.isEmpty()) return emptyList()
+        val target = live.filter { it.char == c }.maxByOrNull { it.progress(now) }
+        if (target == null) {
+            val lowest = live.maxBy { it.progress(now) }
+            lives--
+            charOutcomes += CharOutcome(lowest.char, false)
+            return if (isOver) listOf(StormEvent.Miss(c), StormEvent.GameOver) else listOf(StormEvent.Miss(c))
+        }
         live -= target
         score++
         charOutcomes += CharOutcome(c, true)

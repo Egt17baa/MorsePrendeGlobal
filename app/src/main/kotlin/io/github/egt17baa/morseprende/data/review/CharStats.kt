@@ -31,33 +31,34 @@ interface CharStatsDao {
     @Upsert
     suspend fun upsert(rows: List<CharStatsEntity>)
 
-    /** Aplica las reglas de Leitner a los resultados y suma aciertos y fallos. */
+    /** Aplica una sesión con las reglas de Leitner (un paso por carácter) y suma aciertos y fallos. */
     @Transaction
-    suspend fun record(outcomes: List<CharOutcome>) {
-        val rows = all().associateBy { it.char }.toMutableMap()
-        for ((c, ok) in outcomes) {
+    suspend fun record(outcomes: List<CharOutcome>, gentle: Boolean) {
+        val rows = all().associateBy { it.char }
+        val boxes = Leitner.apply(rows.mapKeys { it.key.first() }.mapValues { it.value.box }, outcomes, gentle)
+        val updated = outcomes.groupBy { it.char }.map { (c, list) ->
             val key = c.toString()
             val old = rows[key] ?: CharStatsEntity(key, Leitner.MIN_BOX, 0, 0)
-            rows[key] = old.copy(
-                box = Leitner.next(old.box, ok),
-                correct = old.correct + if (ok) 1 else 0,
-                wrong = old.wrong + if (ok) 0 else 1,
+            old.copy(
+                box = boxes.getValue(c),
+                correct = old.correct + list.count { it.correct },
+                wrong = old.wrong + list.count { !it.correct },
             )
         }
-        upsert(rows.values.toList())
+        upsert(updated)
     }
 }
 
 /** Cajas de Leitner por carácter (repaso inteligente). */
 interface CharStatsRepository {
     val boxes: Flow<Map<Char, Int>>
-    suspend fun record(outcomes: List<CharOutcome>)
+    suspend fun record(outcomes: List<CharOutcome>, gentle: Boolean = false)
 }
 
 class RoomCharStatsRepository(db: AppDatabase) : CharStatsRepository {
     private val dao = db.charStatsDao()
     override val boxes: Flow<Map<Char, Int>> = dao.observeAll().map { rows -> rows.associate { it.char.first() to it.box } }
-    override suspend fun record(outcomes: List<CharOutcome>) {
-        if (outcomes.isNotEmpty()) dao.record(outcomes)
+    override suspend fun record(outcomes: List<CharOutcome>, gentle: Boolean) {
+        if (outcomes.isNotEmpty()) dao.record(outcomes, gentle)
     }
 }

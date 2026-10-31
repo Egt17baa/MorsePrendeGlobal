@@ -171,7 +171,7 @@ class GameViewModelsTest {
         val vm = intercept(d)
         vm.start()
         runCurrent()
-        assertEquals(12, vm.state.value.wpm)
+        assertEquals(10, vm.state.value.wpm)   // empieza a la velocidad efectiva, como las misiones
         val word = vm.state.value.word!!
         assertTrue(word.all { it in learned })
         vm.answer(word)
@@ -180,7 +180,7 @@ class GameViewModelsTest {
         repeat(3) { vm.answer("zzz"); vm.next() }
         runCurrent()
         assertEquals(GamePhase.OVER, vm.state.value.phase)
-        assertEquals(listOf(Triple(GameId.INTERCEPT, 1, 12)), d.records.games)
+        assertEquals(listOf(Triple(GameId.INTERCEPT, 1, 10)), d.records.games)
         assertEquals(1, d.stats.recorded.size)
     }
 
@@ -216,5 +216,43 @@ class GameViewModelsTest {
         assertEquals(GamePhase.LOCKED, vm.state.value.phase)
         vm.start()
         assertEquals(GamePhase.LOCKED, vm.state.value.phase)
+    }
+
+    /** Como Room: el progreso llega un poco después de crear el ViewModel. */
+    private fun delayedProgress(vararg completed: Pair<String, Int>) = object : io.github.egt17baa.morseprende.data.progress.ProgressRepository {
+        override val progress = kotlinx.coroutines.flow.flow {
+            kotlinx.coroutines.delay(50)
+            emit(completed.associate { (id, st) -> id to io.github.egt17baa.morseprende.data.progress.MissionProgress(id, st, 1, 0) })
+        }
+        override suspend fun recordResult(missionId: String, stars: Int, nowMs: Long) = Unit
+    }
+
+    private fun TestScope.lateDeps(d: Deps) = GameDeps(
+        FakeContentSource(listOf(FakeContentSource.realChapter1)), delayedProgress(*completed),
+        d.stats, d.records, FakeSettingsRepository(AppSettings()), FakeOutputFactory(this),
+        Random(1), backgroundScope, { d.clock[0] },
+    )
+
+    @Test fun games_unlock_when_progress_loads_late() = runTest {
+        val d = deps()
+        val stormVm = StormViewModel(lateDeps(d))
+        val flashVm = FlashViewModel(lateDeps(d))
+        val interceptVm = InterceptViewModel(lateDeps(d))
+        assertEquals(GamePhase.LOADING, stormVm.state.value.phase)
+        advanceTimeBy(100)
+        runCurrent()
+        assertEquals(GamePhase.READY, stormVm.state.value.phase)
+        assertEquals(learned, stormVm.state.value.letters.toSet())
+        assertEquals(GamePhase.READY, flashVm.state.value.phase)
+        assertEquals(GamePhase.READY, interceptVm.state.value.phase)
+    }
+
+    @Test fun arcade_records_gentle_outcomes() = runTest {
+        val d = deps()
+        val vm = storm(d)
+        vm.start()
+        while (vm.state.value.phase != GamePhase.OVER && d.clock[0] < 300_000) { d.clock[0] += 100; vm.frame() }
+        runCurrent()
+        assertEquals(listOf(true), d.stats.gentleFlags)
     }
 }

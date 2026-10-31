@@ -21,6 +21,7 @@ import io.github.egt17baa.morseprende.settings.SettingsRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -39,7 +40,7 @@ class GameDeps(
     val clock: () -> Long = { SystemClock.uptimeMillis() },
 )
 
-enum class GamePhase { LOCKED, READY, PLAYING, OVER }
+enum class GamePhase { LOADING, LOCKED, READY, PLAYING, OVER }
 
 /**
  * Base de los minijuegos: letras aprendidas, bloqueo, cajas de Leitner, sonido y guardado único del
@@ -51,17 +52,37 @@ abstract class GameViewModelBase(protected val deps: GameDeps, private val gameI
     protected val chapterWords: List<String> = chapters.flatMap { it.words }
     protected val settings: StateFlow<AppSettings> = deps.settings.settings.stateIn(viewModelScope, SharingStarted.Eagerly, AppSettings())
     protected val boxes: StateFlow<Map<Char, Int>> = deps.charStats.boxes.stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
-    private val completed: StateFlow<Set<String>> =
-        deps.progress.progress.map { it.keys }.stateIn(viewModelScope, SharingStarted.Eagerly, emptySet())
+    /** null hasta que llega el progreso (Room lo entrega un instante después de crear el ViewModel). */
+    private val completed: StateFlow<Set<String>?> =
+        deps.progress.progress.map<Map<String, *>, Set<String>?> { it.keys }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
     protected val player = SignalPlayer(deps.playerScope ?: viewModelScope)
     protected val gameScope: CoroutineScope get() = deps.playerScope ?: viewModelScope
     private var saved = false
 
     /** Letras aprendidas en misiones completadas, en orden alfabético. */
-    protected val learned: List<Char> get() = ProgressRules.learnedChars(chapters, completed.value).sorted()
+    protected val learned: List<Char> get() = ProgressRules.learnedChars(chapters, completed.value.orEmpty()).sorted()
 
     protected val unlocked: Boolean
-        get() = ProgressRules.isGameUnlocked(gameId.name, completed.value) && learned.isNotEmpty()
+        get() = ProgressRules.isGameUnlocked(gameId.name, completed.value.orEmpty()) && learned.isNotEmpty()
+
+    protected val progressLoaded: Boolean get() = completed.value != null
+
+    /** Fase inicial: cargando hasta tener el progreso; después, listo o bloqueado. */
+    protected fun idlePhase(): GamePhase = when {
+        !progressLoaded -> GamePhase.LOADING
+        unlocked -> GamePhase.READY
+        else -> GamePhase.LOCKED
+    }
+
+    /**
+     * Las subclases lo llaman al final de su init: cada vez que cambia el progreso se reevalúa el
+     * bloqueo (sin tocar una partida en curso ni su final).
+     */
+    protected fun observeProgress() {
+        viewModelScope.launch { completed.filterNotNull().collect { onProgressChanged() } }
+    }
+
+    protected abstract fun onProgressChanged()
 
     protected fun now(): Long = deps.clock()
 
@@ -80,7 +101,7 @@ abstract class GameViewModelBase(protected val deps: GameDeps, private val gameI
         saved = true
         viewModelScope.launch {
             val isRecord = deps.records.recordGame(gameId, score, extra)
-            deps.charStats.record(outcomes)
+            deps.charStats.record(outcomes, gentle = true)
             onSaved(isRecord)
         }
     }

@@ -40,14 +40,34 @@ class StormGameTest {
         assertEquals(listOf(CharOutcome('S', true)), g.outcomes)
     }
 
-    @Test fun wrong_input_does_nothing() {
+    @Test fun wrong_key_costs_a_life() {
         val g = game(listOf('S', 'O'), seed = 3)
         g.tick(0)
         val c = g.signals.single().char
         val other = if (c == 'S') 'O' else 'S'
-        assertEquals(emptyList<StormEvent>(), g.input(other, 100))
+        assertEquals(listOf(StormEvent.Miss(other)), g.input(other, 100))
         assertEquals(0, g.score)
+        assertEquals(StormGame.LIVES - 1, g.lives)
         assertEquals(1, g.signals.size)
+        assertEquals(listOf(CharOutcome(c, false)), g.outcomes)
+    }
+
+    @Test fun key_without_signals_does_nothing() {
+        val g = game()
+        assertEquals(emptyList<StormEvent>(), g.input('S', 0))
+        assertEquals(StormGame.LIVES, g.lives)
+    }
+
+    @Test fun mashing_all_keys_ends_the_game() {
+        val g = game(listOf('S', 'O', 'E', 'T'), seed = 9)
+        var t = 0L
+        while (!g.isOver && t < 600_000) {
+            g.tick(t)
+            listOf('S', 'O', 'E', 'T').forEach { g.input(it, t) }
+            t += 200
+        }
+        assertTrue("t=$t", g.isOver)
+        assertTrue("t=$t", t < 30_000)
     }
 
     @Test fun double_input_scores_once() {

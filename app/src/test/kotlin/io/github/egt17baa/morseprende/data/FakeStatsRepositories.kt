@@ -12,10 +12,12 @@ import kotlinx.coroutines.flow.StateFlow
 class FakeCharStatsRepository(initial: Map<Char, Int> = emptyMap()) : CharStatsRepository {
     private val state = MutableStateFlow(initial)
     val recorded = mutableListOf<List<CharOutcome>>()
+    val gentleFlags = mutableListOf<Boolean>()
     override val boxes: StateFlow<Map<Char, Int>> = state
-    override suspend fun record(outcomes: List<CharOutcome>) {
+    override suspend fun record(outcomes: List<CharOutcome>, gentle: Boolean) {
         recorded += outcomes
-        state.value = Leitner.apply(state.value, outcomes)
+        gentleFlags += gentle
+        state.value = Leitner.apply(state.value, outcomes, gentle)
     }
 }
 

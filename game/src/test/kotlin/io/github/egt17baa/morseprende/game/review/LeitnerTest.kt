@@ -19,6 +19,26 @@ class LeitnerTest {
         assertEquals(2, after['O'])
     }
 
+    @Test fun apply_moves_one_step_per_session() {
+        // "SOS" bien escrito no sube la S dos cajas: un paso por carácter y sesión.
+        val after = Leitner.apply(mapOf('S' to 1), Leitner.outcomesFor("SOS", "SOS"))
+        assertEquals(2, after['S'])
+        assertEquals(2, after['O'])
+    }
+
+    @Test fun gentle_mode_for_arcade() {
+        val boxes = mapOf('S' to 4, 'O' to 3, 'E' to 2)
+        val outcomes = listOf(
+            CharOutcome('S', true), CharOutcome('S', true), CharOutcome('S', false), // aciertos y un fallo final: se queda
+            CharOutcome('O', false),                                                 // solo fallos: baja una caja
+            CharOutcome('E', true),                                                  // solo aciertos: sube una
+        )
+        val after = Leitner.apply(boxes, outcomes, gentle = true)
+        assertEquals(4, after['S'])
+        assertEquals(2, after['O'])
+        assertEquals(3, after['E'])
+    }
+
     @Test fun weights() {
         assertEquals(5, Leitner.weight(1))
         assertEquals(1, Leitner.weight(5))

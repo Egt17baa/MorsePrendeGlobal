@@ -16,9 +16,25 @@ object Leitner {
 
     fun next(box: Int, correct: Boolean): Int = if (correct) minOf(MAX_BOX, box + 1) else MIN_BOX
 
-    fun apply(boxes: Map<Char, Int>, outcomes: List<CharOutcome>): Map<Char, Int> {
+    /**
+     * Aplica una sesión (una misión o una partida): cada carácter se mueve **un solo paso** aunque
+     * aparezca varias veces. Estricto (misiones): algún fallo → caja 1; si no, sube una.
+     * Suave (minijuegos, que siempre acaban en fallo a velocidad máxima): aciertos y fallos → se
+     * queda; solo fallos → baja una; solo aciertos → sube una.
+     */
+    fun apply(boxes: Map<Char, Int>, outcomes: List<CharOutcome>, gentle: Boolean = false): Map<Char, Int> {
         val result = boxes.toMutableMap()
-        outcomes.forEach { (c, ok) -> result[c] = next(result[c] ?: MIN_BOX, ok) }
+        outcomes.groupBy { it.char }.forEach { (c, list) ->
+            val box = result[c] ?: MIN_BOX
+            val anyWrong = list.any { !it.correct }
+            val anyRight = list.any { it.correct }
+            result[c] = when {
+                !gentle -> next(box, correct = !anyWrong)
+                anyWrong && anyRight -> box
+                anyWrong -> maxOf(MIN_BOX, box - 1)
+                else -> minOf(MAX_BOX, box + 1)
+            }
+        }
         return result
     }
 

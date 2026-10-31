@@ -36,13 +36,21 @@ data class FlashUiState(
 
 class FlashViewModel(deps: GameDeps) : GameViewModelBase(deps, GameId.FLASH) {
 
-    private val ui = MutableStateFlow(FlashUiState(phase = if (unlocked) GamePhase.READY else GamePhase.LOCKED))
+    private val ui = MutableStateFlow(FlashUiState(phase = idlePhase()))
     val state: StateFlow<FlashUiState> = combine(ui, settings) { s, prefs -> s.copy(flashWpm = flashWpm(prefs)) }
         .stateIn(viewModelScope, SharingStarted.Eagerly, ui.value.copy(flashWpm = flashWpm(settings.value)))
 
     private var game: FlashGame? = null
     private var flashJob: Job? = null
     private val lamp = SteppedOutput(setOn = { on -> ui.update { it.copy(lampOn = on) } })
+
+    init {
+        observeProgress()
+    }
+
+    override fun onProgressChanged() {
+        ui.update { if (it.phase == GamePhase.PLAYING || it.phase == GamePhase.OVER) it else it.copy(phase = idlePhase()) }
+    }
 
     fun start() {
         if (!unlocked) {

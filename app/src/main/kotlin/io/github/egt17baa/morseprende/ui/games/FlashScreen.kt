@@ -39,6 +39,7 @@ fun FlashScreen(viewModel: FlashViewModel, onBack: () -> Unit) {
 fun FlashContent(state: FlashUiState, onStart: () -> Unit, onAnswer: (Char) -> Unit, onBack: () -> Unit) {
     GameScaffold(stringResource(R.string.game_flash), onBack) {
         when (state.phase) {
+            GamePhase.LOADING -> Unit
             GamePhase.LOCKED -> LockedPanel()
             GamePhase.READY -> StartPanel(stringResource(R.string.game_flash_desc), onStart)
             GamePhase.OVER -> GameOverPanel(

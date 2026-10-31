@@ -28,11 +28,15 @@ class StormViewModel(deps: GameDeps) : GameViewModelBase(deps, GameId.STORM) {
     private var game: StormGame? = null
 
     init {
-        refreshIdle()
+        ui.update { it.copy(phase = idlePhase(), letters = learned) }
+        observeProgress()
+    }
+
+    override fun onProgressChanged() {
+        ui.update { if (it.phase == GamePhase.PLAYING || it.phase == GamePhase.OVER) it else it.copy(phase = idlePhase(), letters = learned) }
     }
 
     fun start() {
-        refreshIdle()
         if (!unlocked) return
         beginGame()
         game = StormGame(learned, boxes.value, deps.random, now())
@@ -82,7 +86,4 @@ class StormViewModel(deps: GameDeps) : GameViewModelBase(deps, GameId.STORM) {
         }
     }
 
-    private fun refreshIdle() {
-        ui.update { it.copy(letters = learned, phase = if (unlocked) (if (it.phase == GamePhase.LOCKED) GamePhase.READY else it.phase) else GamePhase.LOCKED) }
-    }
 }

@@ -325,5 +325,5 @@ class MissionViewModel(
 /** Sin repaso inteligente (p. ej. en pruebas que no lo necesitan). */
 private object NoCharStats : CharStatsRepository {
     override val boxes: Flow<Map<Char, Int>> = emptyFlow()
-    override suspend fun record(outcomes: List<CharOutcome>) = Unit
+    override suspend fun record(outcomes: List<CharOutcome>, gentle: Boolean) = Unit
 }
