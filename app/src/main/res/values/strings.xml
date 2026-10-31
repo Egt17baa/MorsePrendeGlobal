@@ -1,4 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">MorsePrende: El Faro</string>
+    <string name="back">Volver</string>
+
+    <!-- Ajustes -->
+    <string name="settings_title">Ajustes</string>
+    <string name="settings_speed_section">Velocidad</string>
+    <string name="settings_char_wpm">Velocidad de cada letra: %1$d PPM</string>
+    <string name="settings_char_wpm_help">Lo rápido que suena cada letra (palabras por minuto).</string>
+    <string name="settings_effective_wpm">Velocidad efectiva: %1$d PPM</string>
+    <string name="settings_effective_wpm_help">Si es menor, se alargan las pausas entre letras y palabras para que te dé tiempo a pensar (espaciado Farnsworth).</string>
+    <string name="settings_sound_section">Sonido</string>
+    <string name="settings_tone">Tono: %1$d Hz</string>
+    <string name="settings_volume">Volumen: %1$d %%</string>
+    <string name="settings_test_sound">Probar sonido</string>
+    <string name="settings_safety_section">Seguridad</string>
+    <string name="settings_limit_flashes">Limitar destellos (recomendado)</string>
+    <string name="settings_limit_flashes_help">Con la linterna o la pantalla, el Morse va como máximo a 7 PPM (unos 3 destellos por segundo) para reducir el riesgo para personas fotosensibles.</string>
 </resources>

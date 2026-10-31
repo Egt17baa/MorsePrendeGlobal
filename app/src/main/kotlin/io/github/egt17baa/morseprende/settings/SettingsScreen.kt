@@ -1,0 +1,116 @@
+package io.github.egt17baa.morseprende.settings
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Slider
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.github.egt17baa.morseprende.R
+import io.github.egt17baa.morseprende.core.MorseTiming
+import kotlin.math.roundToInt
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SettingsScreen(viewModel: SettingsViewModel, onBack: () -> Unit) {
+    val s by viewModel.state.collectAsStateWithLifecycle()
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(R.string.settings_title)) },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
+                    }
+                },
+            )
+        },
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            SectionTitle(stringResource(R.string.settings_speed_section))
+            Text(stringResource(R.string.settings_char_wpm, s.charWpm))
+            Slider(
+                value = s.charWpm.toFloat(),
+                onValueChange = { viewModel.setCharWpm(it.roundToInt()) },
+                valueRange = MorseTiming.MIN_WPM.toFloat()..MorseTiming.MAX_WPM.toFloat(),
+                steps = MorseTiming.MAX_WPM - MorseTiming.MIN_WPM - 1,
+            )
+            Help(stringResource(R.string.settings_char_wpm_help))
+            Text(stringResource(R.string.settings_effective_wpm, s.effectiveWpm))
+            if (s.charWpm > MorseTiming.MIN_WPM) {
+                Slider(
+                    value = s.effectiveWpm.toFloat(),
+                    onValueChange = { viewModel.setEffectiveWpm(it.roundToInt()) },
+                    valueRange = MorseTiming.MIN_WPM.toFloat()..s.charWpm.toFloat(),
+                    steps = (s.charWpm - MorseTiming.MIN_WPM - 1).coerceAtLeast(0),
+                )
+            }
+            Help(stringResource(R.string.settings_effective_wpm_help))
+
+            SectionTitle(stringResource(R.string.settings_sound_section))
+            Text(stringResource(R.string.settings_tone, s.toneHz))
+            Slider(
+                value = s.toneHz.toFloat(),
+                onValueChange = { viewModel.setToneHz((it / 10).roundToInt() * 10) },
+                valueRange = AppSettings.MIN_TONE_HZ.toFloat()..AppSettings.MAX_TONE_HZ.toFloat(),
+            )
+            Text(stringResource(R.string.settings_volume, (s.volume * 100).roundToInt()))
+            Slider(value = s.volume, onValueChange = viewModel::setVolume)
+            Button(onClick = viewModel::testSound) {
+                Icon(Icons.Filled.PlayArrow, contentDescription = null)
+                Text(stringResource(R.string.settings_test_sound), modifier = Modifier.padding(start = 8.dp))
+            }
+
+            SectionTitle(stringResource(R.string.settings_safety_section))
+            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(R.string.settings_limit_flashes), modifier = Modifier.weight(1f))
+                Switch(checked = s.limitFlashes, onCheckedChange = viewModel::setLimitFlashes)
+            }
+            Help(stringResource(R.string.settings_limit_flashes_help))
+        }
+    }
+}
+
+@Composable
+private fun SectionTitle(text: String) {
+    Text(
+        text,
+        style = MaterialTheme.typography.titleMedium,
+        color = MaterialTheme.colorScheme.secondary,
+        modifier = Modifier.padding(top = 12.dp),
+    )
+}
+
+@Composable
+private fun Help(text: String) {
+    Text(text, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+}
