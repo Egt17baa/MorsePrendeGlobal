@@ -13,13 +13,16 @@ import io.github.egt17baa.morseprende.settings.SettingsScreen
 import io.github.egt17baa.morseprende.settings.SettingsViewModel
 import io.github.egt17baa.morseprende.translator.TranslatorScreen
 import io.github.egt17baa.morseprende.translator.TranslatorViewModel
-import io.github.egt17baa.morseprende.ui.home.HomeScreen
+import io.github.egt17baa.morseprende.ui.hub.HubCallbacks
+import io.github.egt17baa.morseprende.ui.hub.HubScreen
+import io.github.egt17baa.morseprende.ui.hub.HubViewModel
 import io.github.egt17baa.morseprende.ui.mission.MissionScreen
 import io.github.egt17baa.morseprende.ui.mission.MissionViewModel
 
 /** Los toques se ignoran mientras la pantalla no está activa (evita dobles navegaciones). */
 object Routes {
-    const val HOME = "home"
+    const val HUB = "hub"
+    const val LIBRARY = "library"
     const val TRANSLATOR = "translator"
     const val SETTINGS = "settings"
     const val MISSION = "mission/{id}"
@@ -30,11 +33,19 @@ object Routes {
 @Composable
 fun AppNavHost(container: AppContainer) {
     val nav = rememberNavController()
-    NavHost(navController = nav, startDestination = Routes.HOME) {
-        composable(Routes.HOME) {
-            HomeScreen(
-                onTranslator = dropUnlessResumed { nav.navigate(Routes.TRANSLATOR) },
-                onSettings = dropUnlessResumed { nav.navigate(Routes.SETTINGS) },
+    NavHost(navController = nav, startDestination = Routes.HUB) {
+        composable(Routes.HUB) {
+            val vm: HubViewModel = viewModel(
+                factory = viewModelFactory { initializer { HubViewModel(container.content, container.progress, container.seenCards) } },
+            )
+            HubScreen(
+                vm,
+                HubCallbacks(
+                    onMission = { id -> nav.navigate(Routes.mission(id)) { launchSingleTop = true } },
+                    onLibrary = dropUnlessResumed { nav.navigate(Routes.LIBRARY) },
+                    onTranslator = dropUnlessResumed { nav.navigate(Routes.TRANSLATOR) },
+                    onSettings = dropUnlessResumed { nav.navigate(Routes.SETTINGS) },
+                ),
             )
         }
         composable(Routes.TRANSLATOR) {

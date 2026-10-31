@@ -1,4 +1,4 @@
-package io.github.egt17baa.morseprende.ui.home
+package io.github.egt17baa.morseprende.ui.hub
 
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
@@ -7,23 +7,8 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
@@ -31,10 +16,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.rotate
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import io.github.egt17baa.morseprende.R
 import io.github.egt17baa.morseprende.ui.theme.BeamCream
 import io.github.egt17baa.morseprende.ui.theme.Coral
 import io.github.egt17baa.morseprende.ui.theme.Sand
@@ -42,54 +23,13 @@ import io.github.egt17baa.morseprende.ui.theme.SeaDeep
 import io.github.egt17baa.morseprende.ui.theme.SeaMist
 import io.github.egt17baa.morseprende.ui.theme.SeaNight
 
-/** Pantalla principal provisional: el faro, el traductor y los ajustes. */
+/**
+ * Faro dibujado con un haz de luz que barre el mar lentamente.
+ * @param glow progreso del capítulo (0..1): el haz gana brillo y alcance al avanzar.
+ */
 @Composable
-fun HomeScreen(onTranslator: () -> Unit, onSettings: () -> Unit) {
-    Scaffold { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .verticalScroll(rememberScrollState())
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            Text(
-                stringResource(R.string.app_name),
-                style = MaterialTheme.typography.headlineMedium,
-                color = MaterialTheme.colorScheme.primary,
-                textAlign = TextAlign.Center,
-            )
-            Text(
-                stringResource(R.string.home_subtitle),
-                style = MaterialTheme.typography.bodyLarge,
-                textAlign = TextAlign.Center,
-            )
-            LighthouseScene(
-                Modifier
-                    .fillMaxWidth()
-                    .height(260.dp),
-            )
-            Button(onClick = onTranslator, modifier = Modifier.fillMaxWidth()) {
-                Text(stringResource(R.string.home_translator))
-            }
-            OutlinedButton(onClick = onSettings, modifier = Modifier.fillMaxWidth()) {
-                Text(stringResource(R.string.home_settings))
-            }
-            Card(modifier = Modifier.fillMaxWidth()) {
-                Column(Modifier.padding(16.dp)) {
-                    Text(stringResource(R.string.home_campaign_soon), style = MaterialTheme.typography.titleMedium)
-                    Text(stringResource(R.string.home_campaign_soon_body), style = MaterialTheme.typography.bodyMedium)
-                }
-            }
-        }
-    }
-}
-
-/** Faro dibujado con un haz de luz que barre el mar lentamente. */
-@Composable
-private fun LighthouseScene(modifier: Modifier = Modifier) {
+fun LighthouseScene(glow: Float, modifier: Modifier = Modifier) {
+    val strength = 0.3f + 0.7f * glow.coerceIn(0f, 1f)
     val transition = rememberInfiniteTransition(label = "beam")
     val angle by transition.animateFloat(
         initialValue = -28f,
@@ -104,7 +44,7 @@ private fun LighthouseScene(modifier: Modifier = Modifier) {
         val towerTop = size.height * 0.36f
         val cx = size.width / 2
         val lantern = Offset(cx, towerTop - size.height * 0.05f)
-        rotate(angle, pivot = lantern) { drawBeam(lantern) }
+        rotate(angle, pivot = lantern) { drawBeam(lantern, strength) }
         drawTower(cx, towerTop, towerBottom)
     }
 }
@@ -127,8 +67,8 @@ private fun DrawScope.drawSea() {
     drawPath(wave, SeaMist)
 }
 
-private fun DrawScope.drawBeam(lantern: Offset) {
-    val length = size.width * 0.48f
+private fun DrawScope.drawBeam(lantern: Offset, strength: Float) {
+    val length = size.width * (0.25f + 0.25f * strength)
     val spread = size.height * 0.16f
     fun beam(direction: Float) = Path().apply {
         moveTo(lantern.x, lantern.y - 4f)
@@ -139,7 +79,7 @@ private fun DrawScope.drawBeam(lantern: Offset) {
     }
     val brush = { direction: Float ->
         Brush.horizontalGradient(
-            listOf(BeamCream.copy(alpha = 0.55f), Color.Transparent),
+            listOf(BeamCream.copy(alpha = 0.6f * strength), Color.Transparent),
             startX = lantern.x,
             endX = lantern.x + direction * length,
         )

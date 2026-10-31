@@ -4,6 +4,8 @@ import android.app.Application
 import android.content.Context
 import io.github.egt17baa.morseprende.data.AssetContentSource
 import io.github.egt17baa.morseprende.data.ContentSource
+import io.github.egt17baa.morseprende.data.DataStoreSeenCardsRepository
+import io.github.egt17baa.morseprende.data.SeenCardsRepository
 import io.github.egt17baa.morseprende.data.progress.AppDatabase
 import io.github.egt17baa.morseprende.data.progress.ProgressRepository
 import io.github.egt17baa.morseprende.data.progress.RoomProgressRepository
@@ -23,6 +25,7 @@ class AppContainer(context: Context) {
     val torchAvailable: Boolean by lazy { TorchOutput.isAvailable(appContext) }
     val content: ContentSource = AssetContentSource(appContext)
     val sidetone: SidetoneFactory = AndroidSidetoneFactory(appContext)
+    val seenCards: SeenCardsRepository = DataStoreSeenCardsRepository(appContext)
     val progress: ProgressRepository by lazy { RoomProgressRepository(AppDatabase.create(appContext)) }
 }
 
