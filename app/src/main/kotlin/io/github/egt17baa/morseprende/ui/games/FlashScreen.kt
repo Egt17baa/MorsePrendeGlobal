@@ -16,6 +16,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -73,16 +74,38 @@ fun FlashContent(state: FlashUiState, onStart: () -> Unit, onAnswer: (Char) -> U
 @Composable
 private fun FlashingLighthouse(lampOn: Boolean, modifier: Modifier) {
     Canvas(modifier) {
+        val h = minOf(size.height, size.width * 1.4f)
         val cx = size.width / 2
-        val top = size.height * 0.3f
         val bottom = size.height * 0.95f
-        val half = size.width * 0.06f
-        drawRect(Sand, Offset(cx - half, top), Size(half * 2, bottom - top))
-        drawRect(Coral, Offset(cx - half, top + (bottom - top) * 0.3f), Size(half * 2, (bottom - top) * 0.12f))
-        val lampCenter = Offset(cx, top - size.height * 0.08f)
-        if (lampOn) {
-            drawCircle(Brush.radialGradient(listOf(BeamCream, Color.Transparent), center = lampCenter, radius = size.minDimension * 0.3f), radius = size.minDimension * 0.3f, center = lampCenter)
+        val top = bottom - h * 0.55f
+        val halfBottom = h * 0.11f
+        val halfTop = h * 0.07f
+        val tower = Path().apply {
+            moveTo(cx - halfBottom, bottom); lineTo(cx - halfTop, top); lineTo(cx + halfTop, top); lineTo(cx + halfBottom, bottom); close()
         }
-        drawCircle(if (lampOn) BeamCream else SeaMist, radius = half * 1.2f, center = lampCenter)
+        drawPath(tower, Sand)
+        val stripeTop = top + (bottom - top) * 0.35f
+        val stripeBottom = stripeTop + (bottom - top) * 0.14f
+        fun halfAt(y: Float) = halfTop + (halfBottom - halfTop) * ((y - top) / (bottom - top))
+        drawPath(
+            Path().apply {
+                moveTo(cx - halfAt(stripeTop), stripeTop); lineTo(cx + halfAt(stripeTop), stripeTop)
+                lineTo(cx + halfAt(stripeBottom), stripeBottom); lineTo(cx - halfAt(stripeBottom), stripeBottom); close()
+            },
+            Coral,
+        )
+        val lanternHeight = h * 0.12f
+        val lanternTop = top - lanternHeight
+        val lampCenter = Offset(cx, lanternTop + lanternHeight / 2)
+        if (lampOn) {
+            // Halo contenido: el destello ocupa una zona pequeña de la pantalla (fotosensibilidad).
+            val glow = h * 0.2f
+            drawCircle(Brush.radialGradient(listOf(BeamCream, Color.Transparent), center = lampCenter, radius = glow), radius = glow, center = lampCenter)
+        }
+        drawRect(if (lampOn) BeamCream else SeaMist, Offset(cx - halfTop * 0.9f, lanternTop), Size(halfTop * 1.8f, lanternHeight))
+        drawPath(
+            Path().apply { moveTo(cx - halfTop * 1.3f, lanternTop); lineTo(cx, lanternTop - h * 0.09f); lineTo(cx + halfTop * 1.3f, lanternTop); close() },
+            Coral,
+        )
     }
 }

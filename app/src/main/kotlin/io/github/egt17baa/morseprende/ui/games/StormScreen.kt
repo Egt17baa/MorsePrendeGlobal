@@ -85,7 +85,9 @@ private fun StormSky(signals: List<SignalView>, modifier: Modifier) {
             val dash = dot * 4
             val gap = dot * 1.6f
             val totalWidth = s.pattern.sumOf { (if (it == '.') dot * 2 else dash).toDouble() }.toFloat() + gap * (s.pattern.length - 1)
-            var cursor = x - totalWidth / 2
+            // La señal nunca se sale por los lados.
+            val margin = dot * 2
+            var cursor = (x - totalWidth / 2).coerceIn(margin, (size.width - totalWidth - margin).coerceAtLeast(margin))
             val color = if (s.progress > 0.75f) Coral else BeamCream
             s.pattern.forEach { el ->
                 if (el == '.') {
