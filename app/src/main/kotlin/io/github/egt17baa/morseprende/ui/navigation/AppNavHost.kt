@@ -13,7 +13,17 @@ import io.github.egt17baa.morseprende.settings.SettingsScreen
 import io.github.egt17baa.morseprende.settings.SettingsViewModel
 import io.github.egt17baa.morseprende.translator.TranslatorScreen
 import io.github.egt17baa.morseprende.translator.TranslatorViewModel
+import io.github.egt17baa.morseprende.data.games.GameId
+import io.github.egt17baa.morseprende.ui.games.FlashScreen
+import io.github.egt17baa.morseprende.ui.games.FlashViewModel
+import io.github.egt17baa.morseprende.ui.games.GameDeps
+import io.github.egt17baa.morseprende.ui.games.InterceptScreen
+import io.github.egt17baa.morseprende.ui.games.InterceptViewModel
+import io.github.egt17baa.morseprende.ui.games.StormScreen
+import io.github.egt17baa.morseprende.ui.games.StormViewModel
 import io.github.egt17baa.morseprende.ui.hub.HubCallbacks
+import io.github.egt17baa.morseprende.ui.practice.PracticeScreen
+import io.github.egt17baa.morseprende.ui.practice.PracticeViewModel
 import io.github.egt17baa.morseprende.ui.hub.HubScreen
 import io.github.egt17baa.morseprende.ui.hub.HubViewModel
 import io.github.egt17baa.morseprende.ui.library.LibraryScreen
@@ -25,6 +35,10 @@ import io.github.egt17baa.morseprende.ui.mission.MissionViewModel
 object Routes {
     const val HUB = "hub"
     const val LIBRARY = "library"
+    const val PRACTICE = "practice"
+    const val GAME = "game/{id}"
+
+    fun game(id: GameId) = "game/${id.name}"
     const val TRANSLATOR = "translator"
     const val SETTINGS = "settings"
     const val MISSION = "mission/{id}"
@@ -45,6 +59,7 @@ fun AppNavHost(container: AppContainer) {
                 HubCallbacks(
                     onMission = { id -> nav.navigate(Routes.mission(id)) { launchSingleTop = true } },
                     onLibrary = dropUnlessResumed { nav.navigate(Routes.LIBRARY) },
+                    onPractice = dropUnlessResumed { nav.navigate(Routes.PRACTICE) },
                     onTranslator = dropUnlessResumed { nav.navigate(Routes.TRANSLATOR) },
                     onSettings = dropUnlessResumed { nav.navigate(Routes.SETTINGS) },
                 ),
@@ -75,6 +90,22 @@ fun AppNavHost(container: AppContainer) {
                 factory = viewModelFactory { initializer { LibraryViewModel(container.content, container.progress, container.seenCards) } },
             )
             LibraryScreen(vm, onBack = dropUnlessResumed { nav.popBackStack() })
+        }
+        composable(Routes.PRACTICE) {
+            val vm: PracticeViewModel = viewModel(
+                factory = viewModelFactory { initializer { PracticeViewModel(container.content, container.progress, container.gameRecords) } },
+            )
+            PracticeScreen(vm, onGame = { id -> nav.navigate(Routes.game(id)) { launchSingleTop = true } }, onBack = dropUnlessResumed { nav.popBackStack() })
+        }
+        composable(Routes.GAME) { entry ->
+            val id = GameId.entries.firstOrNull { it.name == entry.arguments?.getString("id") } ?: GameId.STORM
+            val deps = GameDeps(container.content, container.progress, container.charStats, container.gameRecords, container.settings, container.outputs)
+            val onBack = dropUnlessResumed { nav.popBackStack() }
+            when (id) {
+                GameId.STORM -> StormScreen(viewModel(key = "storm", factory = viewModelFactory { initializer { StormViewModel(deps) } }), onBack)
+                GameId.FLASH -> FlashScreen(viewModel(key = "flash", factory = viewModelFactory { initializer { FlashViewModel(deps) } }), onBack)
+                GameId.INTERCEPT -> InterceptScreen(viewModel(key = "intercept", factory = viewModelFactory { initializer { InterceptViewModel(deps) } }), onBack)
+            }
         }
         composable(Routes.SETTINGS) {
             val vm: SettingsViewModel = viewModel(

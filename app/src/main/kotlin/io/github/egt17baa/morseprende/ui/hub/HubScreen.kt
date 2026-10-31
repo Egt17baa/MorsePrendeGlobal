@@ -54,6 +54,7 @@ import io.github.egt17baa.morseprende.ui.theme.SeaMist
 data class HubCallbacks(
     val onMission: (String) -> Unit = {},
     val onLibrary: () -> Unit = {},
+    val onPractice: () -> Unit = {},
     val onTranslator: () -> Unit = {},
     val onSettings: () -> Unit = {},
 )
@@ -199,6 +200,7 @@ private fun HubBottomBar(newCards: Int, callbacks: HubCallbacks) {
             },
             label = { Text(stringResource(R.string.hub_library)) },
         )
+        NavigationBarItem(selected = false, onClick = callbacks.onPractice, icon = { Text("⚡") }, label = { Text(stringResource(R.string.hub_practice)) })
         NavigationBarItem(selected = false, onClick = callbacks.onTranslator, icon = { Text("•▬") }, label = { Text(stringResource(R.string.hub_translator)) })
         NavigationBarItem(selected = false, onClick = callbacks.onSettings, icon = { Text("⚙") }, label = { Text(stringResource(R.string.hub_settings)) })
     }

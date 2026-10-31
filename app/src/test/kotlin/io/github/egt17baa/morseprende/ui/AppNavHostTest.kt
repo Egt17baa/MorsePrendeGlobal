@@ -3,6 +3,7 @@ package io.github.egt17baa.morseprende.ui
 import android.content.Context
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -51,6 +52,9 @@ class AppNavHostTest {
     @Test fun app_starts_on_hub() {
         compose.setContent { AppNavHost(AppContainer(context)) }
         compose.onNodeWithText(context.getString(R.string.hub_library)).assertIsDisplayed()
-        compose.onNodeWithText("La primera luz", useUnmergedTree = true).assertExists()
+        // El progreso sale de Room en segundo plano (Compose no lo espera): se aguarda a que haya nodos.
+        compose.waitUntil(timeoutMillis = 10_000) {
+            compose.onAllNodesWithText("La primera luz", useUnmergedTree = true).fetchSemanticsNodes().isNotEmpty()
+        }
     }
 }
