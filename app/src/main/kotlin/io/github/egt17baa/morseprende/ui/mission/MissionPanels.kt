@@ -162,7 +162,12 @@ private fun SendPanel(e: Exercise.Send, state: MissionUiState, actions: MissionA
             OutlinedButton(onClick = actions::deleteLast, modifier = Modifier.weight(1f)) { Text(stringResource(R.string.mission_delete)) }
             TextButton(onClick = actions::replay, modifier = Modifier.weight(1f)) { Text(stringResource(R.string.mission_listen_again)) }
         }
-        Button(onClick = actions::submitSend, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.mission_submit)) }
+        // Sin nada transmitido no se puede enviar: un toque accidental no gasta un intento.
+        Button(
+            onClick = actions::submitSend,
+            enabled = state.sentText.isNotBlank() || state.keyerPending.isNotEmpty(),
+            modifier = Modifier.fillMaxWidth(),
+        ) { Text(stringResource(R.string.mission_submit)) }
     }
 }
 

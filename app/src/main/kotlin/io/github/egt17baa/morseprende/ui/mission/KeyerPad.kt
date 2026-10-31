@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
-import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -58,14 +57,31 @@ private fun StraightKey(actions: MissionActions) {
                 .border(6.dp, MaterialTheme.colorScheme.secondary, CircleShape)
                 .semantics { contentDescription = description }
                 .pointerInput(Unit) {
+                    // Se sigue el dedo hasta que se levanta, aunque se mueva o salga del círculo, y se
+                    // consumen los eventos para que la pantalla no se desplace mientras se mantiene
+                    // pulsado. Los tiempos salen del propio evento (más precisos que leer el reloj).
                     awaitEachGesture {
-                        awaitFirstDown()
+                        val down = awaitFirstDown(requireUnconsumed = false)
+                        down.consume()
                         pressed = true
                         haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                        actions.keyDown()
-                        waitForUpOrCancellation()
-                        pressed = false
-                        actions.keyUp()
+                        actions.keyDown(down.uptimeMillis)
+                        var upTime = down.uptimeMillis
+                        try {
+                            while (true) {
+                                val event = awaitPointerEvent()
+                                val change = event.changes.firstOrNull { it.id == down.id }
+                                event.changes.forEach { it.consume() }
+                                if (change == null || !change.pressed) {
+                                    upTime = change?.uptimeMillis ?: upTime
+                                    break
+                                }
+                                upTime = change.uptimeMillis
+                            }
+                        } finally {
+                            pressed = false
+                            actions.keyUp(upTime)
+                        }
                     }
                 },
             contentAlignment = Alignment.Center,

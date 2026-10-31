@@ -9,6 +9,7 @@ import io.github.egt17baa.morseprende.core.MorseCodec
 import io.github.egt17baa.morseprende.core.MorseTiming
 import io.github.egt17baa.morseprende.data.ContentSource
 import io.github.egt17baa.morseprende.data.progress.ProgressRepository
+import io.github.egt17baa.morseprende.game.content.Chapter
 import io.github.egt17baa.morseprende.game.content.Mission
 import io.github.egt17baa.morseprende.game.mission.Exercise
 import io.github.egt17baa.morseprende.game.mission.MissionPlanner
@@ -42,7 +43,7 @@ class MissionViewModel(
     settings: SettingsRepository,
     private val outputs: OutputFactory,
     private val sidetoneFactory: SidetoneFactory,
-    random: Random = Random.Default,
+    private val random: Random = Random.Default,
     playerScope: CoroutineScope? = null,
     private val clock: () -> Long = { SystemClock.uptimeMillis() },
 ) : ViewModel() {
@@ -56,7 +57,8 @@ class MissionViewModel(
     }.stateIn(viewModelScope, SharingStarted.Eagerly, ui.value)
 
     private val mission: Mission?
-    private val session: MissionSession?
+    private val chapter: Chapter?
+    private var session: MissionSession?
     private var keyer = KeyerDecoder(DEFAULT_UNIT_MS)
     private var sidetone: Sidetone? = null
     private var pendingAdvance = false
@@ -67,24 +69,28 @@ class MissionViewModel(
             val chapters = content.chapters()
             val chapter = chapters.first { ch -> ch.missions.any { it.id == missionId } }
             val m = chapter.missions.first { it.id == missionId }
-            m to MissionSession(MissionPlanner.plan(m, chapter, random))
+            Triple(m, chapter, MissionSession(MissionPlanner.plan(m, chapter, random)))
         }
         mission = loaded.getOrNull()?.first
-        session = loaded.getOrNull()?.second
-        if (mission == null || session == null) {
+        chapter = loaded.getOrNull()?.second
+        val initialSession = loaded.getOrNull()?.third
+        session = initialSession
+        if (mission == null || chapter == null || initialSession == null) {
             // Contenido roto (ContentLoadException), misión inexistente o cualquier otro fallo de
             // carga: se muestra un error en vez de cerrar la app.
             ui.value = MissionUiState(phase = MissionPhase.ERROR)
         } else {
-            ui.value = MissionUiState(
-                title = mission.title,
-                briefing = mission.briefing,
-                debriefing = mission.debriefing,
-                exerciseCount = session.exercises.size,
-                newChars = mission.newChars.toSet(),
-            )
+            ui.value = briefingState(mission, initialSession)
         }
     }
+
+    private fun briefingState(m: Mission, s: MissionSession) = MissionUiState(
+        title = m.title,
+        briefing = m.briefing,
+        debriefing = m.debriefing,
+        exerciseCount = s.exercises.size,
+        newChars = m.newChars.toSet(),
+    )
 
     fun start() {
         if (session == null || ui.value.phase != MissionPhase.BRIEFING) return
@@ -128,16 +134,19 @@ class MissionViewModel(
         ui.update { it.copy(feedback = Feedback(result.correct, result.expected), hintLevel = s.hintLevel) }
     }
 
-    fun keyDown() {
+    fun keyDown(atMs: Long = clock()) {
         if (!acceptsKeying()) return
-        keyer.press(clock())
-        sidetone?.keyDown()
+        keyer.press(atMs)
+        val tone = sidetone ?: sidetoneFactory.create(settings.value).also { sidetone = it }
+        keyIsDown = true
+        tone.keyDown()
     }
 
-    fun keyUp() {
+    fun keyUp(atMs: Long = clock()) {
+        // El tono se apaga siempre, aunque el ejercicio ya no acepte pulsaciones: nunca queda sonando.
+        releaseKey()
         if (!acceptsKeying()) return
-        sidetone?.keyUp()
-        keyer.release(clock())
+        keyer.release(atMs)
         syncKeyer()
     }
 
@@ -176,6 +185,7 @@ class MissionViewModel(
     fun submitSend() {
         val s = session ?: return
         if (!acceptsKeying()) return
+        releaseKey()
         keyer.commitLetter()?.let(::appendLetter)
         val result = s.send(ui.value.sentText.trim())
         pendingAdvance = result.advanced
@@ -188,6 +198,7 @@ class MissionViewModel(
     /** Quita el feedback y pasa al siguiente ejercicio (o repite el actual si toca). */
     fun next() {
         if (ui.value.phase != MissionPhase.EXERCISE || ui.value.feedback == null) return
+        releaseKey()
         ui.update { it.copy(feedback = null, sentText = "", keyerPending = "") }
         if (pendingAdvance) {
             pendingAdvance = false
@@ -195,18 +206,47 @@ class MissionViewModel(
         }
     }
 
-    /** Salir a mitad: se apaga todo y no se guarda nada. */
+    /**
+     * Salir a mitad (atrás, botón de inicio, bloqueo, llamada): se apaga todo, no se guarda nada y
+     * la misión vuelve al briefing para empezar de nuevo con ejercicios nuevos. Un debriefing se
+     * conserva tal cual.
+     */
     fun abandon() {
-        player.stop()
-        sidetone?.close()
-        keyer.reset()
+        releaseAudio()
+        val m = mission ?: return
+        val ch = chapter ?: return
+        if (ui.value.phase == MissionPhase.EXERCISE) {
+            val fresh = MissionSession(MissionPlanner.plan(m, ch, random))
+            session = fresh
+            pendingAdvance = false
+            ui.value = briefingState(m, fresh)
+        }
     }
 
-    override fun onCleared() = abandon()
+    override fun onCleared() = releaseAudio()
+
+    private var keyIsDown = false
+
+    /** Apaga el tono si la tecla seguía pulsada. */
+    private fun releaseKey() {
+        if (keyIsDown) {
+            keyIsDown = false
+            sidetone?.keyUp()
+        }
+    }
+
+    private fun releaseAudio() {
+        player.stop()
+        releaseKey()
+        sidetone?.close()
+        sidetone = null
+        keyer.reset()
+    }
 
     private fun enterExercise() {
         val s = session ?: return
         player.stop()
+        releaseKey()
         keyer.reset()
         if (s.isFinished) {
             finish()
@@ -251,7 +291,13 @@ class MissionViewModel(
         ui.update { it.copy(sentText = it.sentText + (event.char ?: UNKNOWN_CHAR)) }
     }
 
+    /**
+     * Solo hay separación de palabras si el objetivo tiene varias: así la pausa larga de un
+     * principiante entre letras no estropea una palabra correcta.
+     */
     private fun appendSpace() {
+        val target = (session?.current as? Exercise.Send)?.target ?: return
+        if (' ' !in target) return
         ui.update { if (it.sentText.isEmpty() || it.sentText.endsWith(' ')) it else it.copy(sentText = it.sentText + ' ') }
     }
 

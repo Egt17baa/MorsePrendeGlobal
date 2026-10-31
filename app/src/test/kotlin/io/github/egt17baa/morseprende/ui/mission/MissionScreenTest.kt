@@ -5,6 +5,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -37,8 +48,8 @@ class MissionScreenTest {
         override fun replay() { calls += "replay" }
         override fun continueListen() { calls += "continueListen" }
         override fun answer(text: String) { calls += "answer:$text" }
-        override fun keyDown() { calls += "down" }
-        override fun keyUp() { calls += "up" }
+        override fun keyDown(atMs: Long) { calls += "down@$atMs" }
+        override fun keyUp(atMs: Long) { calls += "up@$atMs" }
         override fun tick() = Unit
         override fun dot() { calls += "dot" }
         override fun dash() { calls += "dash" }
@@ -67,7 +78,7 @@ class MissionScreenTest {
 
     @Test fun two_button_pad_shown_when_mode_two() {
         val r = Recorder()
-        val state = MissionUiState(phase = MissionPhase.EXERCISE, exercise = Exercise.Send("S"), keyerMode = KeyerMode.TWO_BUTTONS, exerciseCount = 5)
+        val state = MissionUiState(phase = MissionPhase.EXERCISE, exercise = Exercise.Send("S"), keyerMode = KeyerMode.TWO_BUTTONS, exerciseCount = 5, sentText = "S")
         compose.setContent { MissionContent(state, r) }
         compose.onNodeWithText(str(R.string.mission_dot)).performScrollTo().performClick()
         compose.onNodeWithText(str(R.string.mission_dash)).performScrollTo().performClick()
@@ -108,5 +119,34 @@ class MissionScreenTest {
         show = false
         compose.waitForIdle()
         assertTrue(sidetones.last.closed)
+    }
+
+    @Test fun submit_disabled_when_nothing_keyed() {
+        val state = MissionUiState(phase = MissionPhase.EXERCISE, exercise = Exercise.Send("S"), exerciseCount = 5)
+        compose.setContent { MissionContent(state, Recorder()) }
+        compose.onNodeWithText(str(R.string.mission_submit)).performScrollTo().assertIsNotEnabled()
+    }
+
+    @Test fun drifting_finger_keeps_the_press_and_does_not_scroll() {
+        val r = Recorder()
+        compose.setContent {
+            Column(Modifier.verticalScroll(rememberScrollState())) {
+                KeyerPad(KeyerMode.ONE_BUTTON, r)
+                Spacer(Modifier.height(2000.dp))
+            }
+        }
+        compose.onNodeWithContentDescription(str(R.string.mission_key)).performTouchInput {
+            down(center)
+            advanceEventTime(150)
+            moveBy(Offset(0f, 300f))
+            advanceEventTime(250)
+            up()
+        }
+        compose.waitForIdle()
+        assertEquals(2, r.calls.size)
+        val down = r.calls[0].substringAfter("@").toLong()
+        val up = r.calls[1].substringAfter("@").toLong()
+        assertTrue(r.calls[0].startsWith("down") && r.calls[1].startsWith("up"))
+        assertEquals(150L + 16L + 250L, up - down)   // moveBy añade un periodo de evento (16 ms)
     }
 }

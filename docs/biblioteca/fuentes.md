@@ -78,6 +78,7 @@ omite.
   https://itu.int/dms_pub/itu-r/md/03/wrc03/c/R03-WRC03-C-0025!A9!MSW-E.doc
 - La Guardia Costera de EE. UU. dejó el Morse en 1995 y cesó en todo el mundo el 1-2-1999:
   https://webarchive.library.unt.edu/eot2008/20080921185707/http:/www.navcen.uscg.gov/marcomms/gmdss
-- La frecuencia de 500 kHz dejó de formar parte de la red internacional de socorro a las 00:00 UTC
-  del 1-2-1999, tras más de cien años: https://www.qsl.net/gm3zdh/maritime/morse-ceased.htm
+- El uso radiotelegráfico de socorro (500 kHz, SOS) data de las convenciones de 1906/1912: «casi un
+  siglo» hasta 1999 (no «más de cien años»: corregido tras la revisión). Fuente del fin de la
+  obligación: documento UIT WRC-03 citado arriba.
 - Los radioaficionados siguen usándolo: https://en.wikipedia.org/wiki/Global_Maritime_Distress_and_Safety_System

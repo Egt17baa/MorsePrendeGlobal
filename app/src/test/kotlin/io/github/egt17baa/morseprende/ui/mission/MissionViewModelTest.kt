@@ -72,6 +72,17 @@ class MissionViewModelTest {
         at(start + 80); vm.keyUp()
     }
 
+    private fun Env.keyCode(code: String, start: Long): Long {
+        var t = start
+        code.forEach { el ->
+            at(t); vm.keyDown()
+            t += if (el == '.') 80 else 300
+            at(t); vm.keyUp()
+            t += 100
+        }
+        return t
+    }
+
     @Test fun starts_in_briefing_then_exercise() = runTest {
         val e = env()
         assertEquals(MissionPhase.BRIEFING, e.s.phase)
@@ -118,7 +129,7 @@ class MissionViewModelTest {
         e.vm.nextLetter()
         assertEquals("SO", e.s.sentText)
         e.vm.nextLetter()
-        assertEquals("SO ", e.s.sentText)
+        assertEquals("SO", e.s.sentText)   // objetivo de una sola palabra: no se añaden espacios
     }
 
     @Test fun delete_last_removes_char() = runTest {
@@ -218,5 +229,80 @@ class MissionViewModelTest {
         runCurrent()
         assertTrue(e.s.isPlaying)
         assertNotNull(e.s.exercise as? Exercise.ReceiveChoice)
+    }
+
+    @Test fun stop_then_resume_restarts_and_tone_works() = runTest {
+        val e = env()
+        e.advanceToSend()
+        e.vm.abandon()
+        assertEquals(MissionPhase.BRIEFING, e.s.phase)
+        assertTrue(e.sidetones.last.closed)
+        e.advanceToSend()
+        e.vm.keyDown()
+        assertEquals(2, e.sidetones.created.size)
+        assertEquals(listOf("down"), e.sidetones.last.calls)
+        assertEquals(emptyList<Pair<String, Int>>(), e.progress.recorded)
+    }
+
+    @Test fun abandon_in_debriefing_keeps_debriefing() = runTest {
+        val e = env()
+        e.vm.start()
+        while (e.s.phase == MissionPhase.EXERCISE) {
+            when (val x = e.s.exercise) {
+                is Exercise.Listen -> e.vm.continueListen()
+                is Exercise.ReceiveChoice -> { e.vm.answer(x.answer); e.vm.next() }
+                is Exercise.ReceiveTyped -> { e.vm.answer(x.answer); e.vm.next() }
+                is Exercise.Send -> repeat(3) { e.vm.dot(); e.vm.submitSend(); e.vm.next() }
+                is Exercise.FinalMessage -> { e.vm.answer(x.message.text); e.vm.next() }
+                null -> error("sin ejercicio")
+            }
+        }
+        e.vm.abandon()
+        assertEquals(MissionPhase.DEBRIEFING, e.s.phase)
+    }
+
+    @Test fun slow_pause_between_letters_is_not_a_word_break() = runTest {
+        val e = env()
+        e.advanceToSend()
+        // Fuerza un objetivo sin espacios: se transmite exactamente el objetivo actual, con pausas largas.
+        val target = (e.s.exercise as Exercise.Send).target
+        var t = 0L
+        target.forEach { c ->
+            t = e.keyCode(io.github.egt17baa.morseprende.core.MorseAlphabet.codeFor(c)!!, t)
+            e.at(t + 300); e.vm.tick()        // cierra la letra
+            t += 1_500
+            e.at(t); e.vm.tick()              // pausa larga de principiante (> 6 unidades)
+        }
+        assertEquals(target, e.s.sentText)
+        e.vm.submitSend()
+        assertEquals(Feedback(true, target), e.s.feedback)
+    }
+
+    @Test fun empty_next_letter_adds_no_space_for_single_word_target() = runTest {
+        val e = env(settings = AppSettings(keyerMode = KeyerMode.TWO_BUTTONS))
+        e.advanceToSend()
+        repeat(3) { e.vm.dot() }
+        e.vm.nextLetter()
+        e.vm.nextLetter()
+        assertEquals("S", e.s.sentText)
+    }
+
+    @Test fun tone_never_stays_on_after_submit() = runTest {
+        val e = env()
+        e.advanceToSend()
+        e.at(0); e.vm.keyDown()
+        e.vm.submitSend()
+        assertEquals("up", e.sidetones.last.calls.last())
+        e.at(500); e.vm.keyUp()
+        assertEquals("up", e.sidetones.last.calls.last())
+    }
+
+    @Test fun key_timestamps_from_events_are_used() = runTest {
+        val e = env()
+        e.advanceToSend()
+        e.at(99_999)
+        e.vm.keyDown(atMs = 1_000)
+        e.vm.keyUp(atMs = 1_350)
+        assertEquals("-", e.s.keyerPending)
     }
 }
