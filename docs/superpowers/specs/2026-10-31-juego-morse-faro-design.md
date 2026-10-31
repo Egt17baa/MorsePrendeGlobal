@@ -1,4 +1,4 @@
-# Diseño: juego educativo de código Morse para Android ("MorsePrende", nombre provisional)
+# Diseño: "MorsePrende: El Faro", juego educativo de código Morse para Android
 
 Fecha: 2026-10-31 · Estado: borrador para aprobación
 
@@ -60,6 +60,11 @@ de "Lección N" con botones "Recepción/Envío"), iconos de corona/antena, ni su
 ## 5. Restricciones
 
 - Plataforma: Android, solo teléfono (vertical) [decisión del usuario: "en principio en el móvil"].
+- Nombre: **MorsePrende: El Faro**; identificador (applicationId):
+  **`io.github.egt17baa.morseprende`** [decisión del usuario]. No debe cambiar nunca.
+- Dispositivo de pruebas: **Honor Magic 8 Pro** del usuario (gama alta reciente, MagicOS sobre
+  Android 16) [decisión del usuario]. MagicOS es agresivo cerrando apps en segundo plano y
+  personaliza la vibración; hay que comprobar linterna y vibración ahí.
 - Tecnología: **Kotlin nativo + Jetpack Compose** [decisión del usuario, opción A].
 - 100 % offline; todos los datos guardados en el dispositivo.
 - Idioma: **v1 solo en español**; todos los textos en recursos para añadir inglés después
