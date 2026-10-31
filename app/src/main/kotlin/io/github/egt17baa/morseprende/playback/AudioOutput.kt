@@ -28,6 +28,7 @@ class AudioOutput(
         ?: DEFAULT_SAMPLE_RATE
 
     private val lock = Any()
+    private val silence = ShortArray(CHUNK_SAMPLES)
     private var track: AudioTrack? = null
 
     override suspend fun play(signals: List<Signal>) = withContext(Dispatchers.IO) {
@@ -36,12 +37,19 @@ class AudioOutput(
         var finishedNormally = false
         try {
             audioTrack.play()
-            for (signal in signals) {
-                val pcm = ToneSynth.render(signal, sampleRate, freqHz, volume)
+            for (signal in withTail(signals)) {
+                // Los silencios reutilizan un bloque de ceros: no se reserva memoria por pausa.
+                val pcm = if (signal.on) ToneSynth.render(signal, sampleRate, freqHz, volume) else null
+                val total = ToneSynth.samplesFor(signal.durationMs, sampleRate)
                 var offset = 0
-                while (offset < pcm.size) {
+                while (offset < total) {
                     ensureActive()
-                    val written = audioTrack.write(pcm, offset, min(CHUNK_SAMPLES, pcm.size - offset))
+                    val count = min(CHUNK_SAMPLES, total - offset)
+                    val written = if (pcm != null) {
+                        audioTrack.write(pcm, offset, count)
+                    } else {
+                        audioTrack.write(silence, 0, count)
+                    }
                     if (written <= 0) return@withContext
                     offset += written
                 }
@@ -73,7 +81,7 @@ class AudioOutput(
     private fun createTrack(): AudioTrack {
         val minBuffer = AudioTrack.getMinBufferSize(
             sampleRate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT,
-        ).coerceAtLeast(CHUNK_SAMPLES * 2)
+        ).coerceAtLeast(CHUNK_SAMPLES * 2) * BUFFER_MULTIPLIER
         return AudioTrack.Builder()
             .setAudioAttributes(
                 AudioAttributes.Builder()
@@ -94,8 +102,19 @@ class AudioOutput(
             .build()
     }
 
-    private companion object {
-        const val DEFAULT_SAMPLE_RATE = 48_000
-        const val CHUNK_SAMPLES = 1_024
+    companion object {
+        const val TAIL_SILENCE_MS = 150L
+
+        /**
+         * Añade un silencio final: así lo último que queda en el búfer al llamar a stop() es
+         * silencio y no se recorta el último punto o raya.
+         */
+        fun withTail(signals: List<Signal>): List<Signal> = signals + Signal(false, TAIL_SILENCE_MS)
+
+        private const val DEFAULT_SAMPLE_RATE = 48_000
+        private const val CHUNK_SAMPLES = 1_024
+
+        /** Margen de búfer contra cortes: en el traductor la latencia no es crítica. */
+        private const val BUFFER_MULTIPLIER = 4
     }
 }

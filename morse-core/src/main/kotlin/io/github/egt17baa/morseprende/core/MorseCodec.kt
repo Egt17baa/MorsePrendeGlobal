@@ -19,8 +19,9 @@ object MorseCodec {
     private const val WORD_SEPARATOR = " / "
     private const val ENYE_MARKER = '\u0001'
     private val combiningMarks = Regex("\\p{Mn}+")
-    private val whitespace = Regex("\\s+")
-    private val wordBreakSpaces = Regex("\\s{3,}")
+    // (?U): \s también reconoce espacios Unicode como el no separable (&nbsp;) o el estrecho (U+202F).
+    private val whitespace = Regex("(?U)\\s+")
+    private val wordBreakSpaces = Regex("(?U)\\s{3,}")
 
     /** Mayúsculas, sin tildes ni diéresis (excepto la Ñ) y con los espacios agrupados. */
     fun normalizeText(text: String): String {

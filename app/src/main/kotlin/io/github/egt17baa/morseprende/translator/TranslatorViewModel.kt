@@ -36,11 +36,15 @@ class TranslatorViewModel(
     val state: StateFlow<TranslatorState> = combine(ui, player.isPlaying) { s, playing -> s.copy(isPlaying = playing) }
         .stateIn(viewModelScope, SharingStarted.Eagerly, ui.value)
 
-    private val screenOutput = SteppedOutput { lit -> ui.update { it.copy(screenLit = lit) } }
+    private val screenOutput = SteppedOutput(setOn = { lit -> ui.update { it.copy(screenLit = lit) } })
+
+    init {
+        viewModelScope.launch { settings.collect { prefs -> ui.update { it.copy(charWpm = prefs.charWpm) } } }
+    }
 
     fun onInputChange(text: String) {
-        val input = text.take(MAX_INPUT)
         ui.update { s ->
+            val input = text.take(if (s.direction == Direction.MORSE_TO_TEXT) MAX_MORSE_INPUT else MAX_INPUT)
             when (s.direction) {
                 Direction.TEXT_TO_MORSE -> {
                     val result = MorseCodec.encode(input)
@@ -62,19 +66,20 @@ class TranslatorViewModel(
         val s = ui.value
         when {
             kind == OutputKind.TORCH && !s.torchAvailable -> Unit
-            kind in s.outputs -> ui.update { it.copy(outputs = it.outputs - kind) }
+            kind in s.outputs -> setOutputs(s.outputs - kind)
             kind.isLight && !settings.value.flashWarningAccepted -> {
                 pendingLightOutput = kind
                 ui.update { it.copy(showFlashWarning = true) }
             }
-            else -> ui.update { it.copy(outputs = it.outputs + kind) }
+            else -> setOutputs(s.outputs + kind)
         }
     }
 
     fun acceptFlashWarning() {
         val kind = pendingLightOutput
         pendingLightOutput = null
-        ui.update { it.copy(showFlashWarning = false, outputs = if (kind != null) it.outputs + kind else it.outputs) }
+        ui.update { it.copy(showFlashWarning = false) }
+        if (kind != null) setOutputs(ui.value.outputs + kind)
         viewModelScope.launch { settingsRepo.update { it.copy(flashWarningAccepted = true) } }
     }
 
@@ -93,11 +98,30 @@ class TranslatorViewModel(
         } else {
             MorseTiming(prefs.charWpm, prefs.effectiveWpm)
         }
-        ui.update { it.copy(speedLimitedForFlashes = limited) }
-        val signalOutputs = s.outputs.map { kind ->
-            if (kind == OutputKind.SCREEN) screenOutput else outputs.create(kind, prefs)
+        ui.update { it.copy(speedLimitedForFlashes = limited, failedOutputs = emptySet()) }
+        val byOutput = s.outputs.associateBy { kind ->
+            if (kind == OutputKind.SCREEN) screenOutput else outputs.create(kind, prefs) { markFailed(kind) }
         }
-        player.play(timing.signalsFor(s.morseToPlay), signalOutputs)
+        player.play(timing.signalsFor(s.morseToPlay), byOutput.keys.toList()) { failed ->
+            byOutput[failed]?.let(::markFailed)
+        }
+    }
+
+    /** Cambia la velocidad de las letras (la efectiva nunca la supera). */
+    fun setSpeed(wpm: Int) {
+        viewModelScope.launch {
+            settingsRepo.update { it.copy(charWpm = wpm, effectiveWpm = minOf(it.effectiveWpm, wpm)) }
+        }
+    }
+
+    /** Cambiar las salidas mientras suena detiene la reproducción: nada sigue emitiendo a escondidas. */
+    private fun setOutputs(newOutputs: Set<OutputKind>) {
+        if (player.isPlaying.value) stop()
+        ui.update { it.copy(outputs = newOutputs) }
+    }
+
+    private fun markFailed(kind: OutputKind) {
+        ui.update { it.copy(failedOutputs = it.failedOutputs + kind) }
     }
 
     fun stop() = player.stop()
@@ -113,6 +137,8 @@ class TranslatorViewModel(
 
     companion object {
         const val MAX_INPUT = 1000
+        /** El Morse ocupa varias veces más que el texto: al invertir no se debe recortar. */
+        const val MAX_MORSE_INPUT = 8000
 
         /** Unos 3 destellos por segundo como máximo (pauta WCAG 2.3.1). */
         const val FLASH_SAFE_WPM = 7

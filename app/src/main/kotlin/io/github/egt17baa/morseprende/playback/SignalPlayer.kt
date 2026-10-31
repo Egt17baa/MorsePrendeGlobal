@@ -1,6 +1,7 @@
 package io.github.egt17baa.morseprende.playback
 
 import io.github.egt17baa.morseprende.core.Signal
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
@@ -12,7 +13,10 @@ import kotlinx.coroutines.launch
 
 /**
  * Reproduce una línea de tiempo por varias salidas a la vez. Solo hay una reproducción activa:
- * empezar otra detiene la anterior y deja sus salidas apagadas.
+ * empezar otra detiene la anterior, espera a que termine de cerrarse (varias salidas comparten
+ * el mismo vibrador o la misma linterna) y solo entonces arranca la nueva.
+ *
+ * Si una salida falla, se avisa con `onOutputFailure` y las demás siguen sonando.
  */
 class SignalPlayer(private val scope: CoroutineScope) {
 
@@ -22,18 +26,39 @@ class SignalPlayer(private val scope: CoroutineScope) {
     private var job: Job? = null
     private var activeOutputs: List<SignalOutput> = emptyList()
 
-    fun play(signals: List<Signal>, outputs: List<SignalOutput>) {
+    fun play(
+        signals: List<Signal>,
+        outputs: List<SignalOutput>,
+        onOutputFailure: (SignalOutput) -> Unit = {},
+    ) {
+        val previous = job
         stop()
         if (signals.isEmpty() || outputs.isEmpty()) return
 
         activeOutputs = outputs
         _isPlaying.value = true
         val newJob = scope.launch(start = CoroutineStart.LAZY) {
+            previous?.join()
             try {
-                coroutineScope { outputs.forEach { output -> launch { output.play(signals) } } }
+                coroutineScope {
+                    outputs.forEach { output ->
+                        launch {
+                            try {
+                                output.play(signals)
+                            } catch (e: CancellationException) {
+                                throw e
+                            } catch (e: Exception) {
+                                output.stop()
+                                onOutputFailure(output)
+                            }
+                        }
+                    }
+                }
             } finally {
-                outputs.forEach { it.stop() }
+                // Solo la reproducción vigente toca el estado: una anterior que termina tarde no
+                // debe apagar las salidas de la nueva.
                 if (job === coroutineContext[Job]) {
+                    outputs.forEach { it.stop() }
                     job = null
                     activeOutputs = emptyList()
                     _isPlaying.value = false

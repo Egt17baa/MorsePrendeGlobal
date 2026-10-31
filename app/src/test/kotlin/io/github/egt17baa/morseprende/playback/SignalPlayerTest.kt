@@ -1,6 +1,9 @@
 package io.github.egt17baa.morseprende.playback
 
 import io.github.egt17baa.morseprende.core.Signal
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
@@ -67,5 +70,51 @@ class SignalPlayerTest {
         finish()
         assertEquals(listOf(0L to true, 100L to false), a.events.take(2))
         assertEquals(listOf(0L to true, 100L to false), b.events.take(2))
+    }
+
+    /** Salida cuyo cierre tarda (como el audio, que se libera en otro hilo). */
+    private class SlowTeardownOutput : SignalOutput {
+        override suspend fun play(signals: List<Signal>) {
+            try {
+                delay(signals.sumOf { it.durationMs })
+            } finally {
+                withContext(NonCancellable) { delay(30) }
+            }
+        }
+        override fun stop() = Unit
+    }
+
+    @Test fun late_teardown_does_not_stop_next_playback() = runTest {
+        // Dos salidas que comparten un mismo dispositivo físico (vibrador, linterna).
+        var deviceOn = false
+        val sharedA = SteppedOutput(setOn = { deviceOn = it }, now = { testScheduler.currentTime })
+        val sharedB = SteppedOutput(setOn = { deviceOn = it }, now = { testScheduler.currentTime })
+        val player = SignalPlayer(backgroundScope)
+        player.play(long, listOf(SlowTeardownOutput(), sharedA))
+        advanceTimeBy(50)
+        player.play(long, listOf(SlowTeardownOutput(), sharedB))
+        advanceTimeBy(100)
+        runCurrent()
+        assertEquals(true, deviceOn)
+        assertEquals(true, player.isPlaying.value)
+    }
+
+    @Test fun failing_output_does_not_crash_or_stop_the_others() = runTest {
+        val player = SignalPlayer(backgroundScope)
+        val failures = mutableListOf<SignalOutput>()
+        val broken = object : SignalOutput {
+            override suspend fun play(signals: List<Signal>) = throw UnsupportedOperationException("sin audio")
+            override fun stop() = Unit
+        }
+        val b = RecordingOutput(this)
+        player.play(short, listOf(broken, b.output), onOutputFailure = { failures += it })
+        advanceTimeBy(50)
+        runCurrent()
+        assertEquals(listOf(broken), failures)
+        assertEquals(true, player.isPlaying.value)
+        assertEquals(true, b.lastState)
+        finish()
+        assertEquals(false, b.lastState)
+        assertEquals(false, player.isPlaying.value)
     }
 }

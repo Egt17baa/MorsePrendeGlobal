@@ -32,10 +32,11 @@ class TranslatorViewModelTest {
     private fun TestScope.env(
         settings: AppSettings = AppSettings(),
         torchAvailable: Boolean = true,
+        failing: Set<OutputKind> = emptySet(),
     ): Env {
         Dispatchers.setMain(UnconfinedTestDispatcher(testScheduler))
         val repo = FakeSettingsRepository(settings)
-        val factory = FakeOutputFactory(this)
+        val factory = FakeOutputFactory(this, failing)
         val vm = TranslatorViewModel(repo, factory, torchAvailable, playerScope = backgroundScope)
         return Env(vm, repo, factory)
     }
@@ -197,5 +198,56 @@ class TranslatorViewModelTest {
         assertEquals("", e.vm.s.output)
         assertFalse(e.vm.s.isPlaying)
         assertEquals(false, e.factory.created.single().second.lastState)
+    }
+
+    @Test fun toggle_output_while_playing_stops() = runTest {
+        val e = env(settings = AppSettings(flashWarningAccepted = true))
+        e.vm.onInputChange("sos sos")
+        e.vm.toggleOutput(OutputKind.SCREEN)
+        e.vm.play()
+        runCurrent()
+        advanceTimeBy(10)
+        assertTrue(e.vm.s.screenLit)
+        e.vm.toggleOutput(OutputKind.SCREEN)
+        runCurrent()
+        assertFalse(e.vm.s.screenLit)
+        assertFalse(e.vm.s.isPlaying)
+    }
+
+    @Test fun swap_keeps_long_text() = runTest {
+        val e = env()
+        val text = "hola ".repeat(60)
+        e.vm.onInputChange(text)
+        e.vm.swapDirection()
+        assertEquals(text.trim().uppercase(), e.vm.s.output)
+    }
+
+    @Test fun morse_input_has_its_own_larger_cap() = runTest {
+        val e = env()
+        e.vm.swapDirection()
+        e.vm.onInputChange(".".repeat(50_000))
+        assertEquals(TranslatorViewModel.MAX_MORSE_INPUT, e.vm.s.input.length)
+    }
+
+    @Test fun failing_output_is_reported() = runTest {
+        val e = env(settings = AppSettings(flashWarningAccepted = true), failing = setOf(OutputKind.TORCH))
+        e.vm.onInputChange("e")
+        e.vm.toggleOutput(OutputKind.TORCH)
+        e.vm.play()
+        runCurrent()
+        assertEquals(setOf(OutputKind.TORCH), e.vm.s.failedOutputs)
+        e.vm.toggleOutput(OutputKind.TORCH)
+        e.vm.play()
+        runCurrent()
+        assertEquals(emptySet<OutputKind>(), e.vm.s.failedOutputs)
+    }
+
+    @Test fun speed_can_be_changed_from_translator() = runTest {
+        val e = env(settings = AppSettings(charWpm = 18, effectiveWpm = 10))
+        assertEquals(18, e.vm.s.charWpm)
+        e.vm.setSpeed(8)
+        assertEquals(8, e.repo.settings.value.charWpm)
+        assertEquals(8, e.repo.settings.value.effectiveWpm)
+        assertEquals(8, e.vm.s.charWpm)
     }
 }

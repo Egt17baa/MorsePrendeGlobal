@@ -54,4 +54,7 @@ class MorseTimingTest {
         val expected = 2 * 60000.0 / wpm
         assertTrue("total=$total expected=$expected", abs(total - expected) <= expected * 0.02)
     }
+
+    @Test fun signals_with_non_breaking_space() =
+        assertEquals(3, MorseTiming(20).signalsFor(".\u00A0-").size)
 }

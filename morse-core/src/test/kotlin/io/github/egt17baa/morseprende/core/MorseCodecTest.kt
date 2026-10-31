@@ -47,4 +47,16 @@ class MorseCodecTest {
             assertEquals(c.toString(), MorseCodec.decode(MorseCodec.encode(c.toString()).morse))
         }
     }
+
+    @Test fun decode_non_breaking_spaces() {
+        assertEquals("AB", MorseCodec.decode(".-\u00A0-..."))
+        assertEquals("AB", MorseCodec.decode(".-\u202F-..."))
+        assertEquals("A B", MorseCodec.decode(".-\u00A0\u00A0\u00A0-..."))
+    }
+
+    @Test fun encode_non_breaking_space_separates_words() {
+        val result = MorseCodec.encode("hola\u00A0mundo")
+        assertEquals(".... --- .-.. .- / -- ..- -. -.. ---", result.morse)
+        assertEquals(emptySet<String>(), result.unsupported)
+    }
 }

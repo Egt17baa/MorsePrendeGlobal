@@ -3,6 +3,7 @@ package io.github.egt17baa.morseprende.ui
 import android.content.Context
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
@@ -31,5 +32,19 @@ class AppNavHostTest {
         compose.setContent { AppNavHost(AppContainer(context)) }
         compose.onNodeWithText(context.getString(R.string.home_translator)).performScrollTo().performClick()
         compose.onNodeWithText(context.getString(R.string.translator_title)).assertIsDisplayed()
+    }
+
+    @Test fun double_back_returns_home_not_blank() {
+        compose.setContent { AppNavHost(AppContainer(context)) }
+        compose.onNodeWithText(context.getString(R.string.home_settings)).performScrollTo().performClick()
+        compose.waitForIdle()
+        compose.mainClock.autoAdvance = false
+        val back = compose.onNodeWithContentDescription(context.getString(R.string.back))
+        back.performClick()
+        compose.mainClock.advanceTimeByFrame()
+        back.performClick()
+        compose.mainClock.autoAdvance = true
+        compose.waitForIdle()
+        compose.onNodeWithText(context.getString(R.string.home_translator)).performScrollTo().assertIsDisplayed()
     }
 }

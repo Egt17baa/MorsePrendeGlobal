@@ -16,6 +16,8 @@ data class TranslatorState(
     val screenLit: Boolean = false,
     val speedLimitedForFlashes: Boolean = false,
     val showFlashWarning: Boolean = false,
+    val failedOutputs: Set<OutputKind> = emptySet(),
+    val charWpm: Int = 18,
 ) {
     /** Morse que se reproduciría al pulsar Reproducir. */
     val morseToPlay: String

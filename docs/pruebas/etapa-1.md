@@ -25,7 +25,12 @@ Móvil de referencia: **Honor Magic 8 Pro** (MagicOS, Android 16).
 - [ ] Con linterna o pantalla activas aparece el aviso «Velocidad limitada a 7 PPM».
 - [ ] Pulsa Reproducir con un texto largo y **sal de la pantalla** (botón atrás) mientras suena:
       el sonido, la vibración y la linterna se paran.
-- [ ] Pulsa Reproducir dos veces seguidas: se reinicia, no se superponen dos sonidos.
+- [ ] Mientras suena, el botón cambia a «Detener»: púlsalo y luego «Reproducir» otra vez. Empieza desde el principio y no se superponen dos sonidos.
+- [ ] Mientras suena, desactiva una salida (por ejemplo «Linterna»): la reproducción se detiene y la linterna queda apagada.
+- [ ] Con un mensaje largo y la salida «Pantalla», la pantalla **no se apaga sola** mientras suena.
+- [ ] Pulsa el botón de inicio del móvil mientras suena: todo se detiene (no sigue vibrando en el bolsillo).
+- [ ] Abre la cámara, vuelve a la app y reproduce con «Linterna»: si la cámara la tiene ocupada, aparece un aviso en vez de no hacer nada.
+- [ ] Cambia la velocidad con el control «Velocidad» del propio traductor.
 - [ ] Pega un texto con tildes y emojis, por ejemplo `¡Hola, ñandú! 😀`: la Ñ se traduce
       (`‒‒·‒‒`), las tildes se ignoran y aparece el aviso de caracteres omitidos.
 - [ ] **Invertir:** pasa a Morse → texto, escribe `.... --- .-.. .-` y sale `HOLA`.

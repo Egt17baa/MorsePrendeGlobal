@@ -22,6 +22,8 @@
     <string name="translator_copy">Copiar</string>
     <string name="translator_unsupported">Sin código Morse (se omiten): %1$s</string>
     <string name="translator_speed_limited">Velocidad limitada a 7 PPM por seguridad con los destellos. Puedes cambiarlo en Ajustes.</string>
+    <string name="translator_speed">Velocidad: %1$d PPM</string>
+    <string name="output_failed">No se pudo usar: %1$s. Puede que otra app (por ejemplo, la cámara) lo esté usando.</string>
     <string name="translator_outputs">Emitir por</string>
     <string name="translator_play">Reproducir</string>
     <string name="translator_stop">Detener</string>

@@ -14,6 +14,7 @@ import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeout
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -95,9 +96,21 @@ class HardwareOutputsTest {
     @Test fun factory_creates_hardware_outputs() {
         val factory = AndroidOutputFactory(context)
         val settings = AppSettings()
-        assertTrue(factory.create(OutputKind.SOUND, settings) is AudioOutput)
-        assertTrue(factory.create(OutputKind.VIBRATION, settings) is VibrationOutput)
-        assertTrue(factory.create(OutputKind.TORCH, settings) is TorchOutput)
-        assertFailsWith<IllegalArgumentException> { factory.create(OutputKind.SCREEN, settings) }
+        assertTrue(factory.create(OutputKind.SOUND, settings) {} is AudioOutput)
+        assertTrue(factory.create(OutputKind.VIBRATION, settings) {} is VibrationOutput)
+        assertTrue(factory.create(OutputKind.TORCH, settings) {} is TorchOutput)
+        assertFailsWith<IllegalArgumentException> { factory.create(OutputKind.SCREEN, settings) {} }
+    }
+
+    @Test fun audio_adds_trailing_silence_so_last_element_is_not_cut() = kotlin.test.assertEquals(
+        listOf(Signal(true, 60), Signal(false, AudioOutput.TAIL_SILENCE_MS)),
+        AudioOutput.withTail(listOf(Signal(true, 60))),
+    )
+
+    @Test fun torch_reports_failure_when_unusable() = runTest {
+        var failures = 0
+        // Sin cámaras con flash no se puede encender: se avisa en vez de fallar en silencio.
+        TorchOutput(context, onFailure = { failures++ }).play(listOf(Signal(true, 60), Signal(false, 60), Signal(true, 60)))
+        assertEquals(1, failures)
     }
 }

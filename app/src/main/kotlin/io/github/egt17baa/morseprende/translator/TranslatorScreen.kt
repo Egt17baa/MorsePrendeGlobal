@@ -26,6 +26,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -38,21 +39,34 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.github.egt17baa.morseprende.core.MorseTiming
 import io.github.egt17baa.morseprende.R
 import io.github.egt17baa.morseprende.playback.OutputKind
 import io.github.egt17baa.morseprende.ui.theme.BeamCream
 import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TranslatorScreen(viewModel: TranslatorViewModel, onBack: () -> Unit) {
     val s by viewModel.state.collectAsStateWithLifecycle()
     DisposableEffect(Unit) { onDispose { viewModel.stop() } }
+    // Salir de la app (botón de inicio, bloquear el móvil) también detiene la linterna y la vibración.
+    LifecycleEventEffect(Lifecycle.Event.ON_STOP) { viewModel.stop() }
+    // Mientras suena, la pantalla no se apaga (el destello de pantalla dejaría de verse).
+    val view = LocalView.current
+    DisposableEffect(view, s.isPlaying) {
+        view.keepScreenOn = s.isPlaying
+        onDispose { view.keepScreenOn = false }
+    }
 
     Box(Modifier.fillMaxSize()) {
         Scaffold(
@@ -88,6 +102,10 @@ fun TranslatorScreen(viewModel: TranslatorViewModel, onBack: () -> Unit) {
                 if (s.speedLimitedForFlashes) {
                     Notice(stringResource(R.string.translator_speed_limited))
                 }
+                s.failedOutputs.forEach { kind ->
+                    Notice(stringResource(R.string.output_failed, stringResource(kind.label)))
+                }
+                SpeedControl(s.charWpm, viewModel::setSpeed)
                 OutputChips(s, viewModel::toggleOutput)
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     Button(
@@ -195,19 +213,15 @@ private fun OutputChips(s: TranslatorState, onToggle: (OutputKind) -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Text(stringResource(R.string.translator_outputs), style = MaterialTheme.typography.titleSmall)
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            val kinds = buildList {
-                add(OutputKind.SOUND to R.string.output_sound)
-                add(OutputKind.VIBRATION to R.string.output_vibration)
-                if (s.torchAvailable) add(OutputKind.TORCH to R.string.output_torch)
-                add(OutputKind.SCREEN to R.string.output_screen)
-            }
-            kinds.forEach { (kind, label) ->
-                FilterChip(
-                    selected = kind in s.outputs,
-                    onClick = { onToggle(kind) },
-                    label = { Text(stringResource(label)) },
-                )
-            }
+            OutputKind.entries
+                .filter { it != OutputKind.TORCH || s.torchAvailable }
+                .forEach { kind ->
+                    FilterChip(
+                        selected = kind in s.outputs,
+                        onClick = { onToggle(kind) },
+                        label = { Text(stringResource(kind.label)) },
+                    )
+                }
         }
     }
 }
@@ -215,4 +229,25 @@ private fun OutputChips(s: TranslatorState, onToggle: (OutputKind) -> Unit) {
 @Composable
 private fun Notice(text: String) {
     Text(text, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.secondary)
+}
+
+private val OutputKind.label: Int
+    get() = when (this) {
+        OutputKind.SOUND -> R.string.output_sound
+        OutputKind.VIBRATION -> R.string.output_vibration
+        OutputKind.TORCH -> R.string.output_torch
+        OutputKind.SCREEN -> R.string.output_screen
+    }
+
+@Composable
+private fun SpeedControl(charWpm: Int, onSpeedChange: (Int) -> Unit) {
+    Column {
+        Text(stringResource(R.string.translator_speed, charWpm), style = MaterialTheme.typography.titleSmall)
+        Slider(
+            value = charWpm.toFloat(),
+            onValueChange = { onSpeedChange(it.roundToInt()) },
+            valueRange = MorseTiming.MIN_WPM.toFloat()..MorseTiming.MAX_WPM.toFloat(),
+            steps = MorseTiming.MAX_WPM - MorseTiming.MIN_WPM - 1,
+        )
+    }
 }

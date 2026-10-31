@@ -12,7 +12,10 @@ import kotlinx.coroutines.test.TestScope
 class RecordingSignalOutput(private val scope: TestScope) : SignalOutput {
     val played = mutableListOf<List<Signal>>()
     val events = mutableListOf<Pair<Long, Boolean>>()
-    private val stepped = SteppedOutput { on -> events += scope.testScheduler.currentTime to on }
+    private val stepped = SteppedOutput(
+        setOn = { on -> events += scope.testScheduler.currentTime to on },
+        now = { scope.testScheduler.currentTime },
+    )
     val lastState: Boolean? get() = events.lastOrNull()?.second
 
     override suspend fun play(signals: List<Signal>) {
@@ -23,11 +26,20 @@ class RecordingSignalOutput(private val scope: TestScope) : SignalOutput {
     override fun stop() = stepped.stop()
 }
 
-class FakeOutputFactory(private val scope: TestScope) : OutputFactory {
+class FakeOutputFactory(
+    private val scope: TestScope,
+    private val failing: Set<OutputKind> = emptySet(),
+) : OutputFactory {
     val created = mutableListOf<Pair<OutputKind, RecordingSignalOutput>>()
 
-    override fun create(kind: OutputKind, settings: AppSettings): SignalOutput {
+    override fun create(kind: OutputKind, settings: AppSettings, onFailure: () -> Unit): SignalOutput {
         require(kind != OutputKind.SCREEN) { "SCREEN la crea el ViewModel" }
+        if (kind in failing) {
+            return object : SignalOutput {
+                override suspend fun play(signals: List<Signal>) = onFailure()
+                override fun stop() = Unit
+            }
+        }
         return RecordingSignalOutput(scope).also { created += kind to it }
     }
 }
