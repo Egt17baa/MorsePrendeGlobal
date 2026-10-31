@@ -1,1 +1,55 @@
-[]
+[
+  {
+    "id": "lib-que-es",
+    "title": "Qué es el código Morse",
+    "icon": "book",
+    "body": "El código Morse es una forma de escribir letras, números y signos usando solo dos elementos: uno corto, el punto, y uno largo, la raya. Con ellos se puede transmitir un mensaje con cualquier cosa capaz de encenderse y apagarse: un pitido, una luz, una corriente eléctrica o incluso unos golpes en una pared. Lo importante no es el medio, sino el ritmo. Todo se mide con una unidad de tiempo. Un punto dura una unidad y una raya dura tres. Entre los elementos de una misma letra se deja un silencio de una unidad; entre letras, tres; y entre palabras, siete. Estas proporciones están fijadas en una recomendación internacional de la Unión Internacional de Telecomunicaciones, de modo que un operador de cualquier país puede entender a otro. Las letras más frecuentes en inglés recibieron los códigos más cortos: la E es un solo punto y la T, una sola raya. Así los mensajes eran más rápidos de enviar. Por eso el Morse no se aprende como una tabla que se lee, sino como una música que se oye: los buenos operadores reconocen cada letra por su sonido completo, sin contar puntos ni rayas. En este faro aprenderás a escucharlo igual que ellos.",
+    "didYouKnow": "Una raya dura exactamente lo mismo que tres puntos, y el silencio entre dos palabras equivale a siete puntos."
+  },
+  {
+    "id": "lib-morse-vail",
+    "title": "Samuel Morse y Alfred Vail",
+    "icon": "telegraph",
+    "body": "Samuel Morse no empezó como inventor, sino como pintor. Era un retratista reconocido y fundador de la Academia Nacional de Diseño de Nueva York. En 1832, volviendo de Europa en el barco Sully, una conversación sobre los experimentos con electroimanes le dio una idea: usar la electricidad para enviar mensajes a distancia. Pasó años trabajando en ella. En 1837 un joven llamado Alfred Vail vio una demostración de Morse en la Universidad de Nueva York y se ofreció a ayudarle a cambio de una parte de los beneficios. La familia de Vail tenía una fundición, la Speedwell Iron Works, en Morristown, y allí construyeron y mejoraron los aparatos. En enero de 1838 hicieron funcionar el telégrafo a través de unos tres kilómetros de cable; el padre de Vail envió una frase que se ha hecho famosa: «Un buen esperador no es perdedor». Al principio Morse codificaba palabras mediante números de un diccionario, un sistema lento y engorroso. Con el tiempo se pasó a un código de letras de puntos y rayas. Cuánto de ese código se debe a Morse y cuánto a Vail sigue discutiéndose hoy, porque según su acuerdo todas las patentes iban a nombre de Morse. Lo cierto es que fue un trabajo de equipo.",
+    "didYouKnow": "Morse ya tenía cuarenta y un años y una carrera de pintor cuando se le ocurrió la idea del telégrafo, en mitad del océano."
+  },
+  {
+    "id": "lib-aprender",
+    "title": "Cómo se aprende Morse: Koch y Farnsworth",
+    "icon": "wave",
+    "body": "Durante mucho tiempo se aprendía Morse mirando una tabla y oyendo las letras muy despacio. El problema es que, al acelerar, el oído tiene que volver a aprenderlo todo: una letra lenta y una rápida suenan distintas. En los años treinta, el psicólogo alemán Ludwig Koch propuso otra cosa. En lugar de empezar despacio, se escucha desde el primer día a la velocidad final, pero solo con dos caracteres. Cuando se reconocen casi siempre bien, se añade uno más, y así sucesivamente. El cerebro aprende cada letra como un sonido completo y no como una cuenta de puntos y rayas. Otra técnica muy usada es el espaciado Farnsworth, que suele asociarse al radioaficionado Donald Farnsworth, aunque la idea es anterior y su autoría se discute. Consiste en enviar cada letra a velocidad normal, pero alargar los silencios entre letras y palabras para dar tiempo a pensar. A medida que mejoras, esas pausas se acortan hasta desaparecer. Muchos entrenadores modernos combinan las dos ideas: pocas letras nuevas cada vez, sonido rápido y pausas generosas. Este juego se inspira en ellas: cada misión te enseña solo dos letras y puedes ajustar las pausas en Ajustes con la velocidad efectiva.",
+    "didYouKnow": "Con el método de Koch, nunca oyes una letra «lenta»: desde el primer día suena como la oirá un operador experto."
+  },
+  {
+    "id": "lib-1844",
+    "title": "El primer mensaje oficial (1844)",
+    "icon": "telegraph",
+    "unlockedBy": "c1m2",
+    "body": "En marzo de 1843 el Congreso de los Estados Unidos aprobó treinta mil dólares para que Morse tendiera una línea de telégrafo experimental entre Washington y Baltimore, siguiendo las vías del ferrocarril. Un año después, la línea estaba lista. El 24 de mayo de 1844, Morse se sentó en la sala del Tribunal Supremo, dentro del Capitolio de Washington, y transmitió un mensaje a Baltimore, donde lo esperaba Alfred Vail en la estación de ferrocarril de Mount Clare. La frase la había elegido una joven, Annie Ellsworth, hija de un amigo de Morse, y venía de la Biblia: «¿Qué ha hecho Dios?», en inglés «What hath God wrought?». La cinta de papel original, con los puntos y rayas marcados por el aparato receptor, se conserva hoy en la Biblioteca del Congreso de los Estados Unidos. Curiosamente, no fue la primera noticia que viajó por aquella línea: semanas antes, a comienzos de mayo, ya se había transmitido por ella el nombre del candidato elegido en una convención política. Pero el mensaje del 24 de mayo fue la demostración oficial, la que convenció al mundo de que las noticias podían viajar más rápido que cualquier caballo, tren o barco.",
+    "didYouKnow": "La cinta original de aquel primer mensaje oficial todavía existe y se guarda en la Biblioteca del Congreso, en Washington."
+  },
+  {
+    "id": "lib-americano",
+    "title": "Morse americano e internacional",
+    "icon": "radio",
+    "unlockedBy": "c1m3",
+    "body": "El código que se usaba en la línea de Morse en Estados Unidos no es exactamente el que aprendes en este faro. El primer código, que hoy se llama Morse americano o código ferroviario, tenía rayas de distintas longitudes y algunos espacios dentro de las propias letras. Para un operador experto era rápido, pero también fácil de confundir. En 1848, el telegrafista alemán Friedrich Clemens Gerke lo revisó para la línea entre Hamburgo y Cuxhaven: eliminó las rayas largas especiales y los espacios internos, y dejó solo puntos y rayas normales. Su versión se extendió por Europa. En 1865 se celebró en París la conferencia que fundó la Unión Telegráfica Internacional, la antecesora de la actual Unión Internacional de Telecomunicaciones. Allí se adoptó un código común, basado en el de Gerke con pequeños cambios, que con el tiempo se llamó Morse internacional. El americano siguió vivo durante décadas en las líneas terrestres de Norteamérica, sobre todo en los ferrocarriles, mientras que el internacional se impuso en el resto del mundo y en la radio. Cuando hoy alguien habla de código Morse, casi siempre se refiere al internacional, el que se usa en el mar, en la radioafición y en este juego.",
+    "didYouKnow": "En el Morse americano original algunas letras llevaban un espacio dentro, algo que no existe en el Morse internacional."
+  },
+  {
+    "id": "lib-sos",
+    "title": "SOS, el Titanic y la llamada de socorro",
+    "icon": "ship",
+    "unlockedBy": "c1m5",
+    "body": "Tres puntos, tres rayas, tres puntos. La señal de socorro más famosa del mundo se adoptó en la Convención Radiotelegráfica Internacional de Berlín, firmada en noviembre de 1906 y en vigor desde julio de 1908. Contra lo que se suele creer, SOS no significa nada: no es la abreviatura de «salvad nuestras almas». Se eligió porque es una secuencia inconfundible, fácil de enviar y de reconocer incluso con mucho ruido; la explicación de las palabras se inventó después. Antes existía otra señal, CQD, impulsada por la compañía Marconi, y durante años muchos operadores siguieron usándola. Así ocurrió en el Titanic. La noche del 14 al 15 de abril de 1912, tras chocar con un iceberg, el radiotelegrafista Jack Phillips empezó a transmitir CQD. Su compañero Harold Bride le sugirió que probara también la nueva señal, SOS, y Phillips alternó ambas. El Carpathia captó la llamada y puso rumbo al lugar, aunque llegó cuando el barco ya se había hundido y solo pudo rescatar a los supervivientes. Es un mito que aquel fuera el primer SOS de la historia, pero la tragedia hizo que el mundo entero conociera la señal y que se reforzaran las normas de radio en los barcos.",
+    "didYouKnow": "SOS no es la abreviatura de ninguna frase: se eligió solo porque su ritmo es imposible de confundir."
+  },
+  {
+    "id": "lib-mar",
+    "title": "El Morse en el mar y su retirada (GMDSS, 1999)",
+    "icon": "lighthouse",
+    "unlockedBy": "c1f",
+    "body": "Durante casi un siglo, el Morse fue la voz de los barcos. Cada buque grande llevaba un radiotelegrafista que escuchaba día y noche, y la frecuencia de quinientos kilohercios estaba reservada para las llamadas de socorro. Gracias a ella se salvaron miles de vidas. Pero la tecnología cambió. Los satélites, las radiobalizas automáticas y las llamadas digitales permitían pedir ayuda pulsando un botón, con la posición del barco incluida y sin necesidad de un operador experto. Por eso la Organización Marítima Internacional creó el Sistema Mundial de Socorro y Seguridad Marítimos, conocido por sus siglas en inglés, GMDSS. Desde el 1 de febrero de 1999, todos los buques sujetos al convenio internacional para la seguridad de la vida en el mar debían cumplirlo, y el Morse dejó de ser obligatorio. La Guardia Costera de los Estados Unidos ya lo había abandonado en 1995. A medianoche de aquel 1 de febrero, la frecuencia de quinientos kilohercios dejó de formar parte de la red internacional de socorro después de más de cien años. El Morse no murió: los radioaficionados lo siguen usando cada día, y todavía puede salvar una vida cuando todo lo demás falla.",
+    "didYouKnow": "La frecuencia de quinientos kilohercios estuvo reservada a las llamadas de socorro en el mar durante más de cien años."
+  }
+]

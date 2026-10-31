@@ -9,6 +9,7 @@ import java.io.File
 object RealContent {
     val dir = File("../app/src/main/assets/content/es")
     val chapter1: Chapter by lazy { ContentParser.chapter(File(dir, "chapter1.json").readText()) }
+    val library: List<LibraryCard> by lazy { ContentParser.libraryCards(File(dir, "library.json").readText()) }
 }
 
 class RealContentTest {
@@ -30,5 +31,20 @@ class RealContentTest {
         val finale = chapter1.missions.last()
         assertEquals(MissionType.FINALE, finale.type)
         assertTrue(finale.finalMessage.text.count { it != ' ' } >= 25)
+    }
+
+    @Test fun real_library_is_valid() {
+        val cards = RealContent.library
+        assertEquals(emptyList<String>(), ContentValidator.validate(listOf(chapter1), cards))
+        assertEquals(
+            listOf("lib-que-es", "lib-morse-vail", "lib-aprender", "lib-1844", "lib-americano", "lib-sos", "lib-mar"),
+            cards.map { it.id },
+        )
+        assertEquals(
+            listOf(null, null, null, "c1m2", "c1m3", "c1m5", "c1f"),
+            cards.map { it.unlockedBy },
+        )
+        val icons = setOf("lighthouse", "telegraph", "ship", "radio", "book", "wave")
+        cards.forEach { assertTrue("${it.id}: icono ${it.icon}", it.icon in icons) }
     }
 }

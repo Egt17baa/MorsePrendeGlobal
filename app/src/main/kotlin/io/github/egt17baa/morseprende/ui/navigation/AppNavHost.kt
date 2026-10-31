@@ -16,6 +16,8 @@ import io.github.egt17baa.morseprende.translator.TranslatorViewModel
 import io.github.egt17baa.morseprende.ui.hub.HubCallbacks
 import io.github.egt17baa.morseprende.ui.hub.HubScreen
 import io.github.egt17baa.morseprende.ui.hub.HubViewModel
+import io.github.egt17baa.morseprende.ui.library.LibraryScreen
+import io.github.egt17baa.morseprende.ui.library.LibraryViewModel
 import io.github.egt17baa.morseprende.ui.mission.MissionScreen
 import io.github.egt17baa.morseprende.ui.mission.MissionViewModel
 
@@ -67,6 +69,12 @@ fun AppNavHost(container: AppContainer) {
                 },
             )
             MissionScreen(vm, onExit = dropUnlessResumed { nav.popBackStack() })
+        }
+        composable(Routes.LIBRARY) {
+            val vm: LibraryViewModel = viewModel(
+                factory = viewModelFactory { initializer { LibraryViewModel(container.content, container.progress, container.seenCards) } },
+            )
+            LibraryScreen(vm, onBack = dropUnlessResumed { nav.popBackStack() })
         }
         composable(Routes.SETTINGS) {
             val vm: SettingsViewModel = viewModel(

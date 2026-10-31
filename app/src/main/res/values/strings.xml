@@ -70,6 +70,14 @@
     <string name="mission_back_to_lighthouse">Volver al faro</string>
     <string name="mission_error">No se pudo cargar esta misión. Vuelve al faro e inténtalo de nuevo.</string>
 
+    <!-- Biblioteca -->
+    <string name="library_title">Biblioteca del faro</string>
+    <string name="library_intro">Las fichas se desbloquean al completar misiones. Cuéntale a Remedios lo que aprendas.</string>
+    <string name="library_unlock_with">Se desbloquea al completar «%1$s»</string>
+    <string name="library_new">Nueva</string>
+    <string name="library_did_you_know">¿Sabías que…?</string>
+    <string name="library_error">No se pudo cargar la biblioteca.</string>
+
     <!-- Ajustes -->
     <string name="settings_title">Ajustes</string>
     <string name="settings_speed_section">Velocidad</string>
