@@ -1,5 +1,6 @@
 package io.github.egt17baa.morseprende.ui.mission
 
+import io.github.egt17baa.morseprende.data.FakeCharStatsRepository
 import io.github.egt17baa.morseprende.data.FakeContentSource
 import io.github.egt17baa.morseprende.data.FakeProgressRepository
 import io.github.egt17baa.morseprende.game.mission.Exercise
@@ -31,6 +32,7 @@ class MissionViewModelTest {
     private class Env(
         val vm: MissionViewModel,
         val progress: FakeProgressRepository,
+        val charStats: FakeCharStatsRepository,
         val sidetones: FakeSidetoneFactory,
         val clock: LongArray,
     ) {
@@ -43,15 +45,16 @@ class MissionViewModelTest {
         content: FakeContentSource = FakeContentSource(listOf(MissionTestContent.chapter)),
         missionId: String = "t1",
         progress: FakeProgressRepository = FakeProgressRepository(),
+        charStats: FakeCharStatsRepository = FakeCharStatsRepository(),
     ): Env {
         Dispatchers.setMain(UnconfinedTestDispatcher(testScheduler))
         val clock = longArrayOf(0)
         val sidetones = FakeSidetoneFactory()
         val vm = MissionViewModel(
             missionId, content, progress, FakeSettingsRepository(settings), FakeOutputFactory(this), sidetones,
-            random = Random(1), playerScope = backgroundScope, clock = { clock[0] },
+            charStats = charStats, random = Random(1), playerScope = backgroundScope, clock = { clock[0] },
         )
-        return Env(vm, progress, sidetones, clock)
+        return Env(vm, progress, charStats, sidetones, clock)
     }
 
     /** Responde bien a todo hasta llegar al primer ejercicio de enviar. */
@@ -304,5 +307,60 @@ class MissionViewModelTest {
         e.vm.keyDown(atMs = 1_000)
         e.vm.keyUp(atMs = 1_350)
         assertEquals("-", e.s.keyerPending)
+    }
+
+    private fun Env.finishMission() {
+        vm.start()
+        while (s.phase == MissionPhase.EXERCISE) {
+            when (val x = s.exercise) {
+                is Exercise.Listen -> vm.continueListen()
+                is Exercise.ReceiveChoice -> { vm.answer(x.answer); vm.next() }
+                is Exercise.ReceiveTyped -> { vm.answer(x.answer); vm.next() }
+                is Exercise.Send -> repeat(3) { vm.dot(); vm.submitSend(); vm.next() }
+                is Exercise.FinalMessage -> { vm.answer(x.message.text); vm.next() }
+                null -> error("sin ejercicio")
+            }
+        }
+    }
+
+    @Test fun completing_records_char_outcomes() = runTest {
+        val e = env()
+        e.finishMission()
+        runCurrent()
+        assertEquals(1, e.charStats.recorded.size)
+        assertTrue(e.charStats.recorded.single().isNotEmpty())
+        assertTrue(e.charStats.recorded.single().all { it.char in setOf('S', 'O') })
+    }
+
+    @Test fun abandon_records_no_char_outcomes() = runTest {
+        val e = env()
+        e.advanceToSend()
+        e.vm.abandon()
+        runCurrent()
+        assertEquals(emptyList<Any>(), e.charStats.recorded)
+    }
+
+    @Test fun review_uses_boxes() = runTest {
+        val review = io.github.egt17baa.morseprende.game.content.Mission(
+            "r", io.github.egt17baa.morseprende.game.content.MissionType.REVIEW, "Repaso", "b", emptyList(),
+            io.github.egt17baa.morseprende.game.content.StoryMessage("R", "SOS"), "d",
+        )
+        val chapter = MissionTestContent.chapter.copy(missions = MissionTestContent.chapter.missions + review)
+        val e = env(
+            content = FakeContentSource(listOf(chapter)), missionId = "r",
+            charStats = FakeCharStatsRepository(mapOf('S' to 1, 'O' to 5)),
+        )
+        e.vm.start()
+        val letters = mutableListOf<String>()
+        while (e.s.phase == MissionPhase.EXERCISE) {
+            when (val x = e.s.exercise) {
+                is Exercise.ReceiveChoice -> { if (x.answer.length == 1) letters += x.answer; e.vm.answer(x.answer); e.vm.next() }
+                is Exercise.ReceiveTyped -> { if (x.answer.length == 1) letters += x.answer; e.vm.answer(x.answer); e.vm.next() }
+                is Exercise.Send -> { if (x.target.length == 1) letters += x.target; repeat(3) { e.vm.dot(); e.vm.submitSend(); e.vm.next() } }
+                is Exercise.FinalMessage -> { e.vm.answer(x.message.text); e.vm.next() }
+                else -> e.vm.continueListen()
+            }
+        }
+        assertTrue("letters=$letters", letters.count { it == "S" } > letters.size / 2)
     }
 }

@@ -64,7 +64,7 @@ fun AppNavHost(container: AppContainer) {
                 key = "mission-$id",
                 factory = viewModelFactory {
                     initializer {
-                        MissionViewModel(id, container.content, container.progress, container.settings, container.outputs, container.sidetone)
+                        MissionViewModel(id, container.content, container.progress, container.settings, container.outputs, container.sidetone, container.charStats)
                     }
                 },
             )

@@ -9,6 +9,10 @@ import io.github.egt17baa.morseprende.core.MorseCodec
 import io.github.egt17baa.morseprende.core.MorseTiming
 import io.github.egt17baa.morseprende.data.ContentSource
 import io.github.egt17baa.morseprende.data.progress.ProgressRepository
+import io.github.egt17baa.morseprende.data.review.CharStatsRepository
+import io.github.egt17baa.morseprende.game.review.CharOutcome
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.Flow
 import io.github.egt17baa.morseprende.game.content.Chapter
 import io.github.egt17baa.morseprende.game.content.Mission
 import io.github.egt17baa.morseprende.game.mission.Exercise
@@ -43,12 +47,14 @@ class MissionViewModel(
     settings: SettingsRepository,
     private val outputs: OutputFactory,
     private val sidetoneFactory: SidetoneFactory,
+    private val charStats: CharStatsRepository = NoCharStats,
     private val random: Random = Random.Default,
     playerScope: CoroutineScope? = null,
     private val clock: () -> Long = { SystemClock.uptimeMillis() },
 ) : ViewModel() {
 
     private val settings: StateFlow<AppSettings> = settings.settings.stateIn(viewModelScope, SharingStarted.Eagerly, AppSettings())
+    private val boxes: StateFlow<Map<Char, Int>> = charStats.boxes.stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
     private val player = SignalPlayer(playerScope ?: viewModelScope)
     private val ui = MutableStateFlow(MissionUiState())
 
@@ -94,6 +100,10 @@ class MissionViewModel(
 
     fun start() {
         if (session == null || ui.value.phase != MissionPhase.BRIEFING) return
+        val m = mission
+        val ch = chapter
+        // Se planifica al empezar con las cajas de Leitner actuales (los repasos insisten en lo fallado).
+        if (m != null && ch != null) session = MissionSession(MissionPlanner.plan(m, ch, random, boxes.value))
         val prefs = settings.value
         keyer = KeyerDecoder(1200L / prefs.effectiveWpm)
         sidetone = sidetoneFactory.create(prefs)
@@ -275,6 +285,7 @@ class MissionViewModel(
             val previous = progress.progress.first()[missionId]?.bestStars ?: 0
             ui.update { it.copy(previousBest = previous) }
             progress.recordResult(missionId, result.stars, System.currentTimeMillis())
+            charStats.record(s.outcomes)
         }
     }
 
@@ -309,4 +320,10 @@ class MissionViewModel(
         const val DEFAULT_UNIT_MS = 120L
         const val UNKNOWN_CHAR = '?'
     }
+}
+
+/** Sin repaso inteligente (p. ej. en pruebas que no lo necesitan). */
+private object NoCharStats : CharStatsRepository {
+    override val boxes: Flow<Map<Char, Int>> = emptyFlow()
+    override suspend fun record(outcomes: List<CharOutcome>) = Unit
 }
