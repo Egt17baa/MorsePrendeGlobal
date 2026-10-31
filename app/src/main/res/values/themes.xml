@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.MorsePrende" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">#0E2A2F</item>
+        <item name="android:statusBarColor">#0E2A2F</item>
+    </style>
+</resources>
