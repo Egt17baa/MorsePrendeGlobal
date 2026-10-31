@@ -78,6 +78,18 @@
     <string name="library_did_you_know">¿Sabías que…?</string>
     <string name="library_error">No se pudo cargar la biblioteca.</string>
 
+    <!-- Práctica y minijuegos -->
+    <string name="hub_practice">Práctica</string>
+    <string name="practice_title">Práctica libre</string>
+    <string name="practice_intro">Minijuegos para practicar con las letras que ya conoces. Las que más fallas aparecerán más a menudo.</string>
+    <string name="practice_record">Récord: %1$d · %2$d partidas</string>
+    <string name="game_storm">Tormenta de señales</string>
+    <string name="game_storm_desc">Caen señales hacia el mar: escribe su letra antes de que se hundan.</string>
+    <string name="game_flash">Destello rápido</string>
+    <string name="game_flash_desc">El faro emite una letra con luz. ¿Cuánto tardas en reconocerla?</string>
+    <string name="game_intercept">Interceptación</string>
+    <string name="game_intercept_desc">Copia palabras cada vez más rápidas. Tres fallos y se acabó.</string>
+
     <!-- Ajustes -->
     <string name="settings_title">Ajustes</string>
     <string name="settings_speed_section">Velocidad</string>
