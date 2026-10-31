@@ -33,6 +33,13 @@ android {
 
     testOptions {
         unitTests.isIncludeAndroidResources = true
+        unitTests.all {
+            // Robolectric descarga android-all por su cuenta: se usa el espejo de Google de Maven Central.
+            it.systemProperty(
+                "robolectric.dependency.repo.url",
+                "https://maven-central.storage-download.googleapis.com/maven2/",
+            )
+        }
     }
 }
 
