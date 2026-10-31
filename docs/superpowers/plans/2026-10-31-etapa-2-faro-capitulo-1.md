@@ -197,8 +197,9 @@ docs/biblioteca/fuentes.md · docs/pruebas/etapa-2.md
     muy larga es raya y la estimación se limita.
   - `slow_beginner_is_followed` (Review Focus 1): con la unidad inicial de la velocidad efectiva
     (10 PPM = 120 ms), un principiante hace punto de 160 y raya de 480. Se clasifican como `.` y
-    `-`, y la unidad sube a 128 tras el punto (0,75·120 + 0,25·160 = 130 al redondear). Después,
-    una pausa de 300 ms dentro de la letra (< 2,5·u ≈ 325) **no** la corta.
+    `-`. La unidad sube a 130 tras el punto (0,75·120 + 0,25·160) y a 138 tras la raya
+    (0,75·130 + 0,25·160 = 137,5). Después, una pausa de 300 ms dentro de la letra
+    (< 2,5·137,5 ≈ 344) **no** la corta: `poll(release + 300)` da `null`.
   - `unknown_code_reports_null_char`: `........` cerrado da `LetterEnded("........", null)`.
   - `two_button_mode`: `appendElement('-')`, `appendElement('-')` y `commitLetter()` dan
     `LetterEnded("--", 'M')`. `commitLetter()` sin elementos da `null`.
