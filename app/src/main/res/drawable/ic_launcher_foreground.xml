@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Faro propio: torre con franjas de coral y un haz de luz que lleva un punto y una raya. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Haz de luz -->
+    <path android:fillColor="#FFE8B0" android:fillAlpha="0.35" android:pathData="M58,43 L86,33 L86,57 L58,48 Z" />
+    <!-- Punto y raya -->
+    <path android:fillColor="#FFE8B0" android:pathData="M66,45.5 m-2.4,0 a2.4,2.4 0,1 1,4.8 0 a2.4,2.4 0,1 1,-4.8 0" />
+    <path android:fillColor="#FFE8B0" android:pathData="M72,44.2 h10 v2.6 h-10 z" />
+    <!-- Torre -->
+    <path android:fillColor="#F4EFE3" android:pathData="M44,82 L48.5,50 L57.5,50 L62,82 Z" />
+    <path android:fillColor="#FF7A5C" android:pathData="M47.6,56.5 L58.4,56.5 L59.1,61.5 L46.9,61.5 Z" />
+    <path android:fillColor="#FF7A5C" android:pathData="M46.1,67.5 L59.9,67.5 L60.6,72.5 L45.4,72.5 Z" />
+    <!-- Linterna y tejado -->
+    <path android:fillColor="#FFE8B0" android:pathData="M48,41 h10 v9 h-10 z" />
+    <path android:fillColor="#FF7A5C" android:pathData="M45.5,41 L53,33.5 L60.5,41 Z" />
+    <!-- Base -->
+    <path android:fillColor="#163C42" android:pathData="M40,82 h26 v4 h-26 z" />
+</vector>

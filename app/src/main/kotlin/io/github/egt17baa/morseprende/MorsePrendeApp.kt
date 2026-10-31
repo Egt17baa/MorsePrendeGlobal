@@ -1,0 +1,21 @@
+package io.github.egt17baa.morseprende
+
+import android.app.Application
+import android.content.Context
+import io.github.egt17baa.morseprende.playback.AndroidOutputFactory
+import io.github.egt17baa.morseprende.playback.OutputFactory
+import io.github.egt17baa.morseprende.playback.TorchOutput
+import io.github.egt17baa.morseprende.settings.DataStoreSettingsRepository
+import io.github.egt17baa.morseprende.settings.SettingsRepository
+
+/** Dependencias compartidas de la app (inyección manual). */
+class AppContainer(context: Context) {
+    private val appContext = context.applicationContext
+    val settings: SettingsRepository = DataStoreSettingsRepository(appContext)
+    val outputs: OutputFactory = AndroidOutputFactory(appContext)
+    val torchAvailable: Boolean by lazy { TorchOutput.isAvailable(appContext) }
+}
+
+class MorsePrendeApp : Application() {
+    val container: AppContainer by lazy { AppContainer(this) }
+}

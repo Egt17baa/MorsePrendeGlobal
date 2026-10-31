@@ -3,6 +3,13 @@
     <string name="app_name">MorsePrende: El Faro</string>
     <string name="back">Volver</string>
 
+    <!-- Faro (pantalla principal) -->
+    <string name="home_subtitle">Aprende código Morse desde lo alto del faro</string>
+    <string name="home_translator">Traductor</string>
+    <string name="home_settings">Ajustes</string>
+    <string name="home_campaign_soon">Campaña del faro: próximamente</string>
+    <string name="home_campaign_soon_body">Pronto llegarán los barcos, los espías… y algo más allá de las estrellas.</string>
+
     <!-- Ajustes -->
     <string name="settings_title">Ajustes</string>
     <string name="settings_speed_section">Velocidad</string>
