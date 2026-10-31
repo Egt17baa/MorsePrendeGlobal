@@ -1,0 +1,85 @@
+{
+  "id": 1,
+  "title": "El Faro",
+  "intro": "Acabas de llegar a la isla de Punta Silencio para ocupar el puesto de farero. La vieja Remedios, que ha cuidado la luz durante cuarenta años, te enseñará el oficio. Aquí nadie llama por teléfono: el mar habla en puntos y rayas.",
+  "words": [
+    "SOS", "OSO", "ESO", "ESTO", "ESTE", "OESTE", "TESO", "SETO",
+    "NOTA", "SANO", "ANTES", "ESTAN", "NADA", "TONTA", "NATA",
+    "MAR", "RED", "DATOS", "RADIO", "ORDEN", "TIMON", "MESA", "MANO",
+    "MANOS", "MINA", "MAREA", "TORRE", "TIERRA", "ROSA", "RIO",
+    "NORTE", "REMOS", "ARENA", "TRES", "DOS", "SEIS", "MONTE",
+    "ATRAS", "DIA", "MIRA", "SIETE", "MARINERO", "DONDE", "RADAR",
+    "MOTOR", "DESTINO", "SIN", "SI", "NO", "IDA"
+  ],
+  "missions": [
+    {
+      "id": "c1m1",
+      "type": "LESSON",
+      "title": "La primera luz",
+      "briefing": "Remedios te pone la mano en el hombro: «Antes de nada, aprende la señal que salva vidas. Tres cortos, tres largos, tres cortos. La S son tres puntos; la O, tres rayas». Abajo, el mar empieza a encresparse.",
+      "newChars": ["S", "O"],
+      "finalMessage": { "from": "Pesquero Gaviota", "text": "SOS" },
+      "debriefing": "Era el Gaviota, con el motor ahogado. Remedios enciende la luz grande: «Bien hecho. Ya saben que alguien les escucha». En la radio, alguien responde con un largo y aliviado silencio."
+    },
+    {
+      "id": "c1m2",
+      "type": "LESSON",
+      "title": "Niebla en la bocana",
+      "briefing": "Una niebla espesa cubre la entrada del puerto. «Cuando no se ve nada, el oído manda», dice Remedios. «La E es la letra más corta: un punto. La T, una raya». El Gaviota avanza a ciegas.",
+      "newChars": ["E", "T"],
+      "finalMessage": { "from": "Pesquero Gaviota", "text": "ESTO ES SOS" },
+      "debriefing": "Guías al Gaviota con destellos lentos hasta que su proa asoma entre la bruma. Remedios sonríe por primera vez: «Tienes buen oído, farero»."
+    },
+    {
+      "id": "c1m3",
+      "type": "LESSON",
+      "title": "El pesquero Gaviota",
+      "briefing": "El patrón del Gaviota, Anselmo, quiere avisar a sus familias de que todos están bien. «La A es un punto y una raya; la N, al revés», explica Remedios. «Fíjate en el orden».",
+      "newChars": ["A", "N"],
+      "finalMessage": { "from": "Patrón Anselmo", "text": "ESTAN SANOS" },
+      "debriefing": "El mensaje corre de faro en faro hasta el pueblo. Esa noche, en el puerto, alguien enciende una hoguera en tu honor."
+    },
+    {
+      "id": "c1r1",
+      "type": "REVIEW",
+      "title": "Guardia de noche",
+      "briefing": "Primera guardia en solitario. Remedios duerme en la casa del farero y te ha dejado una nota: «Repasa lo que sabes. De noche los mensajes llegan cansados y mal escritos».",
+      "finalMessage": { "from": "Barco sin nombre", "text": "ESTE O OESTE" },
+      "debriefing": "Un barco sin nombre pregunta el rumbo y desaparece sin dar las gracias. Lo apuntas en el cuaderno. Remedios, al leerlo por la mañana, frunce el ceño."
+    },
+    {
+      "id": "c1m4",
+      "type": "LESSON",
+      "title": "La tormenta",
+      "briefing": "El barómetro se desploma. Un velero ha perdido el gobierno cerca de las rocas. «La I son dos puntos; la M, dos rayas», grita Remedios por encima del viento. «¡Rápido!».",
+      "newChars": ["I", "M"],
+      "finalMessage": { "from": "Velero Albatros", "text": "TIMON A MANO" },
+      "debriefing": "El velero logra gobernar a mano y se aleja de las rocas. Remedios, empapada, te da una palmada: «Hoy te has ganado el café»."
+    },
+    {
+      "id": "c1m5",
+      "type": "LESSON",
+      "title": "Rescate en el arrecife",
+      "briefing": "Al amanecer, dos marineros del Albatros han llegado a nado hasta el arrecife. «La R es punto, raya, punto. La D, raya, punto, punto», dice Remedios. «Avisa a la lancha de salvamento».",
+      "newChars": ["R", "D"],
+      "finalMessage": { "from": "Lancha de salvamento", "text": "DOS MARINEROS EN TIERRA" },
+      "debriefing": "La lancha los recoge sanos y salvos. Uno de ellos, al pasar junto al faro, levanta la vista hacia ti y se lleva la mano a la gorra."
+    },
+    {
+      "id": "c1r2",
+      "type": "REVIEW",
+      "title": "El cuaderno del farero",
+      "briefing": "Remedios te enseña el viejo cuaderno de señales del faro. «Todo farero anota las mareas y los mensajes. Repasa las diez letras: mañana te toca a ti llevarlo».",
+      "finalMessage": { "from": "Remedios", "text": "ANOTA DATOS DE MAREA" },
+      "debriefing": "Entre las páginas del cuaderno encuentras mensajes antiguos que nadie supo descifrar. Algunos están firmados con un símbolo extraño: un punto dentro de un círculo."
+    },
+    {
+      "id": "c1f",
+      "type": "FINALE",
+      "title": "La señal bajo el faro",
+      "briefing": "A medianoche, la radio del faro capta una transmisión débil que no viene del mar. Viene de muy cerca. Remedios palidece: «Eso no debería estar emitiendo… desde hace treinta años».",
+      "finalMessage": { "from": "Transmisor desconocido", "text": "OTRA RADIO EMITE DESDE ESTA TORRE" },
+      "debriefing": "Bajo las losas del sótano encontráis una trampilla oxidada y, al fondo, una sala llena de aparatos de escucha. Remedios suspira: «Ha llegado el momento de contarte la verdad sobre este faro». Continuará en la Operación Sombra."
+    }
+  ]
+}
