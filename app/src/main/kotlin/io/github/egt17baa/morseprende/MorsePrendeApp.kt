@@ -2,6 +2,11 @@ package io.github.egt17baa.morseprende
 
 import android.app.Application
 import android.content.Context
+import io.github.egt17baa.morseprende.data.AssetContentSource
+import io.github.egt17baa.morseprende.data.ContentSource
+import io.github.egt17baa.morseprende.data.progress.AppDatabase
+import io.github.egt17baa.morseprende.data.progress.ProgressRepository
+import io.github.egt17baa.morseprende.data.progress.RoomProgressRepository
 import io.github.egt17baa.morseprende.playback.AndroidOutputFactory
 import io.github.egt17baa.morseprende.playback.OutputFactory
 import io.github.egt17baa.morseprende.playback.TorchOutput
@@ -14,6 +19,8 @@ class AppContainer(context: Context) {
     val settings: SettingsRepository = DataStoreSettingsRepository(appContext)
     val outputs: OutputFactory = AndroidOutputFactory(appContext)
     val torchAvailable: Boolean by lazy { TorchOutput.isAvailable(appContext) }
+    val content: ContentSource = AssetContentSource(appContext)
+    val progress: ProgressRepository by lazy { RoomProgressRepository(AppDatabase.create(appContext)) }
 }
 
 class MorsePrendeApp : Application() {
