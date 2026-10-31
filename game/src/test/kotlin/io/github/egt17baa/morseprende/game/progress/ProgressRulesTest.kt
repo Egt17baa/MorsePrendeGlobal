@@ -45,4 +45,19 @@ class ProgressRulesTest {
         assertEquals(0f, ProgressRules.chapterProgress(RealContent.chapter1, setOf("otra")), 1e-6f)
         assertEquals(1f, ProgressRules.chapterProgress(RealContent.chapter1, all), 1e-6f)
     }
+
+    @Test fun learned_from_completed_only() {
+        assertEquals(emptySet<Char>(), ProgressRules.learnedChars(chapters, emptySet()))
+        assertEquals(setOf('S', 'O', 'E', 'T'), ProgressRules.learnedChars(chapters, setOf("c1m1", "c1m2")))
+        assertEquals(setOf('S', 'O', 'E', 'T'), ProgressRules.learnedChars(chapters, setOf("c1m1", "c1m2", "c1r1")))
+    }
+
+    @Test fun game_unlocks() {
+        assertEquals("c1m2", ProgressRules.gameUnlockMission("STORM"))
+        assertEquals("c1m3", ProgressRules.gameUnlockMission("FLASH"))
+        assertEquals("c1r1", ProgressRules.gameUnlockMission("INTERCEPT"))
+        assertFalse(ProgressRules.isGameUnlocked("STORM", setOf("c1m1")))
+        assertTrue(ProgressRules.isGameUnlocked("STORM", setOf("c1m1", "c1m2")))
+        assertFalse(ProgressRules.isGameUnlocked("DESCONOCIDO", all))
+    }
 }
