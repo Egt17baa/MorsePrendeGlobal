@@ -38,4 +38,10 @@ class SettingsViewModelTest {
         assertEquals(false, s.limitFlashes)
         assertEquals(7, s.effectiveWpm)
     }
+
+    @Test fun set_keyer_mode_updates_repo() = runTest {
+        val repo = FakeSettingsRepository()
+        SettingsViewModel(repo).setKeyerMode(KeyerMode.TWO_BUTTONS)
+        assertEquals(KeyerMode.TWO_BUTTONS, repo.settings.value.keyerMode)
+    }
 }

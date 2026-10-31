@@ -48,6 +48,10 @@
     <string name="settings_tone">Tono: %1$d Hz</string>
     <string name="settings_volume">Volumen: %1$d %%</string>
     <string name="settings_test_sound">Probar sonido</string>
+    <string name="settings_keyer_section">Manipulador</string>
+    <string name="settings_keyer_one">Un botón</string>
+    <string name="settings_keyer_two">Dos botones</string>
+    <string name="settings_keyer_help">Con un botón, la duración de cada pulsación decide si es punto o raya, como un manipulador de verdad. Con dos botones pulsas «punto» o «raya» y luego «siguiente letra».</string>
     <string name="settings_safety_section">Seguridad</string>
     <string name="settings_limit_flashes">Limitar destellos (recomendado)</string>
     <string name="settings_limit_flashes_help">Con la linterna o la pantalla, el Morse va como máximo a 7 PPM (unos 3 destellos por segundo) para reducir el riesgo para personas fotosensibles.</string>

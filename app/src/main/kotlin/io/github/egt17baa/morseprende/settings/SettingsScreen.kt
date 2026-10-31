@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Button
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -89,6 +90,21 @@ fun SettingsScreen(viewModel: SettingsViewModel, onBack: () -> Unit) {
                 Icon(Icons.Filled.PlayArrow, contentDescription = null)
                 Text(stringResource(R.string.settings_test_sound), modifier = Modifier.padding(start = 8.dp))
             }
+
+            SectionTitle(stringResource(R.string.settings_keyer_section))
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FilterChip(
+                    selected = s.keyerMode == KeyerMode.ONE_BUTTON,
+                    onClick = { viewModel.setKeyerMode(KeyerMode.ONE_BUTTON) },
+                    label = { Text(stringResource(R.string.settings_keyer_one)) },
+                )
+                FilterChip(
+                    selected = s.keyerMode == KeyerMode.TWO_BUTTONS,
+                    onClick = { viewModel.setKeyerMode(KeyerMode.TWO_BUTTONS) },
+                    label = { Text(stringResource(R.string.settings_keyer_two)) },
+                )
+            }
+            Help(stringResource(R.string.settings_keyer_help))
 
             SectionTitle(stringResource(R.string.settings_safety_section))
             Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {

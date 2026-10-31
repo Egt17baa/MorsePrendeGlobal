@@ -42,4 +42,13 @@ class SettingsRepositoryTest {
         assertEquals(30, s.effectiveWpm)
         assertEquals(400, s.toneHz)
     }
+
+    @Test fun keyer_mode_persists() = runTest {
+        val f = File(context.filesDir, "settings-keyer.preferences_pb")
+        val first = DataStoreSettingsRepository.create(f, backgroundScope)
+        first.update { it.copy(keyerMode = KeyerMode.TWO_BUTTONS) }
+        first.close()
+        val second = DataStoreSettingsRepository.create(f, backgroundScope)
+        assertEquals(KeyerMode.TWO_BUTTONS, second.settings.first().keyerMode)
+    }
 }

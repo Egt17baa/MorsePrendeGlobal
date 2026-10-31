@@ -8,6 +8,8 @@ import io.github.egt17baa.morseprende.data.progress.AppDatabase
 import io.github.egt17baa.morseprende.data.progress.ProgressRepository
 import io.github.egt17baa.morseprende.data.progress.RoomProgressRepository
 import io.github.egt17baa.morseprende.playback.AndroidOutputFactory
+import io.github.egt17baa.morseprende.playback.AndroidSidetoneFactory
+import io.github.egt17baa.morseprende.playback.SidetoneFactory
 import io.github.egt17baa.morseprende.playback.OutputFactory
 import io.github.egt17baa.morseprende.playback.TorchOutput
 import io.github.egt17baa.morseprende.settings.DataStoreSettingsRepository
@@ -20,6 +22,7 @@ class AppContainer(context: Context) {
     val outputs: OutputFactory = AndroidOutputFactory(appContext)
     val torchAvailable: Boolean by lazy { TorchOutput.isAvailable(appContext) }
     val content: ContentSource = AssetContentSource(appContext)
+    val sidetone: SidetoneFactory = AndroidSidetoneFactory(appContext)
     val progress: ProgressRepository by lazy { RoomProgressRepository(AppDatabase.create(appContext)) }
 }
 

@@ -2,6 +2,9 @@ package io.github.egt17baa.morseprende.settings
 
 import io.github.egt17baa.morseprende.core.MorseTiming
 
+/** Cómo se transmite en las misiones: un manipulador (duración) o dos botones (punto | raya). */
+enum class KeyerMode { ONE_BUTTON, TWO_BUTTONS }
+
 /** Preferencias del usuario. Se guardan en el dispositivo. */
 data class AppSettings(
     val charWpm: Int = 18,
@@ -10,6 +13,7 @@ data class AppSettings(
     val volume: Float = 0.8f,
     val limitFlashes: Boolean = true,
     val flashWarningAccepted: Boolean = false,
+    val keyerMode: KeyerMode = KeyerMode.ONE_BUTTON,
 ) {
     /** Devuelve una copia con todos los valores dentro de sus rangos válidos. */
     fun clamped(): AppSettings {

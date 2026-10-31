@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -44,6 +45,7 @@ class DataStoreSettingsRepository private constructor(
             prefs[VOLUME] = next.volume
             prefs[LIMIT_FLASHES] = next.limitFlashes
             prefs[FLASH_WARNING_ACCEPTED] = next.flashWarningAccepted
+            prefs[KEYER_MODE] = next.keyerMode.name
         }
     }
 
@@ -61,6 +63,7 @@ class DataStoreSettingsRepository private constructor(
             volume = this[VOLUME] ?: defaults.volume,
             limitFlashes = this[LIMIT_FLASHES] ?: defaults.limitFlashes,
             flashWarningAccepted = this[FLASH_WARNING_ACCEPTED] ?: defaults.flashWarningAccepted,
+            keyerMode = this[KEYER_MODE]?.let { name -> KeyerMode.entries.firstOrNull { it.name == name } } ?: defaults.keyerMode,
         ).clamped()
     }
 
@@ -71,6 +74,7 @@ class DataStoreSettingsRepository private constructor(
         private val VOLUME = floatPreferencesKey("volume")
         private val LIMIT_FLASHES = booleanPreferencesKey("limit_flashes")
         private val FLASH_WARNING_ACCEPTED = booleanPreferencesKey("flash_warning_accepted")
+        private val KEYER_MODE = stringPreferencesKey("keyer_mode")
 
         /** Repositorio sobre un fichero concreto (pruebas). */
         fun create(file: File, parentScope: CoroutineScope): DataStoreSettingsRepository {
