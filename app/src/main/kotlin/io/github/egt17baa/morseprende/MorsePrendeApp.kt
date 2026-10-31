@@ -6,7 +6,11 @@ import io.github.egt17baa.morseprende.data.AssetContentSource
 import io.github.egt17baa.morseprende.data.ContentSource
 import io.github.egt17baa.morseprende.data.DataStoreSeenCardsRepository
 import io.github.egt17baa.morseprende.data.SeenCardsRepository
+import io.github.egt17baa.morseprende.data.games.GameRecordsRepository
+import io.github.egt17baa.morseprende.data.games.RoomGameRecordsRepository
 import io.github.egt17baa.morseprende.data.progress.AppDatabase
+import io.github.egt17baa.morseprende.data.review.CharStatsRepository
+import io.github.egt17baa.morseprende.data.review.RoomCharStatsRepository
 import io.github.egt17baa.morseprende.data.progress.ProgressRepository
 import io.github.egt17baa.morseprende.data.progress.RoomProgressRepository
 import io.github.egt17baa.morseprende.playback.AndroidOutputFactory
@@ -26,7 +30,10 @@ class AppContainer(context: Context) {
     val content: ContentSource = AssetContentSource(appContext)
     val sidetone: SidetoneFactory = AndroidSidetoneFactory(appContext)
     val seenCards: SeenCardsRepository = DataStoreSeenCardsRepository(appContext)
-    val progress: ProgressRepository by lazy { RoomProgressRepository(AppDatabase.create(appContext)) }
+    private val database: AppDatabase by lazy { AppDatabase.create(appContext) }
+    val progress: ProgressRepository by lazy { RoomProgressRepository(database) }
+    val charStats: CharStatsRepository by lazy { RoomCharStatsRepository(database) }
+    val gameRecords: GameRecordsRepository by lazy { RoomGameRecordsRepository(database) }
 }
 
 class MorsePrendeApp : Application() {

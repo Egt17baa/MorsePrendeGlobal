@@ -56,6 +56,9 @@ android {
         compose = true
     }
 
+    // Esquemas de Room para probar migraciones con Robolectric (solo debug; no van en el APK de entrega).
+    sourceSets["debug"].assets.srcDir("$projectDir/schemas")
+
     testOptions {
         unitTests.isIncludeAndroidResources = true
         unitTests.all {
@@ -106,6 +109,7 @@ dependencies {
     testImplementation(libs.robolectric)
     testImplementation(libs.androidx.test.core)
     testImplementation(libs.androidx.lifecycle.runtime.testing)
+    testImplementation(libs.androidx.room.testing)
     testImplementation(platform(libs.androidx.compose.bom))
     testImplementation(libs.androidx.compose.ui.test.junit4)
 }
