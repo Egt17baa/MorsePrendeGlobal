@@ -14,12 +14,17 @@ import io.github.egt17baa.morseprende.settings.SettingsViewModel
 import io.github.egt17baa.morseprende.translator.TranslatorScreen
 import io.github.egt17baa.morseprende.translator.TranslatorViewModel
 import io.github.egt17baa.morseprende.ui.home.HomeScreen
+import io.github.egt17baa.morseprende.ui.mission.MissionScreen
+import io.github.egt17baa.morseprende.ui.mission.MissionViewModel
 
 /** Los toques se ignoran mientras la pantalla no está activa (evita dobles navegaciones). */
 object Routes {
     const val HOME = "home"
     const val TRANSLATOR = "translator"
     const val SETTINGS = "settings"
+    const val MISSION = "mission/{id}"
+
+    fun mission(id: String) = "mission/$id"
 }
 
 @Composable
@@ -39,6 +44,18 @@ fun AppNavHost(container: AppContainer) {
                 },
             )
             TranslatorScreen(vm, onBack = dropUnlessResumed { nav.popBackStack() })
+        }
+        composable(Routes.MISSION) { entry ->
+            val id = entry.arguments?.getString("id").orEmpty()
+            val vm: MissionViewModel = viewModel(
+                key = "mission-$id",
+                factory = viewModelFactory {
+                    initializer {
+                        MissionViewModel(id, container.content, container.progress, container.settings, container.outputs, container.sidetone)
+                    }
+                },
+            )
+            MissionScreen(vm, onExit = dropUnlessResumed { nav.popBackStack() })
         }
         composable(Routes.SETTINGS) {
             val vm: SettingsViewModel = viewModel(

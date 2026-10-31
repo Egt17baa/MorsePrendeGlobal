@@ -37,6 +37,35 @@
     <string name="flash_warning_accept">Entiendo, activar</string>
     <string name="flash_warning_cancel">Cancelar</string>
 
+    <!-- Misión -->
+    <string name="mission_start">Empezar</string>
+    <string name="mission_logbook">Cuaderno de bitácora</string>
+    <string name="mission_progress">%1$d de %2$d</string>
+    <string name="mission_listen_title">Letras nuevas</string>
+    <string name="mission_listen_again">Escuchar</string>
+    <string name="mission_replay">Escuchar otra vez</string>
+    <string name="mission_continue">Continuar</string>
+    <string name="mission_choose">¿Qué has oído?</string>
+    <string name="mission_type_title">Escribe lo que oyes</string>
+    <string name="mission_type_hint">Tu respuesta</string>
+    <string name="mission_check">Comprobar</string>
+    <string name="mission_correct">¡Correcto!</string>
+    <string name="mission_wrong">No era eso. Era: %1$s</string>
+    <string name="mission_send_title">Transmite con el manipulador</string>
+    <string name="mission_key">Manipulador</string>
+    <string name="mission_dot">Punto</string>
+    <string name="mission_dash">Raya</string>
+    <string name="mission_next_letter">Siguiente letra</string>
+    <string name="mission_delete">Borrar</string>
+    <string name="mission_submit">Enviar</string>
+    <string name="mission_sent">Enviado: %1$s</string>
+    <string name="mission_attempts">Intentos: %1$d</string>
+    <string name="mission_incoming">Mensaje entrante de %1$s</string>
+    <string name="mission_hint">Pista: %1$s</string>
+    <string name="mission_new_best">¡Nueva mejor marca!</string>
+    <string name="mission_back_to_lighthouse">Volver al faro</string>
+    <string name="mission_error">No se pudo cargar esta misión. Vuelve al faro e inténtalo de nuevo.</string>
+
     <!-- Ajustes -->
     <string name="settings_title">Ajustes</string>
     <string name="settings_speed_section">Velocidad</string>
