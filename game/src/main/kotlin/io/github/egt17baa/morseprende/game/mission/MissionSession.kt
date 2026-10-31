@@ -1,6 +1,8 @@
 package io.github.egt17baa.morseprende.game.mission
 
 import io.github.egt17baa.morseprende.core.MorseCodec
+import io.github.egt17baa.morseprende.game.review.CharOutcome
+import io.github.egt17baa.morseprende.game.review.Leitner
 
 data class AnswerResult(val correct: Boolean, val expected: String, val advanced: Boolean, val attemptsLeft: Int)
 
@@ -23,6 +25,10 @@ class MissionSession(val exercises: List<Exercise>) {
         private set
 
     private var correct = 0
+    private val charOutcomes = mutableListOf<CharOutcome>()
+
+    /** Resultados por carácter para el repaso inteligente: recibir y el primer intento de cada envío. */
+    val outcomes: List<CharOutcome> get() = charOutcomes.toList()
     private var attemptsUsed = 0
     private var finalFailures = 0
 
@@ -55,6 +61,7 @@ class MissionSession(val exercises: List<Exercise>) {
     fun send(decoded: String): AnswerResult {
         val e = current as? Exercise.Send ?: throw IllegalStateException("El ejercicio actual no es de enviar")
         val ok = matches(decoded, e.target)
+        if (attemptsUsed == 0) charOutcomes += Leitner.outcomesFor(e.target, decoded)
         attemptsUsed++
         if (ok && attemptsUsed == 1) correct++
         val attemptsLeft = SEND_ATTEMPTS - attemptsUsed
@@ -71,6 +78,7 @@ class MissionSession(val exercises: List<Exercise>) {
 
     private fun receive(response: String, expected: String): AnswerResult {
         val ok = matches(response, expected)
+        charOutcomes += Leitner.outcomesFor(expected, response)
         if (ok) correct++
         advance()
         return AnswerResult(ok, expected, advanced = true, attemptsLeft = 0)

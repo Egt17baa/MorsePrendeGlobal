@@ -105,4 +105,24 @@ class MissionPlannerTest {
         val exercises = MissionPlanner.plan(one.missions.first(), one, Random(1))
         assertTrue(exercises.filterIsInstance<Exercise.ReceiveChoice>().all { it.answer in it.options })
     }
+
+    private fun singleLetters(boxes: Map<Char, Int>): List<String> = (0 until 200).flatMap { seed ->
+        MissionPlanner.plan(mission("c1r1"), chapter, Random(seed), boxes).flatMap { e ->
+            when (e) {
+                is Exercise.ReceiveChoice -> listOf(e.answer)
+                is Exercise.ReceiveTyped -> listOf(e.answer)
+                is Exercise.Send -> listOf(e.target)
+                else -> emptyList()
+            }
+        }.filter { it.length == 1 }
+    }
+
+    @Test fun review_prefers_weak_letters() {
+        val weakA = singleLetters(mapOf('A' to 1, 'S' to 5, 'O' to 5, 'E' to 5, 'T' to 5, 'N' to 5))
+        assertTrue("A=${weakA.count { it == "A" }} de ${weakA.size}", weakA.count { it == "A" } >= weakA.size * 0.4)
+        val uniform = singleLetters(emptyMap())
+        uniform.groupingBy { it }.eachCount().forEach { (c, n) ->
+            assertTrue("$c=$n de ${uniform.size}", n <= uniform.size * 0.35)
+        }
+    }
 }

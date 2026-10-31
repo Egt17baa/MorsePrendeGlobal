@@ -4,6 +4,7 @@ import io.github.egt17baa.morseprende.game.content.Chapter
 import io.github.egt17baa.morseprende.game.content.ContentValidator
 import io.github.egt17baa.morseprende.game.content.Mission
 import io.github.egt17baa.morseprende.game.content.MissionType
+import io.github.egt17baa.morseprende.game.review.Leitner
 import kotlin.random.Random
 
 /**
@@ -20,8 +21,9 @@ object MissionPlanner {
     private const val MAX_SEND_WORD = 4
     private const val MAX_DISTRACTOR_TRIES = 50
 
-    fun plan(mission: Mission, chapter: Chapter, random: Random): List<Exercise> {
-        val pool = Pool(mission, chapter, random)
+    /** @param boxes cajas de Leitner por carácter: en los repasos se insiste en las letras débiles. */
+    fun plan(mission: Mission, chapter: Chapter, random: Random, boxes: Map<Char, Int> = emptyMap()): List<Exercise> {
+        val pool = Pool(mission, chapter, random, if (mission.type == MissionType.REVIEW) boxes else emptyMap())
         return when (mission.type) {
             MissionType.LESSON -> lesson(mission, pool)
             MissionType.REVIEW -> review(pool)
@@ -53,12 +55,17 @@ object MissionPlanner {
             pool.words(2, short = true).map { Exercise.Send(it) }
 
     /** Letras y palabras disponibles para una misión concreta. */
-    private class Pool(mission: Mission, chapter: Chapter, val random: Random) {
+    private class Pool(mission: Mission, chapter: Chapter, val random: Random, private val boxes: Map<Char, Int>) {
         private val learned: List<Char> = ContentValidator.learnedCharsUpTo(listOf(chapter), mission.id).toList()
         private val newChars = mission.newChars.toSet()
         private val validWords = chapter.words.filter { w -> w.length > 1 && w.all { it in learned } }.distinct()
 
-        fun letters(n: Int): List<String> = List(n) { learned.random(random).toString() }
+        fun letters(n: Int): List<String> = List(n) {
+            if (boxes.isEmpty()) learned.random(random).toString() else Leitner.pick(learned, boxes, random).toString()
+        }
+
+        /** La letra aprendida con la caja más baja (la más débil), o null si no hay cajas. */
+        private val weakest: Char? = if (boxes.isEmpty()) null else learned.minByOrNull { boxes[it] ?: Leitner.MIN_BOX }
 
         fun words(n: Int, preferNew: Boolean = false, short: Boolean = false): List<String> {
             if (n <= 0) return emptyList()
@@ -67,6 +74,10 @@ object MissionPlanner {
             if (preferNew) {
                 val withNew = candidates.filter { w -> w.any { it in newChars } }
                 if (withNew.isNotEmpty()) candidates = withNew
+            }
+            weakest?.let { weak ->
+                val withWeak = candidates.filter { weak in it }
+                if (withWeak.isNotEmpty()) candidates = withWeak
             }
             if (candidates.isEmpty()) return List(n) { combo(random.nextInt(2, 4)) }
             val shuffled = candidates.shuffled(random)

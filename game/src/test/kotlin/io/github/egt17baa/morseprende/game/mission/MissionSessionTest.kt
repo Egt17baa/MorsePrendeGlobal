@@ -1,6 +1,7 @@
 package io.github.egt17baa.morseprende.game.mission
 
 import io.github.egt17baa.morseprende.game.content.StoryMessage
+import io.github.egt17baa.morseprende.game.review.CharOutcome
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -113,5 +114,14 @@ class MissionSessionTest {
 
     @Test fun result_before_finish_throws() {
         assertFailsWith<IllegalStateException> { MissionSession(listOf(final)).result() }
+    }
+
+    @Test fun outcomes_record_receive_and_first_send() {
+        val s = MissionSession(listOf(Exercise.ReceiveTyped("SO"), Exercise.Send("S"), final))
+        s.answer("SE")
+        s.send("E")
+        s.send("S")
+        s.answer("ESTO ES SOS")
+        assertEquals(listOf(CharOutcome('S', true), CharOutcome('O', false), CharOutcome('S', false)), s.outcomes)
     }
 }
