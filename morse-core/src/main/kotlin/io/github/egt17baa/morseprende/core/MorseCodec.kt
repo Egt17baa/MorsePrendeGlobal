@@ -18,20 +18,17 @@ object MorseCodec {
 
     private const val WORD_SEPARATOR = " / "
     private const val ENYE_MARKER = '\u0001'
-    private val combiningMarks = Regex("\\p{Mn}+")
-    // (?U): \s también reconoce espacios Unicode como el no separable (&nbsp;) o el estrecho (U+202F).
-    private val whitespace = Regex("(?U)\\s+")
-    private val wordBreakSpaces = Regex("(?U)\\s{3,}")
+
+    // Sin expresiones regulares a propósito: el motor de Android (ICU) no admite `(?U)` y
+    // `\p{...}` falla en versiones antiguas. Char.isWhitespace() ya reconoce los espacios Unicode
+    // (no separable &nbsp;, estrecho U+202F…).
 
     /** Mayúsculas, sin tildes ni diéresis (excepto la Ñ) y con los espacios agrupados. */
     fun normalizeText(text: String): String {
         val protected = text.replace('ñ', ENYE_MARKER).replace('Ñ', ENYE_MARKER)
-        val withoutMarks = Normalizer.normalize(protected, Normalizer.Form.NFD).replace(combiningMarks, "")
-        return withoutMarks
-            .replace(ENYE_MARKER, 'Ñ')
-            .uppercase(Locale.ROOT)
-            .replace(whitespace, " ")
-            .trim()
+        val withoutMarks = Normalizer.normalize(protected, Normalizer.Form.NFD)
+            .filter { Character.getType(it) != Character.NON_SPACING_MARK.toInt() }
+        return collapseSpaces(withoutMarks.replace(ENYE_MARKER, 'Ñ').uppercase(Locale.ROOT))
     }
 
     /**
@@ -40,7 +37,17 @@ object MorseCodec {
      */
     fun normalizeMorse(morse: String): String {
         val ascii = buildString(morse.length) {
+            var spaces = 0
+            fun flushSpaces() {
+                if (spaces >= 3) append('/') else if (spaces > 0) append(' ')
+                spaces = 0
+            }
             for (c in morse) {
+                if (c.isWhitespace()) {
+                    spaces++
+                    continue
+                }
+                flushSpaces()
                 append(
                     when (c) {
                         '·', '•', '∙', '⋅' -> '.'
@@ -50,12 +57,25 @@ object MorseCodec {
                     },
                 )
             }
+            flushSpaces()
         }
-        return ascii.replace(wordBreakSpaces, "/")
-            .split('/')
-            .map { word -> word.trim().split(whitespace).filter { it.isNotEmpty() } }
+        return ascii.split('/')
+            .map { word -> word.split(' ').filter { it.isNotEmpty() } }
             .filter { it.isNotEmpty() }
             .joinToString(WORD_SEPARATOR) { it.joinToString(" ") }
+    }
+
+    private fun collapseSpaces(text: String): String = buildString(text.length) {
+        var pendingSpace = false
+        for (c in text) {
+            if (c.isWhitespace()) {
+                pendingSpace = isNotEmpty()
+            } else {
+                if (pendingSpace) append(' ')
+                pendingSpace = false
+                append(c)
+            }
+        }
     }
 
     fun encode(text: String): EncodeResult {

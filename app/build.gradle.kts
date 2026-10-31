@@ -19,8 +19,8 @@ android {
         applicationId = "io.github.egt17baa.morseprende"
         minSdk = 26
         targetSdk = 36
-        versionCode = 2
-        versionName = "0.2.0"
+        versionCode = 3
+        versionName = "0.2.1"
     }
 
     // Clave permanente para los APK de entrega. Vive en variables de entorno (nunca en el repo):
