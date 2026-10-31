@@ -17,4 +17,4 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "MorsePrende"
-include(":morse-core", ":app")
+include(":morse-core", ":game", ":app")
