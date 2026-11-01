@@ -8,7 +8,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
@@ -80,5 +82,55 @@ class FreeSendViewModelTest {
         assertEquals(FreeSendViewModel.MAX_CHARS - 1, v.state.value.text.length)
         v.clear()
         assertEquals("", v.state.value.text)
+    }
+
+    /** Como DataStore: el primer valor llega un poco después de abrir la pantalla. */
+    private fun lateSettings(prefs: AppSettings) = object : io.github.egt17baa.morseprende.settings.SettingsRepository {
+        override val settings = kotlinx.coroutines.flow.flow {
+            kotlinx.coroutines.delay(50)
+            emit(prefs)
+        }
+        override suspend fun update(transform: (AppSettings) -> AppSettings) = Unit
+    }
+
+    @Test fun free_send_uses_user_settings_even_if_they_load_late() = runTest {
+        Dispatchers.setMain(UnconfinedTestDispatcher(testScheduler))
+        val mine = AppSettings(toneHz = 800, charWpm = 10, effectiveWpm = 10)
+        val v = FreeSendViewModel(lateSettings(mine), tones) { now }
+        v.enter()
+        advanceTimeBy(60)
+        runCurrent()
+        assertEquals(listOf(800), tones.settingsUsed.map { it.toneHz })
+        assertEquals(10, v.state.value.wpm)
+    }
+
+    @Test fun free_send_leave_while_loading_opens_nothing() = runTest {
+        Dispatchers.setMain(UnconfinedTestDispatcher(testScheduler))
+        val v = FreeSendViewModel(lateSettings(AppSettings()), tones) { now }
+        v.enter()
+        v.leave()
+        advanceTimeBy(60)
+        runCurrent()
+        assertTrue(tones.created.isEmpty())
+    }
+
+    @Test fun free_send_speed_shown_only_after_keying() = runTest {
+        val v = vm()
+        assertEquals(false, v.state.value.keyed)
+        v.key(0, 60)
+        assertEquals(true, v.state.value.keyed)
+    }
+
+    @Test fun free_send_delete_in_gap_adds_no_space() = runTest {
+        val v = vm()
+        v.key(0, 60)
+        v.tickAt(220)
+        v.key(400, 580)
+        v.tickAt(740)
+        assertEquals("ET", v.state.value.text)
+        // Se borra la T en plena pausa: no debe aparecer después un espacio suelto.
+        v.deleteLast()
+        v.tickAt(1_200)
+        assertEquals("E", v.state.value.text)
     }
 }

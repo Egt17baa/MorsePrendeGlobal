@@ -38,7 +38,7 @@ class WorkshopScreensTest {
         var cleared = 0
         compose.setContent { FreeSendContent(state, noKeyer, onDelete = {}, onClear = { cleared++ }, onBack = {}) }
         compose.onNodeWithText(context.getString(R.string.workshop_send_hint)).performScrollTo()
-        state = FreeSendUiState(text = "SOS", wpm = 14)
+        state = FreeSendUiState(text = "SOS", wpm = 14, keyed = true)
         compose.onNodeWithText("SOS").performScrollTo()
         compose.onNodeWithText(context.getString(R.string.workshop_speed, 14)).performScrollTo()
         compose.onNodeWithText(context.getString(R.string.workshop_clear)).performScrollTo().performClick()

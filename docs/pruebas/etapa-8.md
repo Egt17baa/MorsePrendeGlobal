@@ -6,9 +6,11 @@ Instala el APK encima del anterior: no se pierde el progreso.
 - [ ] En Práctica aparece «Taller del farero» con «Envío libre» y «Letras a la carta», encima de los minijuegos.
 
 ### Envío libre
-- [ ] Al pulsar el manipulador suena el tono desde el primer punto.
+- [ ] Al pulsar el manipulador suena el tono desde el primer punto, con el tono y el volumen de tus Ajustes.
 - [ ] Teclea «SOS»: aparece «SOS». Haz una pausa larga y teclea otra palabra: sale separada por un espacio.
-- [ ] Mientras tecleas una letra se ven sus puntos y rayas; debajo, «Vas a unas … PPM», que cambia según tu ritmo.
+- [ ] Mientras tecleas una letra se ven sus puntos y rayas; al empezar a teclear aparece «Vas a unas … PPM»,
+      que cambia según tu ritmo (con el manipulador de dos botones no se muestra).
+- [ ] Teclea mucho texto: el recuadro se desplaza solo y el manipulador no se mueve de sitio.
 - [ ] Una letra mal formada aparece como «?»; «Borrar» quita lo último y «Borrar todo» lo limpia.
 - [ ] Con el manipulador de dos botones (Ajustes) también funciona (punto, raya, siguiente letra).
 - [ ] Sal con la tecla pulsada, o cambia de app mientras la pulsas: el tono se calla siempre.
@@ -19,6 +21,7 @@ Instala el APK encima del anterior: no se pierde el progreso.
 - [ ] Suena una letra; pulsa cuál era en el teclado grande. Ves «¡Correcto!» o «No era eso. Era: …» y,
       al poco, suena la siguiente (nunca la misma dos veces seguidas).
 - [ ] «Escuchar» la repite; abajo se ven los aciertos de cada letra («K: 3 de 5»).
+- [ ] Gira el móvil o cambia de app y vuelve: sigues en la práctica con tus aciertos; pulsa «Escuchar» para seguir.
 - [ ] «Cambiar letras» vuelve a la elección. Las letras que fallas aparecen más en el repaso de las misiones.
 - [ ] Sin ninguna misión hecha, explica que primero hay que completar la primera misión.
 

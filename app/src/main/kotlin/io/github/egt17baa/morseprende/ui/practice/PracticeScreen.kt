@@ -80,7 +80,7 @@ fun PracticeContent(state: PracticeUiState, onGame: (GameId) -> Unit, onBack: ()
 
 @Composable
 private fun WorkshopCard(title: String, description: String, icon: GameId, onOpen: () -> Unit) {
-    Card(Modifier.fillMaxWidth().clickable(onClick = onOpen)) {
+    Card(onClick = onOpen, modifier = Modifier.fillMaxWidth()) {
         Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
             GameIcon(icon)
             Column(Modifier.weight(1f).padding(start = 16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {

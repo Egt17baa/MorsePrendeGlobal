@@ -17,6 +17,7 @@ import io.github.egt17baa.morseprende.settings.AppSettings
 import io.github.egt17baa.morseprende.settings.SettingsRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -104,7 +105,8 @@ class LetterDrillViewModel(
         val correct = d.answer(c)
         player.stop()
         ui.update { it.copy(feedback = DrillFeedback(correct, heard), stats = d.stats.toMap()) }
-        viewModelScope.launch { charStats.record(listOf(CharOutcome(heard, correct)), gentle = true) }
+        // Aunque se salga justo ahora, la respuesta llega al repaso.
+        viewModelScope.launch(NonCancellable) { charStats.record(listOf(CharOutcome(heard, correct)), gentle = true) }
         advance = scope.launch {
             delay(FEEDBACK_MS)
             d.next()
@@ -120,7 +122,21 @@ class LetterDrillViewModel(
         ui.update { if (it.phase == DrillPhase.PLAYING) it.copy(phase = DrillPhase.SETUP, current = null, feedback = null) else it }
     }
 
-    /** Al salir de la pantalla o de la app: se calla. */
+    /**
+     * Al pasar a segundo plano (o girar el móvil): se calla sin perder la práctica. Si se estaba
+     * viendo un resultado, se prepara la siguiente letra y suena al pulsar «Escuchar».
+     */
+    fun pause() {
+        val d = drill ?: return abandon()
+        val showingResult = advance?.isActive == true
+        abandon()
+        if (showingResult) {
+            d.next()
+            ui.update { it.copy(feedback = null, current = d.current) }
+        }
+    }
+
+    /** Al salir de la pantalla: se calla. */
     fun abandon() {
         advance?.cancel()
         advance = null

@@ -102,4 +102,22 @@ class LetterDrillViewModelTest {
         assertEquals(DrillPhase.SETUP, v.state.value.phase)
         assertEquals(false, v.state.value.isPlaying)
     }
+
+    @Test fun drill_pause_keeps_stats_and_silences() = runTest {
+        val v = vm()
+        runCurrent()
+        v.start()
+        runCurrent()
+        val first = v.state.value.current!!
+        v.answer(first)
+        // Pasar a segundo plano (o girar el móvil) con el resultado a la vista: se calla, pero no se pierde nada.
+        v.pause()
+        advanceTimeBy(LetterDrillViewModel.FEEDBACK_MS * 3)
+        runCurrent()
+        assertEquals(DrillPhase.PLAYING, v.state.value.phase)
+        assertEquals(false, v.state.value.isPlaying)
+        assertNull(v.state.value.feedback)
+        assertNotEquals(first, v.state.value.current)
+        assertEquals(1, v.state.value.stats[first]!!.total)
+    }
 }

@@ -15,6 +15,10 @@ class FakeSidetone : Sidetone {
 
 class FakeSidetoneFactory : SidetoneFactory {
     val created = mutableListOf<FakeSidetone>()
-    override fun create(settings: io.github.egt17baa.morseprende.settings.AppSettings) = FakeSidetone().also { created += it }
+    val settingsUsed = mutableListOf<io.github.egt17baa.morseprende.settings.AppSettings>()
+    override fun create(settings: io.github.egt17baa.morseprende.settings.AppSettings) = FakeSidetone().also {
+        created += it
+        settingsUsed += settings
+    }
     val last: FakeSidetone get() = created.last()
 }

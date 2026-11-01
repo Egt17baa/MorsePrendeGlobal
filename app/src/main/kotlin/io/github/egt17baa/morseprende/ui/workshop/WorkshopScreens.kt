@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.rememberScrollState
@@ -33,6 +33,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -40,7 +43,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import io.github.egt17baa.morseprende.R
 import io.github.egt17baa.morseprende.translator.MorseDisplay
 import io.github.egt17baa.morseprende.ui.mission.KeyerActions
@@ -79,10 +84,14 @@ fun FreeSendScreen(viewModel: FreeSendViewModel, onBack: () -> Unit) {
     DisposableEffect(Unit) { onDispose { viewModel.leave() } }
     LifecycleEventEffect(Lifecycle.Event.ON_START) { viewModel.enter() }
     LifecycleEventEffect(Lifecycle.Event.ON_STOP) { viewModel.leave() }
-    LaunchedEffect(Unit) {
-        while (true) {
-            delay(TICK_MS)
-            viewModel.tick()
+    // Cierra letras y palabras por las pausas, solo mientras la pantalla está a la vista.
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    LaunchedEffect(lifecycle) {
+        lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            while (true) {
+                delay(TICK_MS)
+                viewModel.tick()
+            }
         }
     }
     FreeSendContent(state, viewModel, viewModel::deleteLast, viewModel::clear, onBack)
@@ -91,8 +100,16 @@ fun FreeSendScreen(viewModel: FreeSendViewModel, onBack: () -> Unit) {
 @Composable
 fun FreeSendContent(state: FreeSendUiState, keyer: KeyerActions, onDelete: () -> Unit, onClear: () -> Unit, onBack: () -> Unit) {
     WorkshopScaffold(stringResource(R.string.workshop_send), onBack) {
+        // Altura fija con su propio desplazamiento (siempre al final): aunque el texto crezca, el
+        // manipulador no se mueve bajo el dedo.
+        val textScroll = rememberScrollState()
+        LaunchedEffect(state.text) { textScroll.scrollTo(textScroll.maxValue) }
         Card(Modifier.fillMaxWidth()) {
-            Column(Modifier.fillMaxWidth().heightIn(min = 120.dp).padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Column(
+                Modifier.fillMaxWidth().height(TEXT_AREA_HEIGHT).verticalScroll(textScroll).padding(16.dp)
+                    .semantics { liveRegion = LiveRegionMode.Polite },
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
                 if (state.text.isEmpty()) {
                     Text(stringResource(R.string.workshop_send_hint), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 } else {
@@ -106,7 +123,8 @@ fun FreeSendContent(state: FreeSendUiState, keyer: KeyerActions, onDelete: () ->
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth(),
         )
-        if (state.wpm > 0) {
+        // Con dos botones no hay ritmo que medir; con uno, la velocidad se ve al empezar a teclear.
+        if (state.keyed && state.keyerMode == io.github.egt17baa.morseprende.settings.KeyerMode.ONE_BUTTON && state.wpm > 0) {
             Text(stringResource(R.string.workshop_speed, state.wpm), style = MaterialTheme.typography.labelLarge, modifier = Modifier.align(Alignment.CenterHorizontally))
         }
         KeyerPad(state.keyerMode, keyer, Cosmetics.keyerRing(state.keyerSkin), haptics = state.haptics)
@@ -123,7 +141,7 @@ fun FreeSendContent(state: FreeSendUiState, keyer: KeyerActions, onDelete: () ->
 fun LetterDrillScreen(viewModel: LetterDrillViewModel, onBack: () -> Unit) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     DisposableEffect(Unit) { onDispose { viewModel.abandon() } }
-    LifecycleEventEffect(Lifecycle.Event.ON_STOP) { viewModel.stop() }
+    LifecycleEventEffect(Lifecycle.Event.ON_STOP) { viewModel.pause() }
     LetterDrillContent(state, viewModel::toggle, viewModel::start, viewModel::replay, viewModel::answer, viewModel::stop, onBack)
 }
 
@@ -162,6 +180,7 @@ fun LetterDrillContent(
                         else -> stringResource(R.string.mission_wrong, feedback.expected.toString())
                     },
                     style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
                     color = when {
                         feedback == null -> MaterialTheme.colorScheme.onSurface
                         feedback.correct -> MaterialTheme.colorScheme.primary
@@ -193,3 +212,4 @@ fun LetterDrillContent(
 }
 
 private const val TICK_MS = 20L
+private val TEXT_AREA_HEIGHT = 160.dp
