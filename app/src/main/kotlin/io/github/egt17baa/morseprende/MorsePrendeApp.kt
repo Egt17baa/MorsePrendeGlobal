@@ -45,7 +45,7 @@ class AppContainer(context: Context) {
         io.github.egt17baa.morseprende.data.AppProgressReset(database, seenCards, missionSaves, settings, daily)
     }
     val rewards: io.github.egt17baa.morseprende.rewards.RewardsService by lazy {
-        io.github.egt17baa.morseprende.rewards.RewardsService(content, progress, gameRecords, seenCards, economy, activity, achievements)
+        io.github.egt17baa.morseprende.rewards.RewardsService(content, progress, gameRecords, seenCards, economy, activity, achievements, daily = daily)
     }
 }
 

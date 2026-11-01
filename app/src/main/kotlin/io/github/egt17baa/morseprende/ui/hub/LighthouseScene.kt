@@ -44,6 +44,7 @@ fun LighthouseScene(
     )
     Canvas(modifier) {
         drawRect(Brush.verticalGradient(listOf(SeaNight, SeaDeep)))
+        drawSky(decorations)
         drawSea()
         val towerBottom = size.height * 0.82f
         val towerTop = size.height * 0.36f
@@ -143,7 +144,35 @@ private fun DrawScope.drawTower(cx: Float, top: Float, bottom: Float, lampColor:
     drawPath(roof, Coral)
 }
 
-/** Decoraciones compradas en la tienda: gaviotas, barca, banderines y farolillos. */
+/** Decoraciones del cielo, detrás de todo: aurora y estrellas fugaces. */
+private fun DrawScope.drawSky(decorations: Set<String>) {
+    if ("decor_aurora" in decorations) {
+        val bands = listOf(Color(0xFF7FE0B0) to 0.10f, Color(0xFFC9A7FF) to 0.18f, Color(0xFF7FE0B0) to 0.26f)
+        bands.forEachIndexed { i, (color, fy) ->
+            val y = size.height * fy
+            val path = Path().apply {
+                moveTo(0f, y)
+                cubicTo(size.width * 0.3f, y - size.height * 0.08f, size.width * 0.6f, y + size.height * 0.08f, size.width, y - size.height * 0.04f * (i + 1))
+                lineTo(size.width, y + size.height * 0.05f)
+                cubicTo(size.width * 0.6f, y + size.height * 0.12f, size.width * 0.3f, y - size.height * 0.02f, 0f, y + size.height * 0.06f)
+                close()
+            }
+            drawPath(path, Brush.verticalGradient(listOf(color.copy(alpha = 0.25f), Color.Transparent), startY = y - size.height * 0.06f, endY = y + size.height * 0.12f))
+        }
+    }
+    if ("decor_stars" in decorations) {
+        listOf(0.08f to 0.08f, 0.35f to 0.05f, 0.55f to 0.12f, 0.88f to 0.07f, 0.66f to 0.28f, 0.12f to 0.33f).forEach { (fx, fy) ->
+            drawCircle(Sand.copy(alpha = 0.85f), radius = size.width * 0.004f, center = Offset(size.width * fx, size.height * fy))
+        }
+        // Estrella fugaz con su estela.
+        val head = Offset(size.width * 0.86f, size.height * 0.16f)
+        val tail = Offset(size.width * 0.70f, size.height * 0.06f)
+        drawLine(Brush.linearGradient(listOf(Color.Transparent, BeamCream), start = tail, end = head), tail, head, strokeWidth = size.width * 0.006f)
+        drawCircle(BeamCream, radius = size.width * 0.007f, center = head)
+    }
+}
+
+/** Decoraciones compradas en la tienda: gaviotas, barca, banderines, farolillos, casa y ballena. */
 private fun DrawScope.drawDecorations(decorations: Set<String>, cx: Float, towerTop: Float, lantern: Offset) {
     val seaTop = size.height * 0.78f
     val stroke = size.width * 0.006f
@@ -193,6 +222,38 @@ private fun DrawScope.drawDecorations(decorations: Set<String>, cx: Float, tower
             val c = Offset(x, seaTop - size.height * 0.015f)
             drawCircle(Brush.radialGradient(listOf(BeamCream.copy(alpha = 0.7f), Color.Transparent), center = c, radius = size.width * 0.03f), radius = size.width * 0.03f, center = c)
             drawCircle(BeamCream, radius = size.width * 0.008f, center = c)
+        }
+    }
+    if ("decor_house" in decorations) {
+        // Casa del farero sobre una roca, a la derecha del faro, con la ventana encendida.
+        val left = cx + size.width * 0.12f
+        val w = size.width * 0.12f
+        val h = size.height * 0.10f
+        val base = seaTop + size.height * 0.01f
+        drawOval(SeaDeep, Offset(left - w * 0.25f, base - size.height * 0.015f), androidx.compose.ui.geometry.Size(w * 1.5f, size.height * 0.05f))
+        drawRect(Sand, Offset(left, base - h), androidx.compose.ui.geometry.Size(w, h))
+        drawPath(
+            Path().apply { moveTo(left - w * 0.1f, base - h); lineTo(left + w / 2, base - h * 1.7f); lineTo(left + w * 1.1f, base - h); close() },
+            Coral,
+        )
+        drawRect(BeamCream, Offset(left + w * 0.3f, base - h * 0.7f), androidx.compose.ui.geometry.Size(w * 0.25f, h * 0.3f))
+    }
+    if ("decor_whale" in decorations) {
+        // Ballena asomando en el mar, con su chorro.
+        val wx = size.width * 0.8f
+        val wy = seaTop + size.height * 0.15f
+        val body = Path().apply {
+            moveTo(wx - size.width * 0.09f, wy)
+            cubicTo(wx - size.width * 0.07f, wy - size.height * 0.07f, wx + size.width * 0.06f, wy - size.height * 0.07f, wx + size.width * 0.08f, wy)
+            lineTo(wx + size.width * 0.13f, wy - size.height * 0.04f)
+            lineTo(wx + size.width * 0.12f, wy + size.height * 0.005f)
+            close()
+        }
+        drawPath(body, Color(0xFF123A40))
+        drawCircle(Sand, radius = size.width * 0.005f, center = Offset(wx - size.width * 0.05f, wy - size.height * 0.025f))
+        val spout = Offset(wx - size.width * 0.02f, wy - size.height * 0.06f)
+        listOf(-0.025f, 0f, 0.025f).forEach { dx ->
+            drawLine(Sand.copy(alpha = 0.8f), spout, Offset(spout.x + size.width * dx, spout.y - size.height * 0.06f), strokeWidth = stroke)
         }
     }
 }

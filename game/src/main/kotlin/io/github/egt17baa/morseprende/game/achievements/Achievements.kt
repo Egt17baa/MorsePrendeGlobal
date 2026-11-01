@@ -11,6 +11,13 @@ data class AchievementInput(
     val boughtItems: Int,
     val seenCards: Int,
     val totalCards: Int,
+    /** «Mensajes del día» descifrados en total. */
+    val dailyDone: Int = 0,
+    /** Récord de la Guardia nocturna y hora más tardía alcanzada (0 = 22:00). */
+    val nightBest: Int = 0,
+    val nightHour: Int = 0,
+    /** Todas las misiones de la campaña (los tres capítulos). */
+    val allMissionIds: List<String> = emptyList(),
 )
 
 /** Logros del faro y sus condiciones (spec §7.7). */
@@ -30,6 +37,12 @@ object Achievements {
         "reader" to { i -> i.totalCards > 0 && i.seenCards >= i.totalCards },
         "mole_hunter" to { i -> "c2f" in i.missionStars },
         "stargazer" to { i -> "c3f" in i.missionStars },
+        "daily_first" to { i -> i.dailyDone >= 1 },
+        "daily_week" to { i -> i.dailyDone >= 7 },
+        "night_owl" to { i -> i.nightBest >= 15 },
+        "dawn" to { i -> i.nightHour >= 8 },
+        "enye" to { i -> "c2x" in i.missionStars },
+        "completionist" to { i -> i.allMissionIds.isNotEmpty() && i.allMissionIds.all { (i.missionStars[it] ?: 0) >= 3 } },
     )
 
     val ids: List<String> = rules.map { it.first }

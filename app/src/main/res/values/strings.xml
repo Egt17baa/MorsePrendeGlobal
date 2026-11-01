@@ -172,6 +172,18 @@
     <string name="ach_mole_hunter_desc">Descubre al topo y termina el capítulo 2.</string>
     <string name="ach_stargazer">Mirador de estrellas</string>
     <string name="ach_stargazer_desc">Descifra la señal estelar y termina el capítulo 3.</string>
+    <string name="ach_daily_first">Primer mensaje del día</string>
+    <string name="ach_daily_first_desc">Descifra tu primer mensaje del día.</string>
+    <string name="ach_daily_week">Corresponsal fiel</string>
+    <string name="ach_daily_week_desc">Descifra 7 mensajes del día (no hace falta que sean seguidos).</string>
+    <string name="ach_night_owl">Búho del faro</string>
+    <string name="ach_night_owl_desc">Copia 15 mensajes en una guardia nocturna.</string>
+    <string name="ach_dawn">Hasta el amanecer</string>
+    <string name="ach_dawn_desc">Aguanta la guardia nocturna hasta las 06:00.</string>
+    <string name="ach_enye">La letra de casa</string>
+    <string name="ach_enye_desc">Completa la misión extra de la Ñ.</string>
+    <string name="ach_completionist">Farero legendario</string>
+    <string name="ach_completionist_desc">Consigue tres estrellas en todas las misiones de la campaña.</string>
     <string name="ach_reader">Ratón de biblioteca</string>
     <string name="ach_reader_desc">Lee todas las fichas de la biblioteca.</string>
 
@@ -213,6 +225,12 @@
     <string name="item_decor_boat">Barca de pesca</string>
     <string name="item_decor_flags">Banderines</string>
     <string name="item_decor_lanterns">Farolillos</string>
+    <string name="item_lamp_violet">Luz violeta estelar</string>
+    <string name="item_key_wood">Manipulador de madera</string>
+    <string name="item_decor_stars">Estrellas fugaces</string>
+    <string name="item_decor_house">Casa del farero</string>
+    <string name="item_decor_whale">Ballena</string>
+    <string name="item_decor_aurora">Aurora</string>
 
     <!-- Ajustes -->
     <string name="settings_title">Ajustes</string>

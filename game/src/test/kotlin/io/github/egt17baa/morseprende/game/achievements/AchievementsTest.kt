@@ -11,7 +11,10 @@ class AchievementsTest {
     private fun earned(i: AchievementInput) = Achievements.earned(i)
 
     @Test fun ids_in_order() = assertEquals(
-        listOf("first_sos", "three_flashes", "keeper", "perfectionist", "storm_rider", "quick_eye", "sharp_ear", "speed_20", "steady", "collector", "reader", "mole_hunter", "stargazer"),
+        listOf(
+            "first_sos", "three_flashes", "keeper", "perfectionist", "storm_rider", "quick_eye", "sharp_ear", "speed_20", "steady", "collector",
+            "reader", "mole_hunter", "stargazer", "daily_first", "daily_week", "night_owl", "dawn", "enye", "completionist",
+        ),
         Achievements.ids,
     )
     @Test fun none_initially() = assertEquals(emptySet<String>(), earned(base))
@@ -58,5 +61,28 @@ class AchievementsTest {
     @Test fun mole_hunter() {
         assertTrue("mole_hunter" in earned(base.copy(missionStars = mapOf("c2f" to 1))))
         assertFalse("mole_hunter" in earned(base.copy(missionStars = mapOf("c1f" to 3))))
+    }
+
+    @Test fun daily_achievements() {
+        assertFalse("daily_first" in earned(base))
+        assertTrue("daily_first" in earned(base.copy(dailyDone = 1)))
+        assertFalse("daily_week" in earned(base.copy(dailyDone = 6)))
+        assertTrue("daily_week" in earned(base.copy(dailyDone = 7)))
+    }
+
+    @Test fun night_achievements() {
+        assertFalse("night_owl" in earned(base.copy(nightBest = 14)))
+        assertTrue("night_owl" in earned(base.copy(nightBest = 15)))
+        assertFalse("dawn" in earned(base.copy(nightHour = 7)))
+        assertTrue("dawn" in earned(base.copy(nightHour = 8)))
+    }
+
+    @Test fun enye() = assertTrue("enye" in earned(base.copy(missionStars = mapOf("c2x" to 1))))
+
+    @Test fun completionist() {
+        val all = listOf("c1m1", "c2m1", "c3f")
+        assertFalse("completionist" in earned(base.copy(allMissionIds = all, missionStars = mapOf("c1m1" to 3, "c2m1" to 3, "c3f" to 2))))
+        assertTrue("completionist" in earned(base.copy(allMissionIds = all, missionStars = all.associateWith { 3 })))
+        assertFalse("completionist" in earned(base.copy(allMissionIds = emptyList())))
     }
 }

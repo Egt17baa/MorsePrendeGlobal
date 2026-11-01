@@ -44,6 +44,12 @@ fun achievementTitle(id: String): Int = when (id) {
     "collector" -> R.string.ach_collector
     "mole_hunter" -> R.string.ach_mole_hunter
     "stargazer" -> R.string.ach_stargazer
+    "daily_first" -> R.string.ach_daily_first
+    "daily_week" -> R.string.ach_daily_week
+    "night_owl" -> R.string.ach_night_owl
+    "dawn" -> R.string.ach_dawn
+    "enye" -> R.string.ach_enye
+    "completionist" -> R.string.ach_completionist
     else -> R.string.ach_reader
 }
 
@@ -60,5 +66,11 @@ fun achievementDescription(id: String): Int = when (id) {
     "collector" -> R.string.ach_collector_desc
     "mole_hunter" -> R.string.ach_mole_hunter_desc
     "stargazer" -> R.string.ach_stargazer_desc
+    "daily_first" -> R.string.ach_daily_first_desc
+    "daily_week" -> R.string.ach_daily_week_desc
+    "night_owl" -> R.string.ach_night_owl_desc
+    "dawn" -> R.string.ach_dawn_desc
+    "enye" -> R.string.ach_enye_desc
+    "completionist" -> R.string.ach_completionist_desc
     else -> R.string.ach_reader_desc
 }

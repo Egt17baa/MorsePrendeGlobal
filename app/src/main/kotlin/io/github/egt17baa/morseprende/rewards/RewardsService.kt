@@ -34,6 +34,7 @@ class RewardsService(
     private val achievements: AchievementsRepository,
     private val today: () -> LocalDate = { LocalDate.now() },
     private val now: () -> Long = System::currentTimeMillis,
+    private val daily: io.github.egt17baa.morseprende.data.daily.DailyRepository? = null,
 ) {
 
     suspend fun onMissionCompleted(mission: Mission, previousBest: Int, stars: Int): RewardSummary =
@@ -88,6 +89,10 @@ class RewardsService(
             boughtItems = (owned - Shop.defaults()).size,
             seenCards = seenCards.seen.first().count { id -> cards.any { it.id == id } },
             totalCards = cards.size,
+            dailyDone = daily?.completed?.first()?.size ?: 0,
+            nightBest = recs[GameId.NIGHT_WATCH]?.bestScore ?: 0,
+            nightHour = recs[GameId.NIGHT_WATCH]?.bestExtra ?: 0,
+            allMissionIds = chapters.flatMap { it.missions }.map { it.id },
         )
         val earned = Achievements.earned(input)
         val new = achievements.unlock(earned, now())

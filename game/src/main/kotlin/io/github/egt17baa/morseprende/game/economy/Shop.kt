@@ -21,16 +21,22 @@ object Shop {
         ShopItem("lamp_harbor", ItemCategory.LAMP, 40),
         ShopItem("lamp_polar", ItemCategory.LAMP, 60),
         ShopItem("lamp_amber", ItemCategory.LAMP, 60),
+        ShopItem("lamp_violet", ItemCategory.LAMP, 70),
         ShopItem("tone_sine", ItemCategory.TONE, 0),
         ShopItem("tone_soft", ItemCategory.TONE, 50),
         ShopItem("tone_classic", ItemCategory.TONE, 80),
         ShopItem("key_coral", ItemCategory.KEYER, 0),
         ShopItem("key_brass", ItemCategory.KEYER, 50),
         ShopItem("key_silver", ItemCategory.KEYER, 70),
+        ShopItem("key_wood", ItemCategory.KEYER, 60),
         ShopItem("decor_gulls", ItemCategory.DECOR, 30),
         ShopItem("decor_boat", ItemCategory.DECOR, 60),
         ShopItem("decor_flags", ItemCategory.DECOR, 50),
         ShopItem("decor_lanterns", ItemCategory.DECOR, 80),
+        ShopItem("decor_stars", ItemCategory.DECOR, 70),
+        ShopItem("decor_house", ItemCategory.DECOR, 90),
+        ShopItem("decor_whale", ItemCategory.DECOR, 120),
+        ShopItem("decor_aurora", ItemCategory.DECOR, 150),
     )
 
     private val byId = items.associateBy { it.id }

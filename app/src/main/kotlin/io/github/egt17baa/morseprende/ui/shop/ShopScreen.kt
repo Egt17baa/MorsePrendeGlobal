@@ -178,5 +178,11 @@ fun itemName(id: String): Int = when (id) {
     "decor_gulls" -> R.string.item_decor_gulls
     "decor_boat" -> R.string.item_decor_boat
     "decor_flags" -> R.string.item_decor_flags
+    "lamp_violet" -> R.string.item_lamp_violet
+    "key_wood" -> R.string.item_key_wood
+    "decor_stars" -> R.string.item_decor_stars
+    "decor_house" -> R.string.item_decor_house
+    "decor_whale" -> R.string.item_decor_whale
+    "decor_aurora" -> R.string.item_decor_aurora
     else -> R.string.item_decor_lanterns
 }
