@@ -6,6 +6,8 @@ import io.github.egt17baa.morseprende.core.MorseCodec
 /** Reglas de coherencia del contenido. Se ejecutan en las pruebas sobre los ficheros reales. */
 object ContentValidator {
 
+    const val MAX_NOISE = 0.5f
+    const val MIN_TIME_LIMIT = 5
     const val MIN_CARD_WORDS = 150
     const val MAX_CARD_WORDS = 300
 
@@ -13,8 +15,9 @@ object ContentValidator {
     fun learnedCharsUpTo(chapters: List<Chapter>, missionId: String): Set<Char> {
         val learned = linkedSetOf<Char>()
         for (mission in chapters.flatMap { it.missions }) {
-            learned += mission.newChars
-            if (mission.id == missionId) return learned
+            if (mission.id == missionId) return learned + mission.newChars
+            // Las letras de una misión opcional no se dan por aprendidas en las demás.
+            if (!mission.optional) learned += mission.newChars
         }
         throw IllegalArgumentException("Misión desconocida: $missionId")
     }
@@ -38,10 +41,16 @@ object ContentValidator {
             }
             mission.newChars.filter { MorseAlphabet.codeFor(it) == null }
                 .forEach { errors += "${mission.id}: el carácter '$it' no existe en Morse" }
-            learned += mission.newChars
+            if (mission.optional && mission.type != MissionType.LESSON) {
+                errors += "${mission.id}: solo una lección puede ser opcional"
+            }
+            if (mission.noise !in 0f..MAX_NOISE) errors += "${mission.id}: el ruido debe estar entre 0 y $MAX_NOISE"
+            mission.timeLimitSeconds?.let { if (it < MIN_TIME_LIMIT) errors += "${mission.id}: el contrarreloj debe ser de al menos $MIN_TIME_LIMIT s" }
+            val available = learned + mission.newChars
+            if (!mission.optional) learned += mission.newChars
 
             val unknown = MorseCodec.normalizeText(mission.finalMessage.text)
-                .filter { it != ' ' && it !in learned }
+                .filter { it != ' ' && it !in available }
                 .toSet()
             if (unknown.isNotEmpty()) {
                 errors += "${mission.id}: el mensaje final usa letras no aprendidas: ${unknown.joinToString(" ")}"

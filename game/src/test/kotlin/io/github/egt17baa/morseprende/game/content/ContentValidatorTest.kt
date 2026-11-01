@@ -56,4 +56,24 @@ class ContentValidatorTest {
         assertEquals(setOf('S', 'O'), ContentValidator.learnedCharsUpTo(listOf(ch), "r1"))
         assertEquals(setOf('S', 'O', 'E', 'T'), ContentValidator.learnedCharsUpTo(listOf(ch), "m2"))
     }
+
+    @Test fun optional_chars_not_learned_by_others() {
+        val ch = ch.copy(
+            missions = listOf(
+                ch.missions[0],
+                Mission("x", MissionType.LESSON, "Ñ", "b", listOf('Ñ'), StoryMessage("x", "Ñ"), "d", optional = true),
+                Mission("m2", MissionType.LESSON, "Dos", "b", listOf('E', 'T'), StoryMessage("Gaviota", "ESTO ES SOS Ñ"), "d"),
+            ),
+        )
+        errors(ch).hasErrorContaining("Ñ")
+        assertEquals(setOf('S', 'O', 'E', 'T'), ContentValidator.learnedCharsUpTo(listOf(ch), "m2"))
+        assertEquals(setOf('S', 'O', 'Ñ'), ContentValidator.learnedCharsUpTo(listOf(ch), "x"))
+    }
+
+    @Test fun noise_and_time_limit_validated() {
+        errors(withMission(0) { it.copy(noise = 0.6f) }).hasErrorContaining("m1")
+        errors(withMission(0) { it.copy(timeLimitSeconds = 4) }).hasErrorContaining("m1")
+        errors(withMission(1) { it.copy(optional = true) }).hasErrorContaining("r1")
+        assertEquals(emptyList<String>(), errors(withMission(0) { it.copy(noise = 0.5f, timeLimitSeconds = 5) }))
+    }
 }

@@ -18,6 +18,12 @@ data class Mission(
     val newChars: List<Char> = emptyList(),
     val finalMessage: StoryMessage,
     val debriefing: String,
+    /** Misión extra: no bloquea la campaña y sus letras no cuentan como aprendidas para las demás. */
+    val optional: Boolean = false,
+    /** Ruido de radio en los ejercicios (0 = limpio, máx. 0,5). */
+    val noise: Float = 0f,
+    /** Segundos para responder cada ejercicio de recibir (contrarreloj); null = sin límite. */
+    val timeLimitSeconds: Int? = null,
 )
 
 @Serializable

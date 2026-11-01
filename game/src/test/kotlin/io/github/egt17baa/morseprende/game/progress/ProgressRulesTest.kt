@@ -60,4 +60,31 @@ class ProgressRulesTest {
         assertTrue(ProgressRules.isGameUnlocked("STORM", setOf("c1m1", "c1m2")))
         assertFalse(ProgressRules.isGameUnlocked("DESCONOCIDO", all))
     }
+
+    private val withOptional = listOf(
+        io.github.egt17baa.morseprende.game.content.Chapter(
+            1, "T", "i", listOf("SOS"),
+            listOf(
+                io.github.egt17baa.morseprende.game.content.Mission("a", io.github.egt17baa.morseprende.game.content.MissionType.LESSON, "A", "b", listOf('S', 'O'), io.github.egt17baa.morseprende.game.content.StoryMessage("x", "SOS"), "d"),
+                io.github.egt17baa.morseprende.game.content.Mission("x", io.github.egt17baa.morseprende.game.content.MissionType.LESSON, "X", "b", listOf('Ñ'), io.github.egt17baa.morseprende.game.content.StoryMessage("x", "Ñ"), "d", optional = true),
+                io.github.egt17baa.morseprende.game.content.Mission("b", io.github.egt17baa.morseprende.game.content.MissionType.LESSON, "B", "b", listOf('E', 'T'), io.github.egt17baa.morseprende.game.content.StoryMessage("x", "SET"), "d"),
+            ),
+        ),
+    )
+
+    @Test fun optional_does_not_block_next() {
+        assertTrue(ProgressRules.isUnlocked("b", withOptional, setOf("a")))
+        assertTrue(ProgressRules.isUnlocked("x", withOptional, setOf("a")))
+        assertEquals("b", ProgressRules.nextMission(withOptional, setOf("a"))?.id)
+    }
+
+    @Test fun progress_ignores_optional() {
+        assertEquals(1f, ProgressRules.chapterProgress(withOptional.single(), setOf("a", "b")), 1e-6f)
+        assertEquals(0.5f, ProgressRules.chapterProgress(withOptional.single(), setOf("a", "x")), 1e-6f)
+    }
+
+    @Test fun optional_counts_for_minigames_when_completed() {
+        assertEquals(setOf('S', 'O'), ProgressRules.learnedChars(withOptional, setOf("a")))
+        assertEquals(setOf('S', 'O', 'Ñ'), ProgressRules.learnedChars(withOptional, setOf("a", "x")))
+    }
 }

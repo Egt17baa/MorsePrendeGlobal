@@ -15,18 +15,19 @@ object ProgressRules {
         val missions = chapters.flatMap { it.missions }
         val index = missions.indexOfFirst { it.id == missionId }
         if (index < 0) return false
-        return missionId in completed || missions.take(index).all { it.id in completed }
+        return missionId in completed || missions.take(index).filter { !it.optional }.all { it.id in completed }
     }
 
     fun nextMission(chapters: List<Chapter>, completed: Set<String>): Mission? =
-        chapters.flatMap { it.missions }.firstOrNull { it.id !in completed }
+        chapters.flatMap { it.missions }.firstOrNull { !it.optional && it.id !in completed }
 
     fun unlockedCards(cards: List<LibraryCard>, completed: Set<String>): List<LibraryCard> =
         cards.filter { it.unlockedBy == null || it.unlockedBy in completed }
 
     fun chapterProgress(chapter: Chapter, completed: Set<String>): Float {
-        if (chapter.missions.isEmpty()) return 0f
-        return chapter.missions.count { it.id in completed }.toFloat() / chapter.missions.size
+        val required = chapter.missions.filter { !it.optional }
+        if (required.isEmpty()) return 0f
+        return required.count { it.id in completed }.toFloat() / required.size
     }
 
     /** Letras nuevas de las misiones completadas: las únicas que usan los minijuegos. */
