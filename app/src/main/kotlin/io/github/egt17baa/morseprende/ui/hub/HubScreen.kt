@@ -64,6 +64,7 @@ data class HubCallbacks(
     val onSettings: () -> Unit = {},
     val onShop: () -> Unit = {},
     val onAchievements: () -> Unit = {},
+    val onStats: () -> Unit = {},
     val onDaily: () -> Unit = {},
 )
 
@@ -96,6 +97,7 @@ fun HubContent(state: HubUiState, callbacks: HubCallbacks) {
                     label = { Text(pluralStringResource(R.plurals.hub_balance, state.balance, state.balance)) },
                 )
                 AssistChip(onClick = callbacks.onAchievements, label = { Text(stringResource(R.string.hub_achievements)) })
+                AssistChip(onClick = callbacks.onStats, label = { Text(stringResource(R.string.hub_stats)) })
                 Surface(shape = RoundedCornerShape(8.dp), border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)) {
                     Text(
                         stringResource(R.string.hub_streak, state.streak),

@@ -5,7 +5,9 @@ import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
+import androidx.navigation.navArgument
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import io.github.egt17baa.morseprende.AppContainer
@@ -48,6 +50,11 @@ object Routes {
     const val DAILY = "daily"
     const val WORKSHOP_SEND = "workshop_send"
     const val WORKSHOP_LETTERS = "workshop_letters"
+    const val WORKSHOP_LETTERS_ROUTE = "workshop_letters?letras={letras}"
+    const val STATS = "stats"
+
+    /** Letras a la carta con [letters] ya elegidas. */
+    fun workshopLetters(letters: List<Char>) = "workshop_letters?letras=${letters.joinToString("")}"
     const val MISSION = "mission/{id}"
 
     fun mission(id: String) = "mission/$id"
@@ -72,6 +79,7 @@ fun AppNavHost(container: AppContainer) {
                     onPractice = dropUnlessResumed { nav.navigate(Routes.PRACTICE) },
                     onShop = dropUnlessResumed { nav.navigate(Routes.SHOP) },
                     onAchievements = dropUnlessResumed { nav.navigate(Routes.ACHIEVEMENTS) },
+                    onStats = dropUnlessResumed { nav.navigate(Routes.STATS) },
                     onTranslator = dropUnlessResumed { nav.navigate(Routes.TRANSLATOR) },
                     onSettings = dropUnlessResumed { nav.navigate(Routes.SETTINGS) },
                     onDaily = dropUnlessResumed { nav.navigate(Routes.DAILY) },
@@ -124,18 +132,39 @@ fun AppNavHost(container: AppContainer) {
                 },
             )
         }
+        composable(Routes.STATS) {
+            val vm: io.github.egt17baa.morseprende.ui.stats.StatsViewModel = viewModel(
+                factory = viewModelFactory {
+                    initializer {
+                        io.github.egt17baa.morseprende.ui.stats.StatsViewModel(
+                            container.content, container.progress, container.charStats, container.gameRecords, container.daily, container.activity,
+                        )
+                    }
+                },
+            )
+            io.github.egt17baa.morseprende.ui.stats.StatsScreen(
+                vm,
+                onPractice = { letters -> nav.navigate(Routes.workshopLetters(letters)) { launchSingleTop = true } },
+                onBack = dropUnlessResumed { nav.popBackStack() },
+            )
+        }
         composable(Routes.WORKSHOP_SEND) {
             val vm: io.github.egt17baa.morseprende.ui.workshop.FreeSendViewModel = viewModel(
                 factory = viewModelFactory { initializer { io.github.egt17baa.morseprende.ui.workshop.FreeSendViewModel(container.settings, container.sidetone) } },
             )
             io.github.egt17baa.morseprende.ui.workshop.FreeSendScreen(vm, onBack = dropUnlessResumed { nav.popBackStack() })
         }
-        composable(Routes.WORKSHOP_LETTERS) {
+        composable(
+            Routes.WORKSHOP_LETTERS_ROUTE,
+            arguments = listOf(navArgument("letras") { type = NavType.StringType; nullable = true; defaultValue = null }),
+        ) { entry ->
+            val initial = entry.arguments?.getString("letras")?.toSet()
             val vm: io.github.egt17baa.morseprende.ui.workshop.LetterDrillViewModel = viewModel(
                 factory = viewModelFactory {
                     initializer {
                         io.github.egt17baa.morseprende.ui.workshop.LetterDrillViewModel(
                             container.content, container.progress, container.charStats, container.settings, container.outputs,
+                            initialSelection = initial,
                         )
                     }
                 },

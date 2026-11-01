@@ -34,10 +34,11 @@ class LetterDrillViewModelTest {
     private fun TestScope.vm(
         progress: FakeProgressRepository = FakeProgressRepository.completed("c1m1" to 2, "c1m2" to 2, "c1m3" to 2, "c1r1" to 2),
         outputs: FakeOutputFactory = FakeOutputFactory(this),
+        initial: Set<Char>? = null,
     ): LetterDrillViewModel {
         Dispatchers.setMain(UnconfinedTestDispatcher(testScheduler))
         return LetterDrillViewModel(
-            FakeContentSource(listOf(FakeContentSource.realChapter1)), progress, stats, FakeSettingsRepository(), outputs, Random(4), backgroundScope,
+            FakeContentSource(listOf(FakeContentSource.realChapter1)), progress, stats, FakeSettingsRepository(), outputs, Random(4), backgroundScope, initial,
         )
     }
 
@@ -119,5 +120,18 @@ class LetterDrillViewModelTest {
         assertNull(v.state.value.feedback)
         assertNotEquals(first, v.state.value.current)
         assertEquals(1, v.state.value.stats[first]!!.total)
+    }
+
+    @Test fun drill_initial_selection() = runTest {
+        // Desde «Mi progreso»: vienen elegidas las letras flojas.
+        val v = vm(initial = setOf('S', 'O'))
+        runCurrent()
+        assertEquals(setOf('S', 'O'), v.state.value.selected)
+    }
+
+    @Test fun drill_initial_selection_filtered() = runTest {
+        // Letras no aprendidas (p. ej. tras borrar el progreso) se ignoran; con menos de 2, la elección por defecto.
+        assertEquals(setOf('S', 'O'), vm(initial = setOf('S', 'O', 'Q')).also { runCurrent() }.state.value.selected)
+        assertEquals(setOf('E', 'T', 'A', 'N'), vm(initial = setOf('S', 'Q')).also { runCurrent() }.state.value.selected)
     }
 }

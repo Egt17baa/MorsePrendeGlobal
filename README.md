@@ -4,11 +4,11 @@ Juego educativo para Android que enseña **código Morse jugando**. Eres el fare
 barcos, espías y señales del espacio te hablan en Morse, y para avanzar tienes que aprender a
 recibir y a enviar. Totalmente gratis, sin anuncios y sin conexión a internet.
 
-> Estado: **Etapa 8 (0.10.0)**, lista para publicar en Google Play cuando se quiera (ver
+> Estado: **Etapa 9 (0.11.0)**, lista para publicar en Google Play cuando se quiera (ver
 > [`docs/publicacion/`](docs/publicacion/como-publicar.md)): campaña completa en tres capítulos, «El Faro», «Operación Sombra»
 > (todas las letras, números, la Ñ como extra, ruido de radio y contrarreloj) y «Señal Estelar»
 > (signos de puntuación, prosignos AR y BT, misiones de velocidad y señales solo de luz o solo de
-> vibración). También: repaso inteligente, «Mensaje del día» cada día, el Taller del farero (envío libre y letras a la carta), tres minijuegos con récords y la «Guardia nocturna» infinita tras la campaña, Destellos con tienda
+> vibración). También: repaso inteligente, «Mensaje del día» cada día, el Taller del farero (envío libre y letras a la carta), «Mi progreso» con el dominio de cada letra, tres minijuegos con récords y la «Guardia nocturna» infinita tras la campaña, Destellos con tienda
 > estética, logros, racha suave, biblioteca con 22 fichas, traductor y ajustes con accesibilidad
 > (tamaño de texto, alto contraste, limitar destellos, vibración) y borrar progreso. Paleta propia por
 > capítulo y tipografía Atkinson Hyperlegible (OFL) incluida.
@@ -24,8 +24,9 @@ recibir y a enviar. Totalmente gratis, sin anuncios y sin conexión a internet.
 - Plan de la etapa 6: [`docs/superpowers/plans/2026-11-01-etapa-6-preparar-publicacion.md`](docs/superpowers/plans/2026-11-01-etapa-6-preparar-publicacion.md)
 - Plan de la etapa 7: [`docs/superpowers/plans/2026-11-01-etapa-7-mas-enganche.md`](docs/superpowers/plans/2026-11-01-etapa-7-mas-enganche.md)
 - Plan de la etapa 8: [`docs/superpowers/plans/2026-11-01-etapa-8-taller-y-biblioteca.md`](docs/superpowers/plans/2026-11-01-etapa-8-taller-y-biblioteca.md)
+- Plan de la etapa 9: [`docs/superpowers/plans/2026-11-01-etapa-9-mi-progreso.md`](docs/superpowers/plans/2026-11-01-etapa-9-mi-progreso.md)
 - Publicación: [`docs/publicacion/como-publicar.md`](docs/publicacion/como-publicar.md), ficha, política de privacidad y gráficos
-- Pruebas en el móvil: [`etapa-4`](docs/pruebas/etapa-4.md), [`etapa-5`](docs/pruebas/etapa-5.md) , [`etapa-6`](docs/pruebas/etapa-6.md) , [`etapa-7`](docs/pruebas/etapa-7.md) y [`etapa-8`](docs/pruebas/etapa-8.md)
+- Pruebas en el móvil: [`etapa-4`](docs/pruebas/etapa-4.md), [`etapa-5`](docs/pruebas/etapa-5.md) , [`etapa-6`](docs/pruebas/etapa-6.md) , [`etapa-7`](docs/pruebas/etapa-7.md), [`etapa-8`](docs/pruebas/etapa-8.md) y [`etapa-9`](docs/pruebas/etapa-9.md)
 - Fuentes de la biblioteca: [`docs/biblioteca/fuentes.md`](docs/biblioteca/fuentes.md)
 
 ## Compilar

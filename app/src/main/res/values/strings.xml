@@ -304,4 +304,24 @@
     <string name="workshop_letters_which">¿Qué letra ha sonado?</string>
     <string name="workshop_letters_change">Cambiar letras</string>
     <string name="workshop_letters_score">%1$s: %2$d de %3$d</string>
+
+    <!-- Mi progreso -->
+    <string name="hub_stats">Mi progreso</string>
+    <string name="stats_summary">Resumen</string>
+    <string name="stats_missions">Misiones: %1$d de %2$d</string>
+    <string name="stats_stars">Estrellas: %1$d de %2$d</string>
+    <string name="stats_daily">Mensajes del día descifrados: %1$d</string>
+    <string name="stats_days">Días jugados: %1$d</string>
+    <string name="stats_streak">Racha actual: %1$d</string>
+    <string name="stats_letters">Tus letras</string>
+    <string name="stats_letters_empty">Completa la primera misión para ver aquí tus letras.</string>
+    <string name="stats_level_no_data">sin practicar</string>
+    <string name="stats_level_learning">aprendiendo</string>
+    <string name="stats_level_good">bien</string>
+    <string name="stats_level_mastered">dominada</string>
+    <string name="stats_letter_desc">%1$s: %2$s</string>
+    <string name="stats_weakest">Te cuestan un poco: %1$s</string>
+    <string name="stats_practice">Practicar estas letras</string>
+    <string name="stats_records">Récords</string>
+    <string name="stats_no_records">Aún no has jugado a los minijuegos.</string>
 </resources>

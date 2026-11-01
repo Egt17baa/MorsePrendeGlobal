@@ -54,6 +54,8 @@ class LetterDrillViewModel(
     private val outputs: OutputFactory,
     private val random: Random = Random.Default,
     playerScope: CoroutineScope? = null,
+    /** Letras ya elegidas al abrir (desde «Mi progreso»); se ignoran las no aprendidas. */
+    private val initialSelection: Set<Char>? = null,
 ) : ViewModel() {
 
     private val settings: StateFlow<AppSettings> = settings.settings.stateIn(viewModelScope, SharingStarted.Eagerly, AppSettings())
@@ -73,7 +75,8 @@ class LetterDrillViewModel(
             ui.update {
                 it.copy(
                     available = learned,
-                    selected = LetterDrill.defaultSelection(learned),
+                    selected = initialSelection?.filter { it in learned }?.toSet()?.takeIf { LetterDrill.canStart(it) }
+                        ?: LetterDrill.defaultSelection(learned),
                     phase = if (LetterDrill.canStart(learned)) DrillPhase.SETUP else DrillPhase.LOCKED,
                 )
             }

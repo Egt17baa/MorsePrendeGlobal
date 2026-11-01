@@ -95,4 +95,11 @@ class HubScreenTest {
         current = state.copy(daily = DailyCard(doneToday = true))
         compose.onNodeWithText(context.getString(R.string.hub_daily_done)).performScrollTo()
     }
+
+    @Test fun hub_opens_stats() {
+        var opened = 0
+        compose.setContent { HubContent(state, HubCallbacks(onStats = { opened++ })) }
+        compose.onNodeWithText(context.getString(R.string.hub_stats)).performScrollTo().performClick()
+        assertEquals(1, opened)
+    }
 }
