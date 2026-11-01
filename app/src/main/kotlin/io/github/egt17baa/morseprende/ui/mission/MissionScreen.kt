@@ -93,6 +93,13 @@ fun MissionScreen(viewModel: MissionViewModel, onExit: () -> Unit) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MissionContent(state: MissionUiState, actions: MissionActions) {
+    // Cada capítulo tiene su paleta (Sombra: oliva y ámbar; Estelar: violeta y magenta).
+    io.github.egt17baa.morseprende.ui.theme.ChapterTheme(state.chapterId) { MissionScaffold(state, actions) }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun MissionScaffold(state: MissionUiState, actions: MissionActions) {
     Scaffold(
         topBar = {
             TopAppBar(

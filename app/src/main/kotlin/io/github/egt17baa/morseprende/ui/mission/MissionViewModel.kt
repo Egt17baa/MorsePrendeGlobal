@@ -131,6 +131,7 @@ class MissionViewModel(
         exerciseCount = pendingResume?.exercises?.size ?: s.exercises.size,
         newChars = m.newChars.toSet(),
         resumeAt = pendingResume?.index,
+        chapterId = chapter?.id ?: 1,
     )
 
     /** Empieza de cero (y descarta la partida a medias, si la había). */

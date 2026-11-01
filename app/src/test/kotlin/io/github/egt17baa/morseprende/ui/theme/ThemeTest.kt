@@ -54,4 +54,20 @@ class ThemeTest {
         assertEquals(Atkinson, AppTypography.bodyLarge.fontFamily)
         assertEquals(Atkinson, AppTypography.titleLarge.fontFamily)
     }
+
+    @Test fun chapter_palettes() {
+        val dark = colorSchemeFor(true, false)
+        val light = colorSchemeFor(false, false)
+        assertEquals(Amber, chapterColors(dark, 2, dark = true, highContrast = false).primary)
+        assertEquals(Olive, chapterColors(light, 2, dark = false, highContrast = false).primary)
+        assertEquals(StarWhite, chapterColors(dark, 3, dark = true, highContrast = false).primary)
+        assertEquals(Magenta, chapterColors(dark, 3, dark = true, highContrast = false).secondary)
+        assertEquals(DeepViolet, chapterColors(light, 3, dark = false, highContrast = false).primary)
+        assertEquals(dark, chapterColors(dark, 1, dark = true, highContrast = false))
+    }
+
+    @Test fun high_contrast_overrides_chapter_palette() {
+        val hc = colorSchemeFor(true, true)
+        assertEquals(hc, chapterColors(hc, 3, dark = true, highContrast = true))
+    }
 }

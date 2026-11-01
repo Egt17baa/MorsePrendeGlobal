@@ -115,12 +115,15 @@ fun HubContent(state: HubUiState, callbacks: HubCallbacks) {
             val sections = state.chapters.ifEmpty { listOf(ChapterSection(1, state.chapterTitle, state.nodes, true, state.glow)) }
             sections.forEach { section ->
                 if (section.unlocked) {
-                    Text(
-                        stringResource(R.string.hub_chapter, section.id, section.title),
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.secondary,
-                    )
-                    MissionPath(section.nodes, callbacks.onMission)
+                    // Cada capítulo con su paleta: título y camino de misiones.
+                    io.github.egt17baa.morseprende.ui.theme.ChapterTheme(section.id) {
+                        Text(
+                            stringResource(R.string.hub_chapter, section.id, section.title),
+                            style = MaterialTheme.typography.titleLarge,
+                            color = if (section.id == 1) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary,
+                        )
+                        MissionPath(section.nodes, callbacks.onMission)
+                    }
                 } else {
                     // El título va dentro de la tarjeta del candado (una sola vez).
                     LockedChapter(stringResource(R.string.hub_chapter, section.id, section.title), stringResource(R.string.hub_unlock_after, section.id - 1))

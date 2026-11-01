@@ -762,4 +762,10 @@ class MissionViewModelTest {
         e.vm.abandon()
         assertEquals(null, e.s.resumeAt)
     }
+
+    @Test fun mission_knows_its_chapter() = runTest {
+        val ch2 = MissionTestContent.chapter.copy(id = 2)
+        val e = env(content = FakeContentSource(listOf(ch2)))
+        assertEquals(2, e.s.chapterId)
+    }
 }
