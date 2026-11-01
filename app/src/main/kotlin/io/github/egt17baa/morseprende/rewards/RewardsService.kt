@@ -42,6 +42,22 @@ class RewardsService(
     suspend fun onGameFinished(score: Int, isRecord: Boolean): RewardSummary =
         reward(Rewards.forGame(score, isRecord))
 
+    /**
+     * Puesta al día única para quien ya jugaba antes de los Destellos: si aún no hay monedero, da
+     * los Destellos de las estrellas ya conseguidas (como si cada misión se completara ahora sin el
+     * bono diario) y desbloquea los logros que ya merecía. Se llama al abrir el faro.
+     */
+    suspend fun catchUp(): List<String> {
+        if (!economy.hasWallet()) {
+            val missions = runCatching { content.chapters() }.getOrDefault(emptyList()).flatMap { it.missions }.associateBy { it.id }
+            val past = progress.progress.first().values.sumOf { p ->
+                missions[p.missionId]?.let { Rewards.forMission(it.type, previousBest = 0, stars = p.bestStars) } ?: 0
+            }
+            economy.earn(past)
+        }
+        return unlockEarned()
+    }
+
     /** Reevalúa logros que no dependen de jugar (comprar, leer fichas). */
     suspend fun refreshAchievements(): List<String> = unlockEarned()
 

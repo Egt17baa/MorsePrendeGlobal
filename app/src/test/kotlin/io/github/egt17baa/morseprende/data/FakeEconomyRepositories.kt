@@ -13,9 +13,16 @@ class FakeEconomyRepository(balance: Int = 0, bought: Set<String> = emptySet()) 
     private val balanceState = MutableStateFlow(balance)
     private val ownedState = MutableStateFlow(bought + Shop.defaults())
     var buyCalls = 0
+    private var walletExists = balance > 0 || bought.isNotEmpty()
+    override suspend fun hasWallet(): Boolean = walletExists
     override val balance: StateFlow<Int> = balanceState
     override val owned: StateFlow<Set<String>> = ownedState
-    override suspend fun earn(amount: Int) { if (amount > 0) balanceState.value += amount }
+    override suspend fun earn(amount: Int) {
+        if (amount > 0) {
+            balanceState.value += amount
+            walletExists = true
+        }
+    }
     override suspend fun buy(itemId: String): BuyResult {
         buyCalls++
         val r = Shop.check(itemId, balanceState.value, ownedState.value)

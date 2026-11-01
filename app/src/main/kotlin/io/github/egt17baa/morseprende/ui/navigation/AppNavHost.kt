@@ -54,7 +54,10 @@ fun AppNavHost(container: AppContainer) {
     NavHost(navController = nav, startDestination = Routes.HUB) {
         composable(Routes.HUB) {
             val vm: HubViewModel = viewModel(
-                factory = viewModelFactory { initializer { HubViewModel(container.content, container.progress, container.seenCards, container.economy, container.activity, container.settings) } },
+                factory = viewModelFactory { initializer { HubViewModel(
+                            container.content, container.progress, container.seenCards, container.economy, container.activity,
+                            container.settings, rewards = container.rewards,
+                        ) } },
             )
             HubScreen(
                 vm,

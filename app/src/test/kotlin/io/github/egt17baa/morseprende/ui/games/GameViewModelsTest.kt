@@ -278,4 +278,13 @@ class GameViewModelsTest {
         assertTrue(vm.state.value.reward?.dailyBonus == true)
         assertEquals(vm.state.value.reward?.destellos, economy.balance.value)
     }
+
+    @Test fun intercept_without_correct_words_saves_no_speed() = runTest {
+        val d = deps()
+        val vm = intercept(d)
+        vm.start()
+        repeat(3) { vm.answer("zzz"); vm.next() }
+        runCurrent()
+        assertEquals(listOf(Triple(GameId.INTERCEPT, 0, 0)), d.records.games)
+    }
 }

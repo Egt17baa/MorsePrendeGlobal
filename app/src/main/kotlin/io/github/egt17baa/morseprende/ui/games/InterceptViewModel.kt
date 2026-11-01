@@ -68,7 +68,8 @@ class InterceptViewModel(deps: GameDeps) : GameViewModelBase(deps, GameId.INTERC
         }
         if (g.isOver) {
             ui.update { it.copy(phase = GamePhase.OVER) }
-            saveOnce(g.score, g.maxWpm, g.outcomes) { isRecord, reward -> ui.update { it.copy(isNewRecord = isRecord, reward = reward) } }
+            // La velocidad máxima solo cuenta si se copió alguna palabra (si no, «20 PPM» saldría gratis).
+            saveOnce(g.score, if (g.score > 0) g.maxWpm else 0, g.outcomes) { isRecord, reward -> ui.update { it.copy(isNewRecord = isRecord, reward = reward) } }
         }
     }
 

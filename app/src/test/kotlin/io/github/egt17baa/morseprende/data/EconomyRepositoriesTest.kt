@@ -69,4 +69,11 @@ class EconomyRepositoriesTest {
         assertEquals(setOf("keeper"), repo.unlock(setOf("first_sos", "keeper"), 200))
         assertEquals(mapOf("first_sos" to 100L, "keeper" to 200L), repo.unlocked.first())
     }
+
+    @Test fun wallet_exists_after_first_earn() = runTest {
+        val repo = RoomEconomyRepository(db)
+        assertFalse(repo.hasWallet())
+        repo.earn(5)
+        assertTrue(repo.hasWallet())
+    }
 }

@@ -55,4 +55,11 @@ class HubScreenTest {
         compose.setContent { HubContent(HubUiState(error = true), HubCallbacks()) }
         compose.onNodeWithText(context.getString(R.string.hub_error)).performScrollTo()
     }
+
+    @Test fun balance_chip_names_destellos_and_opens_shop() {
+        var shop = 0
+        compose.setContent { HubContent(state.copy(balance = 120), HubCallbacks(onShop = { shop++ })) }
+        compose.onNodeWithText(context.resources.getQuantityString(R.plurals.hub_balance, 120, 120)).performClick()
+        assertEquals(1, shop)
+    }
 }

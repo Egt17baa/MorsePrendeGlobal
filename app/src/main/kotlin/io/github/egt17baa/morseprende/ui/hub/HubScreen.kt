@@ -23,7 +23,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.material3.AssistChip
+import androidx.compose.material3.Surface
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
@@ -68,6 +73,7 @@ fun HubScreen(viewModel: HubViewModel, callbacks: HubCallbacks) {
     HubContent(state, callbacks)
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun HubContent(state: HubUiState, callbacks: HubCallbacks) {
     Scaffold(bottomBar = { HubBottomBar(state.newCards, callbacks) }) { padding ->
@@ -81,10 +87,20 @@ fun HubContent(state: HubUiState, callbacks: HubCallbacks) {
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Text(stringResource(R.string.app_name), style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.primary)
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                AssistChip(onClick = callbacks.onShop, label = { Text(stringResource(R.string.hub_balance, state.balance)) })
-                AssistChip(onClick = {}, label = { Text(stringResource(R.string.hub_streak, state.streak)) })
+            // Los chips se reparten en varias líneas con letra grande. La racha es solo informativa.
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                AssistChip(
+                    onClick = callbacks.onShop,
+                    label = { Text(pluralStringResource(R.plurals.hub_balance, state.balance, state.balance)) },
+                )
                 AssistChip(onClick = callbacks.onAchievements, label = { Text(stringResource(R.string.hub_achievements)) })
+                Surface(shape = RoundedCornerShape(8.dp), border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)) {
+                    Text(
+                        stringResource(R.string.hub_streak, state.streak),
+                        style = MaterialTheme.typography.labelLarge,
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                    )
+                }
             }
             LighthouseScene(
                 state.glow,

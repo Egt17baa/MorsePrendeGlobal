@@ -78,4 +78,24 @@ class RewardsServiceTest {
         assertEquals(listOf("collector"), e.service.refreshAchievements())
         assertEquals(emptySet<LocalDate>(), e.activity.playedDays.value)
     }
+
+    @Test fun catch_up_grants_past_stars_and_achievements_once() = runTest {
+        val e = env()
+        e.progress.recordResult("c1m1", 3, 0)   // progreso de antes de la 3b, sin monedero
+        e.progress.recordResult("c1m2", 2, 0)
+        val first = e.service.catchUp()
+        assertEquals(35 + 25, e.economy.balance.value)
+        assertTrue("first_sos" in first)
+        assertTrue("three_flashes" in first)
+        assertEquals(emptyList<String>(), e.service.catchUp())
+        assertEquals(60, e.economy.balance.value)
+    }
+
+    @Test fun catch_up_does_nothing_for_existing_wallet() = runTest {
+        val e = env()
+        e.economy.earn(10)
+        e.progress.recordResult("c1m1", 3, 0)
+        e.service.catchUp()
+        assertEquals(10, e.economy.balance.value)
+    }
 }

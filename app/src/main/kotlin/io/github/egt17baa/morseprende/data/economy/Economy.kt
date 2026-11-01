@@ -70,6 +70,9 @@ interface EconomyRepository {
     val owned: Flow<Set<String>>
     suspend fun earn(amount: Int)
     suspend fun buy(itemId: String): BuyResult
+
+    /** true si ya existe el monedero (se crea con el primer Destello ganado). */
+    suspend fun hasWallet(): Boolean
 }
 
 class RoomEconomyRepository(db: AppDatabase, private val now: () -> Long = System::currentTimeMillis) : EconomyRepository {
@@ -78,4 +81,5 @@ class RoomEconomyRepository(db: AppDatabase, private val now: () -> Long = Syste
     override val owned: Flow<Set<String>> = dao.observeOwned().map { it.toSet() + Shop.defaults() }
     override suspend fun earn(amount: Int) = dao.earn(amount)
     override suspend fun buy(itemId: String): BuyResult = dao.buy(itemId, now())
+    override suspend fun hasWallet(): Boolean = dao.wallet() != null
 }

@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.stateIn
 import io.github.egt17baa.morseprende.data.activity.ActivityRepository
 import io.github.egt17baa.morseprende.data.economy.EconomyRepository
@@ -51,7 +52,14 @@ class HubViewModel(
     activity: ActivityRepository? = null,
     settings: SettingsRepository? = null,
     private val today: () -> LocalDate = { LocalDate.now() },
+    rewards: io.github.egt17baa.morseprende.rewards.RewardsService? = null,
 ) : ViewModel() {
+
+    init {
+        // Logros y Destellos de lo ya jugado antes de esta versión (solo la primera vez).
+        rewards?.let { r -> viewModelScope.launch { r.catchUp() } }
+    }
+
 
     private val chapters: List<Chapter>? = runCatching { content.chapters() }.getOrNull()
     private val cards: List<LibraryCard> = runCatching { content.libraryCards() }.getOrDefault(emptyList())
