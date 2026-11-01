@@ -79,7 +79,7 @@ fun AppNavHost(container: AppContainer) {
                 key = "mission-$id",
                 factory = viewModelFactory {
                     initializer {
-                        MissionViewModel(id, container.content, container.progress, container.settings, container.outputs, container.sidetone, container.charStats)
+                        MissionViewModel(id, container.content, container.progress, container.settings, container.outputs, container.sidetone, container.charStats, container.rewards)
                     }
                 },
             )
@@ -99,7 +99,7 @@ fun AppNavHost(container: AppContainer) {
         }
         composable(Routes.GAME) { entry ->
             val id = GameId.entries.firstOrNull { it.name == entry.arguments?.getString("id") } ?: GameId.STORM
-            val deps = GameDeps(container.content, container.progress, container.charStats, container.gameRecords, container.settings, container.outputs)
+            val deps = GameDeps(container.content, container.progress, container.charStats, container.gameRecords, container.settings, container.outputs, rewards = container.rewards)
             val onBack = dropUnlessResumed { nav.popBackStack() }
             when (id) {
                 GameId.STORM -> StormScreen(viewModel(key = "storm", factory = viewModelFactory { initializer { StormViewModel(deps) } }), onBack)

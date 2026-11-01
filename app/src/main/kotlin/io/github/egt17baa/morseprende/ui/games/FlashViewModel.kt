@@ -32,6 +32,7 @@ data class FlashUiState(
     val lastCorrect: Boolean? = null,
     val averageReactionMs: Int = 0,
     val isNewRecord: Boolean = false,
+    val reward: io.github.egt17baa.morseprende.rewards.RewardSummary? = null,
 )
 
 class FlashViewModel(deps: GameDeps) : GameViewModelBase(deps, GameId.FLASH) {
@@ -72,7 +73,7 @@ class FlashViewModel(deps: GameDeps) : GameViewModelBase(deps, GameId.FLASH) {
         ui.update { it.copy(score = g.score, lastCorrect = correct, lastReactionMs = reaction, averageReactionMs = g.averageReactionMs, options = emptyList()) }
         if (g.isOver) {
             ui.update { it.copy(phase = GamePhase.OVER, answer = null) }
-            saveOnce(g.score, g.averageReactionMs, g.outcomes) { isRecord -> ui.update { it.copy(isNewRecord = isRecord) } }
+            saveOnce(g.score, g.averageReactionMs, g.outcomes) { isRecord, reward -> ui.update { it.copy(isNewRecord = isRecord, reward = reward) } }
         } else {
             showRound()
         }

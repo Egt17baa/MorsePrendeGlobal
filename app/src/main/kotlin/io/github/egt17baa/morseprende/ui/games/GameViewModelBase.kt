@@ -14,6 +14,8 @@ import io.github.egt17baa.morseprende.game.content.Chapter
 import io.github.egt17baa.morseprende.game.progress.ProgressRules
 import io.github.egt17baa.morseprende.game.review.CharOutcome
 import io.github.egt17baa.morseprende.playback.OutputFactory
+import io.github.egt17baa.morseprende.rewards.RewardSummary
+import io.github.egt17baa.morseprende.rewards.RewardsService
 import io.github.egt17baa.morseprende.playback.OutputKind
 import io.github.egt17baa.morseprende.playback.SignalPlayer
 import io.github.egt17baa.morseprende.settings.AppSettings
@@ -38,6 +40,7 @@ class GameDeps(
     val random: Random = Random.Default,
     val playerScope: CoroutineScope? = null,
     val clock: () -> Long = { SystemClock.uptimeMillis() },
+    val rewards: RewardsService? = null,
 )
 
 enum class GamePhase { LOADING, LOCKED, READY, PLAYING, OVER }
@@ -96,13 +99,19 @@ abstract class GameViewModelBase(protected val deps: GameDeps, private val gameI
     }
 
     /** Guarda récord y resultados por carácter una sola vez por partida. */
-    protected fun saveOnce(score: Int, extra: Int, outcomes: List<CharOutcome>, onSaved: (isRecord: Boolean) -> Unit) {
+    protected fun saveOnce(
+        score: Int,
+        extra: Int,
+        outcomes: List<CharOutcome>,
+        onSaved: (isRecord: Boolean, reward: RewardSummary?) -> Unit,
+    ) {
         if (saved) return
         saved = true
         viewModelScope.launch {
             val isRecord = deps.records.recordGame(gameId, score, extra)
             deps.charStats.record(outcomes, gentle = true)
-            onSaved(isRecord)
+            val reward = deps.rewards?.onGameFinished(score, isRecord)
+            onSaved(isRecord, reward)
         }
     }
 

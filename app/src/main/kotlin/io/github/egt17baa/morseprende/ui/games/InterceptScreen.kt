@@ -46,6 +46,7 @@ fun InterceptContent(
             GamePhase.OVER -> GameOverPanel(
                 state.score, state.isNewRecord, onStart, onBack,
                 detail = stringResource(R.string.game_intercept_max, state.maxWpm),
+                reward = state.reward,
             )
             GamePhase.PLAYING -> {
                 var text by rememberSaveable(state.score, state.strikes) { mutableStateOf("") }

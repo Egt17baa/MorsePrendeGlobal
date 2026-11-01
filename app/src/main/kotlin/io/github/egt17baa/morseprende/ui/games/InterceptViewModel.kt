@@ -19,6 +19,7 @@ data class InterceptUiState(
     val feedback: Feedback? = null,
     val canRepeat: Boolean = false,
     val isNewRecord: Boolean = false,
+    val reward: io.github.egt17baa.morseprende.rewards.RewardSummary? = null,
 )
 
 class InterceptViewModel(deps: GameDeps) : GameViewModelBase(deps, GameId.INTERCEPT) {
@@ -67,7 +68,7 @@ class InterceptViewModel(deps: GameDeps) : GameViewModelBase(deps, GameId.INTERC
         }
         if (g.isOver) {
             ui.update { it.copy(phase = GamePhase.OVER) }
-            saveOnce(g.score, g.maxWpm, g.outcomes) { isRecord -> ui.update { it.copy(isNewRecord = isRecord) } }
+            saveOnce(g.score, g.maxWpm, g.outcomes) { isRecord, reward -> ui.update { it.copy(isNewRecord = isRecord, reward = reward) } }
         }
     }
 

@@ -45,6 +45,7 @@ fun FlashContent(state: FlashUiState, onStart: () -> Unit, onAnswer: (Char) -> U
             GamePhase.OVER -> GameOverPanel(
                 state.score, state.isNewRecord, onStart, onBack,
                 detail = if (state.averageReactionMs > 0) stringResource(R.string.game_flash_average, state.averageReactionMs) else null,
+                reward = state.reward,
             )
             GamePhase.PLAYING -> {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {

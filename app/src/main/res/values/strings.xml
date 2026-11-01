@@ -104,6 +104,33 @@
     <string name="game_intercept_max">Velocidad máxima: %1$d PPM</string>
     <string name="game_intercept_desc">Copia palabras cada vez más rápidas. Tres fallos y se acabó.</string>
 
+    <!-- Recompensas y logros -->
+    <string name="reward_destellos">+%1$d Destellos</string>
+    <string name="reward_daily">Incluye el bono del día (+5)</string>
+    <string name="reward_achievement">Logro conseguido: %1$s</string>
+    <string name="ach_first_sos">Primer SOS</string>
+    <string name="ach_first_sos_desc">Completa «La primera luz».</string>
+    <string name="ach_three_flashes">Tres destellos</string>
+    <string name="ach_three_flashes_desc">Consigue 3 estrellas en una misión.</string>
+    <string name="ach_keeper">Farero de verdad</string>
+    <string name="ach_keeper_desc">Termina el capítulo 1.</string>
+    <string name="ach_perfectionist">Luz perfecta</string>
+    <string name="ach_perfectionist_desc">Todas las misiones del capítulo 1 con 3 estrellas.</string>
+    <string name="ach_storm_rider">Capitán de tormentas</string>
+    <string name="ach_storm_rider_desc">20 puntos en Tormenta de señales.</string>
+    <string name="ach_quick_eye">Ojo de lince</string>
+    <string name="ach_quick_eye_desc">Reacción media de 800 ms o menos en Destello rápido.</string>
+    <string name="ach_sharp_ear">Oído fino</string>
+    <string name="ach_sharp_ear_desc">10 palabras en Interceptación.</string>
+    <string name="ach_speed_20">20 PPM</string>
+    <string name="ach_speed_20_desc">Llega a 20 palabras por minuto en Interceptación.</string>
+    <string name="ach_steady">Constante</string>
+    <string name="ach_steady_desc">Una racha de 7 días.</string>
+    <string name="ach_collector">Coleccionista</string>
+    <string name="ach_collector_desc">Compra 3 objetos en la tienda.</string>
+    <string name="ach_reader">Ratón de biblioteca</string>
+    <string name="ach_reader_desc">Lee todas las fichas de la biblioteca.</string>
+
     <!-- Ajustes -->
     <string name="settings_title">Ajustes</string>
     <string name="settings_speed_section">Velocidad</string>

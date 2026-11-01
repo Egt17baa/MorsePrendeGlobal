@@ -34,6 +34,12 @@ class AppContainer(context: Context) {
     val progress: ProgressRepository by lazy { RoomProgressRepository(database) }
     val charStats: CharStatsRepository by lazy { RoomCharStatsRepository(database) }
     val gameRecords: GameRecordsRepository by lazy { RoomGameRecordsRepository(database) }
+    val economy: io.github.egt17baa.morseprende.data.economy.EconomyRepository by lazy { io.github.egt17baa.morseprende.data.economy.RoomEconomyRepository(database) }
+    val activity: io.github.egt17baa.morseprende.data.activity.ActivityRepository by lazy { io.github.egt17baa.morseprende.data.activity.RoomActivityRepository(database) }
+    val achievements: io.github.egt17baa.morseprende.data.achievements.AchievementsRepository by lazy { io.github.egt17baa.morseprende.data.achievements.RoomAchievementsRepository(database) }
+    val rewards: io.github.egt17baa.morseprende.rewards.RewardsService by lazy {
+        io.github.egt17baa.morseprende.rewards.RewardsService(content, progress, gameRecords, seenCards, economy, activity, achievements)
+    }
 }
 
 class MorsePrendeApp : Application() {

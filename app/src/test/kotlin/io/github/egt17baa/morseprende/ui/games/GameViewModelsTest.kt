@@ -255,4 +255,27 @@ class GameViewModelsTest {
         runCurrent()
         assertEquals(listOf(true), d.stats.gentleFlags)
     }
+
+    @Test fun game_over_shows_reward() = runTest {
+        val d = deps()
+        val economy = io.github.egt17baa.morseprende.data.FakeEconomyRepository()
+        val progress = FakeProgressRepository.completed(*completed)
+        val rewards = io.github.egt17baa.morseprende.rewards.RewardsService(
+            FakeContentSource(listOf(FakeContentSource.realChapter1)), progress, d.records,
+            io.github.egt17baa.morseprende.data.FakeSeenCardsRepository(), economy,
+            io.github.egt17baa.morseprende.data.FakeActivityRepository(), io.github.egt17baa.morseprende.data.FakeAchievementsRepository(),
+            today = { java.time.LocalDate.of(2026, 11, 5) }, now = { 1L },
+        )
+        val vm = StormViewModel(
+            GameDeps(
+                FakeContentSource(listOf(FakeContentSource.realChapter1)), progress, d.stats, d.records,
+                FakeSettingsRepository(AppSettings()), FakeOutputFactory(this), Random(1), backgroundScope, { d.clock[0] }, rewards,
+            ),
+        )
+        vm.start()
+        while (vm.state.value.phase != GamePhase.OVER && d.clock[0] < 300_000) { d.clock[0] += 100; vm.frame() }
+        runCurrent()
+        assertTrue(vm.state.value.reward?.dailyBonus == true)
+        assertEquals(vm.state.value.reward?.destellos, economy.balance.value)
+    }
 }

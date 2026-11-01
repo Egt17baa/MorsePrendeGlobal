@@ -220,6 +220,7 @@ fun DebriefingPanel(state: MissionUiState, actions: MissionActions) {
             modifier = Modifier.fillMaxWidth(),
         )
     }
+    io.github.egt17baa.morseprende.ui.rewards.RewardPanel(state.reward)
     LogbookPanel(state.debriefing, stringResource(R.string.mission_back_to_lighthouse), actions::exit)
 }
 

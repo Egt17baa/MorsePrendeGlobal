@@ -149,4 +149,15 @@ class MissionScreenTest {
         assertTrue(r.calls[0].startsWith("down") && r.calls[1].startsWith("up"))
         assertEquals(150L + 16L + 250L, up - down)   // moveBy añade un periodo de evento (16 ms)
     }
+
+    @Test fun debriefing_panel_shows_reward_and_achievement() {
+        val state = MissionUiState(
+            phase = MissionPhase.DEBRIEFING, debriefing = "¡Bien!", stars = 3,
+            reward = io.github.egt17baa.morseprende.rewards.RewardSummary(40, dailyBonus = true, newAchievements = listOf("first_sos")),
+        )
+        compose.setContent { MissionContent(state, Recorder()) }
+        compose.onNodeWithText(context.getString(R.string.reward_destellos, 40)).performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText(context.getString(R.string.reward_daily)).performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText(context.getString(R.string.reward_achievement, context.getString(R.string.ach_first_sos))).performScrollTo().assertIsDisplayed()
+    }
 }

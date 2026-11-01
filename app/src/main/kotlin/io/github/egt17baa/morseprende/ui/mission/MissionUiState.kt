@@ -2,6 +2,7 @@ package io.github.egt17baa.morseprende.ui.mission
 
 import io.github.egt17baa.morseprende.game.mission.Exercise
 import io.github.egt17baa.morseprende.game.mission.MissionSession
+import io.github.egt17baa.morseprende.rewards.RewardSummary
 import io.github.egt17baa.morseprende.settings.KeyerMode
 
 enum class MissionPhase { BRIEFING, EXERCISE, DEBRIEFING, ERROR }
@@ -28,4 +29,6 @@ data class MissionUiState(
     /** Ayuda visual: en el capítulo 1 se enseña el patrón de las letras nuevas. */
     val showPattern: Boolean = true,
     val newChars: Set<Char> = emptySet(),
+    /** Destellos, bono diario y logros ganados al terminar (null hasta entonces). */
+    val reward: RewardSummary? = null,
 )

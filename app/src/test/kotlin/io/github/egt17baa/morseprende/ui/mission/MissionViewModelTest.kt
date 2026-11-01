@@ -363,4 +363,33 @@ class MissionViewModelTest {
         }
         assertTrue("letters=$letters", letters.count { it == "S" } > letters.size / 2)
     }
+
+    private fun TestScope.rewardsFor(progress: FakeProgressRepository) = io.github.egt17baa.morseprende.rewards.RewardsService(
+        FakeContentSource(listOf(MissionTestContent.chapter)), progress, io.github.egt17baa.morseprende.data.FakeGameRecordsRepository(),
+        io.github.egt17baa.morseprende.data.FakeSeenCardsRepository(), io.github.egt17baa.morseprende.data.FakeEconomyRepository(),
+        io.github.egt17baa.morseprende.data.FakeActivityRepository(), io.github.egt17baa.morseprende.data.FakeAchievementsRepository(),
+        today = { java.time.LocalDate.of(2026, 11, 5) }, now = { 1L },
+    )
+
+    @Test fun debriefing_shows_reward() = runTest {
+        Dispatchers.setMain(UnconfinedTestDispatcher(testScheduler))
+        val progress = FakeProgressRepository()
+        val vm = MissionViewModel(
+            "t1", FakeContentSource(listOf(MissionTestContent.chapter)), progress, FakeSettingsRepository(), FakeOutputFactory(this),
+            FakeSidetoneFactory(), rewards = rewardsFor(progress), random = Random(1), playerScope = backgroundScope,
+        )
+        val e = Env(vm, progress, FakeCharStatsRepository(), FakeSidetoneFactory(), longArrayOf(0))
+        e.finishMission()
+        runCurrent()
+        val reward = vm.state.value.reward
+        assertTrue(reward != null && reward.destellos >= 5 + 5 && reward.dailyBonus)
+    }
+
+    @Test fun abandon_gives_nothing() = runTest {
+        val e = env()
+        e.advanceToSend()
+        e.vm.abandon()
+        runCurrent()
+        assertEquals(null, e.s.reward)
+    }
 }

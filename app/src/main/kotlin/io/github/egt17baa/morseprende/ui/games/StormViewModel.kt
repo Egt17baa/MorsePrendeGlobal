@@ -19,6 +19,7 @@ data class StormUiState(
     val score: Int = 0,
     val lives: Int = StormGame.LIVES,
     val isNewRecord: Boolean = false,
+    val reward: io.github.egt17baa.morseprende.rewards.RewardSummary? = null,
 )
 
 class StormViewModel(deps: GameDeps) : GameViewModelBase(deps, GameId.STORM) {
@@ -40,7 +41,7 @@ class StormViewModel(deps: GameDeps) : GameViewModelBase(deps, GameId.STORM) {
         if (!unlocked) return
         beginGame()
         game = StormGame(learned, boxes.value, deps.random, now())
-        ui.update { it.copy(phase = GamePhase.PLAYING, score = 0, lives = StormGame.LIVES, signals = emptyList(), isNewRecord = false) }
+        ui.update { it.copy(phase = GamePhase.PLAYING, score = 0, lives = StormGame.LIVES, signals = emptyList(), isNewRecord = false, reward = null) }
         frame()
     }
 
@@ -73,7 +74,7 @@ class StormViewModel(deps: GameDeps) : GameViewModelBase(deps, GameId.STORM) {
     private fun finish(g: StormGame) {
         player.stop()
         ui.update { it.copy(phase = GamePhase.OVER) }
-        saveOnce(g.score, 0, g.outcomes) { isRecord -> ui.update { it.copy(isNewRecord = isRecord) } }
+        saveOnce(g.score, 0, g.outcomes) { isRecord, reward -> ui.update { it.copy(isNewRecord = isRecord, reward = reward) } }
     }
 
     private fun sync(g: StormGame, t: Long) {

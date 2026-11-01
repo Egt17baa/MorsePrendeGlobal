@@ -79,7 +79,14 @@ fun LockedPanel() {
 }
 
 @Composable
-fun GameOverPanel(score: Int, isNewRecord: Boolean, onAgain: () -> Unit, onBack: () -> Unit, detail: String? = null) {
+fun GameOverPanel(
+    score: Int,
+    isNewRecord: Boolean,
+    onAgain: () -> Unit,
+    onBack: () -> Unit,
+    detail: String? = null,
+    reward: io.github.egt17baa.morseprende.rewards.RewardSummary? = null,
+) {
     Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Card(Modifier.fillMaxWidth()) {
             Column(Modifier.fillMaxWidth().padding(20.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -89,6 +96,7 @@ fun GameOverPanel(score: Int, isNewRecord: Boolean, onAgain: () -> Unit, onBack:
                 if (isNewRecord) Text(stringResource(R.string.game_new_record), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.secondary)
             }
         }
+        io.github.egt17baa.morseprende.ui.rewards.RewardPanel(reward)
         Button(onClick = onAgain, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.game_again)) }
         OutlinedButton(onClick = onBack, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.back)) }
     }

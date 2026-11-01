@@ -51,7 +51,7 @@ fun StormContent(state: StormUiState, onStart: () -> Unit, onInput: (Char) -> Un
             GamePhase.LOADING -> Unit
             GamePhase.LOCKED -> LockedPanel()
             GamePhase.READY -> StartPanel(stringResource(R.string.game_storm_desc), onStart)
-            GamePhase.OVER -> GameOverPanel(state.score, state.isNewRecord, onStart, onBack)
+            GamePhase.OVER -> GameOverPanel(state.score, state.isNewRecord, onStart, onBack, reward = state.reward)
             GamePhase.PLAYING -> {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Text(stringResource(R.string.game_score, state.score), style = MaterialTheme.typography.titleMedium)

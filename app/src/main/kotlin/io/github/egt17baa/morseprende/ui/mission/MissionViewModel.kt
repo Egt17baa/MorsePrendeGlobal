@@ -10,6 +10,7 @@ import io.github.egt17baa.morseprende.core.MorseTiming
 import io.github.egt17baa.morseprende.data.ContentSource
 import io.github.egt17baa.morseprende.data.progress.ProgressRepository
 import io.github.egt17baa.morseprende.data.review.CharStatsRepository
+import io.github.egt17baa.morseprende.rewards.RewardsService
 import io.github.egt17baa.morseprende.game.review.CharOutcome
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.Flow
@@ -48,6 +49,7 @@ class MissionViewModel(
     private val outputs: OutputFactory,
     private val sidetoneFactory: SidetoneFactory,
     private val charStats: CharStatsRepository = NoCharStats,
+    private val rewards: RewardsService? = null,
     private val random: Random = Random.Default,
     playerScope: CoroutineScope? = null,
     private val clock: () -> Long = { SystemClock.uptimeMillis() },
@@ -286,6 +288,11 @@ class MissionViewModel(
             ui.update { it.copy(previousBest = previous) }
             progress.recordResult(missionId, result.stars, System.currentTimeMillis())
             charStats.record(s.outcomes)
+            val m = mission
+            if (rewards != null && m != null) {
+                val summary = rewards.onMissionCompleted(m, previous, result.stars)
+                ui.update { it.copy(reward = summary) }
+            }
         }
     }
 
