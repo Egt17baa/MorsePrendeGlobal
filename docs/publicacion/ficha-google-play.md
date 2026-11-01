@@ -34,13 +34,16 @@ Reconoce letras y palabras de oído y transmítelas con un manipulador en pantal
 La app recuerda qué letras te cuestan y te las repasa más (repetición espaciada). Si sales de una misión a medias, sigues por donde la dejaste.
 
 ✦ CADA DÍA, UN MENSAJE
-Cada noche llega al faro un mensaje nuevo, solo con las letras que ya conoces. Descífralo y gana Destellos.
+Cada día llega al faro un mensaje nuevo, solo con las letras que ya conoces. Descífralo y gana Destellos.
+
+✦ TALLER DEL FARERO
+Práctica libre, sin puntos ni prisas: envía lo que quieras con el manipulador y mira qué letras salen y a qué velocidad, o elige las letras que se te atascan y escúchalas hasta que salgan solas.
 
 ✦ MINIJUEGOS
 Tormenta de señales, Destello rápido e Interceptación: practica con récords y sube de velocidad. Al terminar la campaña, la Guardia nocturna: mensajes sin fin por sonido, luz y vibración hasta el amanecer.
 
 ✦ BIBLIOTECA DEL FARO
-Fichas cortas y verificadas sobre la historia del Morse: Samuel Morse y Alfred Vail, el primer mensaje de 1844, el SOS y el Titanic, la radio en la guerra, las estaciones de números, los radioaficionados, el Morse en la accesibilidad y mucho más.
+Fichas cortas y verificadas sobre la historia del Morse: Samuel Morse y Alfred Vail, el primer mensaje de 1844, el SOS y el Titanic, la radio en la guerra, las estaciones de números, los radioaficionados, el Morse en la accesibilidad, los cables bajo el océano, el Morse en Marte y mucho más.
 
 ✦ TRADUCTOR
 Convierte texto a Morse y Morse a texto, y reprodúcelo con sonido, linterna, destellos de pantalla o vibración.
@@ -55,7 +58,7 @@ Sin anuncios, sin compras, sin cuentas y sin conexión a internet: la app ni siq
 **Novedades de esta versión** (máx. 500 caracteres)
 
 <!-- campo:novedades -->
-Primera versión: campaña completa en tres capítulos, mensaje del día, Guardia nocturna, minijuegos, biblioteca, traductor y ajustes de accesibilidad.
+Primera versión: campaña completa en tres capítulos, mensaje del día, Guardia nocturna, Taller del farero para practicar libremente, minijuegos, biblioteca, traductor y ajustes de accesibilidad.
 <!-- /campo -->
 
 ## Categoría y etiquetas
