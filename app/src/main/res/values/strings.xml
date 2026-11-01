@@ -144,6 +144,8 @@
     <string name="ach_steady_desc">Una racha de 7 días.</string>
     <string name="ach_collector">Coleccionista</string>
     <string name="ach_collector_desc">Compra 3 objetos en la tienda.</string>
+    <string name="ach_mole_hunter">Cazatopos</string>
+    <string name="ach_mole_hunter_desc">Descubre al topo y termina el capítulo 2.</string>
     <string name="ach_reader">Ratón de biblioteca</string>
     <string name="ach_reader_desc">Lee todas las fichas de la biblioteca.</string>
 

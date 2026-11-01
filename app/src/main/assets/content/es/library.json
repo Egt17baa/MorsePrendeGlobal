@@ -51,5 +51,37 @@
     "unlockedBy": "c1f",
     "body": "Durante casi un siglo, el Morse fue la voz de los barcos. Cada buque grande llevaba un radiotelegrafista que escuchaba día y noche, y la frecuencia de quinientos kilohercios estaba reservada para las llamadas de socorro. Pero la tecnología cambió. Los satélites, las radiobalizas automáticas y las llamadas digitales permitían pedir ayuda pulsando un botón, con la posición del barco incluida y sin necesidad de un operador experto. Por eso la Organización Marítima Internacional creó el Sistema Mundial de Socorro y Seguridad Marítimos, conocido por sus siglas en inglés, GMDSS. Desde el 1 de febrero de 1999, todos los buques sujetos al convenio internacional para la seguridad de la vida en el mar debían cumplirlo, y el Morse dejó de ser obligatorio. La Guardia Costera de los Estados Unidos ya lo había abandonado en 1995. Aquel día terminó la obligación de mantener la escucha de Morse en los barcos, después de casi un siglo de servicio. El Morse no murió: los radioaficionados lo siguen usando cada día, y todavía puede salvar una vida cuando todo lo demás falla.",
     "didYouKnow": "Desde el 1 de febrero de 1999, los grandes buques ya no están obligados a usar el Morse para pedir socorro: basta con pulsar un botón del sistema GMDSS."
+  },
+  {
+    "id": "lib-guerra",
+    "title": "La radio en la guerra y la «mano» del operador",
+    "icon": "radio",
+    "unlockedBy": "c2m3",
+    "body": "Durante la Segunda Guerra Mundial, el Morse por radio fue el sistema nervioso de ejércitos, barcos y redes clandestinas. Los mensajes viajaban cifrados, pero el propio sonido delataba cosas. Cada telegrafista tiene una forma personal de manipular: la duración de sus rayas, las pausas, los pequeños vicios del pulso. Los operadores lo llamaban la «mano» o, en inglés, el «fist», y quienes escuchaban durante horas aprendían a reconocer a una persona concreta por su forma de transmitir, igual que reconocemos una letra manuscrita. Los aliados llegaron a usar técnicas para identificar operadores enemigos por esos rasgos, y la organización británica que enviaba agentes a la Europa ocupada guardaba «huellas» del estilo de sus propios radiotelegrafistas para detectar si alguien los estaba suplantando. Transmitir era peligroso: cuanto más tiempo emitía un agente, más fácil era localizarlo con antenas de radiogoniometría. Por eso los mejores operadores eran rápidos y breves. En esta misión, cuando escuchas a Gaviota Gris, piensa que una red entera dependía de oídos como el tuyo.",
+    "didYouKnow": "Algunos agentes clandestinos transmitían a unas 20 palabras por minuto, bastante por encima de la media, para emitir menos tiempo y no ser localizados."
+  },
+  {
+    "id": "lib-denton",
+    "title": "Jeremiah Denton y el parpadeo que lo dijo todo",
+    "icon": "wave",
+    "unlockedBy": "c2m6",
+    "body": "En 1966, durante la guerra de Vietnam, el piloto estadounidense Jeremiah Denton llevaba casi un año prisionero cuando sus captores lo obligaron a dar una entrevista para la televisión con fines de propaganda. Antes de la grabación lo habían amenazado para que respondiera «como debía». Denton contestó a las preguntas con aparente calma, pero mientras hablaba hizo algo que nadie en la sala detectó: fingiendo que las luces del estudio le molestaban, parpadeó en código Morse una sola palabra en inglés, T-O-R-T-U-R-E, es decir, «tortura». La grabación llegó a la televisión de Estados Unidos y los servicios de inteligencia descifraron el mensaje: era la primera confirmación clara de que los prisioneros estaban siendo torturados. Denton fue castigado después, aunque no supo hasta su liberación, años más tarde, que su mensaje había llegado a su destino. Tras volver a casa fue senador. Su historia muestra algo importante: el Morse no necesita sonido ni radio. Basta con algo que se pueda encender y apagar, aunque sea un par de ojos.",
+    "didYouKnow": "Denton parpadeó «TORTURE» mientras respondía con normalidad a las preguntas: hablaba de una cosa y sus ojos decían otra."
+  },
+  {
+    "id": "lib-numeros",
+    "title": "Las estaciones de números",
+    "icon": "radio",
+    "unlockedBy": "c2n5",
+    "body": "Si alguna vez giras el dial de una radio de onda corta, quizá encuentres algo extraño: una voz, a veces una melodía, que lee series de números sin parar, o pitidos en Morse que solo transmiten cifras. Son las llamadas estaciones de números. Se cree que empezaron hacia la Primera Guerra Mundial y alcanzaron su apogeo durante la Guerra Fría. La explicación más aceptada es que servían para enviar órdenes a espías: el agente escuchaba a una hora acordada, apuntaba los números y los descifraba con una libreta de un solo uso, una clave que solo él y la central tenían y que se destruía después. Bien usado, ese método es imposible de romper. Documentos desclasificados de algunos países y varios casos de espionaje confirmaron este uso, y en juicios a espías aparecieron radios de onda corta y libretas de claves. Aun así, la mayoría de estas emisoras nunca ha sido reconocida oficialmente, y algunas siguen activas hoy. Por eso los números en Morse tienen siempre cinco elementos: son fáciles de distinguir incluso con interferencias.",
+    "didYouKnow": "Con una libreta de un solo uso bien hecha, un mensaje cifrado no se puede descifrar sin la clave, ni con los ordenadores más potentes."
+  },
+  {
+    "id": "lib-q",
+    "title": "QTH, QRZ y CQ: el idioma secreto de la radio",
+    "icon": "telegraph",
+    "unlockedBy": "c2f",
+    "body": "Los radiotelegrafistas inventaron muchas abreviaturas para no transmitir frases enteras. Las más famosas son los códigos Q: grupos de tres letras que empiezan por Q y equivalen a una pregunta o a una respuesta completa. La conferencia radiotelegráfica de Londres de 1912 incluyó una lista de ellos para el servicio marítimo, y una revisión de 1947 fijó la mayoría de los que se usan hoy. Por ejemplo, QTH significa «mi posición es…» o «¿cuál es tu posición?»; QRZ, «¿quién me llama?»; y QSL, «acuso recibo». Entre radioaficionados, QSL también es la tarjeta postal que se envían para confirmar que han hablado. Otra señal muy conocida es CQ, la llamada general: quien transmite «CQ CQ CQ» está diciendo que busca a cualquiera que le escuche. La conferencia de 1912 la adoptó como llamada general, y aunque hoy mucha gente la lee como «seek you», «te busco» en inglés, esa interpretación llegó después. Gracias a estos códigos, operadores que no hablaban el mismo idioma podían entenderse.",
+    "didYouKnow": "Dos radioaficionados que no comparten idioma pueden mantener una conversación básica solo con códigos Q y abreviaturas en Morse."
   }
 ]

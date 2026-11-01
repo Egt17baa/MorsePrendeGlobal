@@ -82,3 +82,32 @@ omite.
   siglo» hasta 1999 (no «más de cien años»: corregido tras la revisión). Fuente del fin de la
   obligación: documento UIT WRC-03 citado arriba.
 - Los radioaficionados siguen usándolo: https://en.wikipedia.org/wiki/Global_Maritime_Distress_and_Safety_System
+
+## lib-guerra · La radio en la guerra y la «mano» del operador
+- El «fist» o «mano» de cada operador permitía reconocerlo; técnica aliada TINA: https://jproc.ca/rrp/rfp_tina.html
+- Gráfico de «huellas» de operadores del SOE (1943–44): International Spy Museum
+  https://www.spymuseum.org/exhibition-experiences/about-the-collection/collection-highlights/telegrapher-s-fingerprint-chart/
+- Transmitir más tiempo facilitaba la radiogoniometría; Yvonne Cormeau transmitía a 18–22 ppm frente a
+  una media de 12: https://en.wikipedia.org/wiki/Yvonne_Cormeau
+- La fiabilidad exacta de la identificación por la «mano» no está bien documentada: se cuenta en general.
+
+## lib-denton · Jeremiah Denton (1966)
+- Entrevista forzada de propaganda (2 de mayo de 1966), parpadeó T-O-R-T-U-R-E fingiendo molestia por
+  las luces; primera confirmación para la inteligencia de EE. UU.: National Archives
+  https://www.archives.gov/exhibits/eyewitness/html.php?section=8 · https://en.wikipedia.org/wiki/Jeremiah_Denton ·
+  CBS News https://www.cbsnews.com/amp/news/jeremiah-denton-ex-senator-and-vietnam-pow-who-blinked-torture-in-morse-code-dies-at-89
+- Castigado después; supo al ser liberado que se emitió; luego senador por Alabama: ibid.
+
+## lib-numeros · Estaciones de números
+- Desde la Primera Guerra Mundial, apogeo en la Guerra Fría, libretas de un solo uso; uso confirmado por
+  documentos checos y suecos y casos como Penkovsky; algunas siguen activas:
+  https://en.wikipedia.org/wiki/Numbers_station · NPR https://www.npr.org/2010/07/17/128586766/numbers-stations-mystery-over-the-airwaves
+- La mayoría no reconocidas oficialmente; el uso de libretas se asume, no está verificado en cada emisora (redactado con cautela).
+- Números en Morse con cinco elementos: UIT-R M.1677-1.
+
+## lib-q · Códigos Q y CQ
+- Lista de códigos Q en el Reglamento de la Convención de Londres de 1912; la mayoría de los actuales, de
+  1947: https://en.wikipedia.org/wiki/Q_code
+- QTH, QRZ, QSL (y tarjeta QSL); CQ adoptado en 1912 como llamada general; «seek you» es una reinterpretación
+  posterior: ARRL https://www.arrl.org/amateur-radio-history · https://en.wikipedia.org/wiki/Q_code
+- El origen exacto de las letras CQ es discutido: no se afirma en la ficha.

@@ -42,6 +42,7 @@ fun achievementTitle(id: String): Int = when (id) {
     "speed_20" -> R.string.ach_speed_20
     "steady" -> R.string.ach_steady
     "collector" -> R.string.ach_collector
+    "mole_hunter" -> R.string.ach_mole_hunter
     else -> R.string.ach_reader
 }
 
@@ -56,5 +57,6 @@ fun achievementDescription(id: String): Int = when (id) {
     "speed_20" -> R.string.ach_speed_20_desc
     "steady" -> R.string.ach_steady_desc
     "collector" -> R.string.ach_collector_desc
+    "mole_hunter" -> R.string.ach_mole_hunter_desc
     else -> R.string.ach_reader_desc
 }

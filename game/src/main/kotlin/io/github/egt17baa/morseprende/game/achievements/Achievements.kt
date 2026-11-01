@@ -28,6 +28,7 @@ object Achievements {
         "steady" to { i -> i.streak >= 7 },
         "collector" to { i -> i.boughtItems >= 3 },
         "reader" to { i -> i.totalCards > 0 && i.seenCards >= i.totalCards },
+        "mole_hunter" to { i -> "c2f" in i.missionStars },
     )
 
     val ids: List<String> = rules.map { it.first }

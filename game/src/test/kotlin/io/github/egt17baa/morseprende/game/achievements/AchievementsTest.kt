@@ -11,7 +11,7 @@ class AchievementsTest {
     private fun earned(i: AchievementInput) = Achievements.earned(i)
 
     @Test fun ids_in_order() = assertEquals(
-        listOf("first_sos", "three_flashes", "keeper", "perfectionist", "storm_rider", "quick_eye", "sharp_ear", "speed_20", "steady", "collector", "reader"),
+        listOf("first_sos", "three_flashes", "keeper", "perfectionist", "storm_rider", "quick_eye", "sharp_ear", "speed_20", "steady", "collector", "reader", "mole_hunter"),
         Achievements.ids,
     )
     @Test fun none_initially() = assertEquals(emptySet<String>(), earned(base))
@@ -48,5 +48,10 @@ class AchievementsTest {
         assertTrue("reader" in earned(base.copy(seenCards = 7)))
         assertFalse("reader" in earned(base.copy(seenCards = 6)))
         assertFalse("reader" in earned(base.copy(seenCards = 0, totalCards = 0)))
+    }
+
+    @Test fun mole_hunter() {
+        assertTrue("mole_hunter" in earned(base.copy(missionStars = mapOf("c2f" to 1))))
+        assertFalse("mole_hunter" in earned(base.copy(missionStars = mapOf("c1f" to 3))))
     }
 }

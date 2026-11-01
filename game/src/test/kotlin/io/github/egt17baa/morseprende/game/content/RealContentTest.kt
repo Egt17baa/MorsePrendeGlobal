@@ -37,13 +37,16 @@ class RealContentTest {
 
     @Test fun real_library_is_valid() {
         val cards = RealContent.library
-        assertEquals(emptyList<String>(), ContentValidator.validate(listOf(chapter1), cards))
+        assertEquals(emptyList<String>(), ContentValidator.validate(listOf(chapter1, RealContent.chapter2), cards))
         assertEquals(
-            listOf("lib-que-es", "lib-morse-vail", "lib-aprender", "lib-1844", "lib-americano", "lib-sos", "lib-mar"),
+            listOf(
+                "lib-que-es", "lib-morse-vail", "lib-aprender", "lib-1844", "lib-americano", "lib-sos", "lib-mar",
+                "lib-guerra", "lib-denton", "lib-numeros", "lib-q",
+            ),
             cards.map { it.id },
         )
         assertEquals(
-            listOf(null, null, null, "c1m2", "c1m3", "c1m5", "c1f"),
+            listOf(null, null, null, "c1m2", "c1m3", "c1m5", "c1f", "c2m3", "c2m6", "c2n5", "c2f"),
             cards.map { it.unlockedBy },
         )
         val icons = setOf("lighthouse", "telegraph", "ship", "radio", "book", "wave")
