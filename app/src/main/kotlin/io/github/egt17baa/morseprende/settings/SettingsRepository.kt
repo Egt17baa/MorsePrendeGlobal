@@ -51,6 +51,9 @@ class DataStoreSettingsRepository private constructor(
             prefs[TONE_TIMBRE] = next.toneTimbre
             prefs[KEYER_SKIN] = next.keyerSkin
             prefs[DECORATIONS] = next.decorations
+            prefs[TEXT_SCALE] = next.textScale
+            prefs[HIGH_CONTRAST] = next.highContrast
+            prefs[VIBRATION] = next.vibration
         }
     }
 
@@ -73,6 +76,9 @@ class DataStoreSettingsRepository private constructor(
             toneTimbre = this[TONE_TIMBRE] ?: defaults.toneTimbre,
             keyerSkin = this[KEYER_SKIN] ?: defaults.keyerSkin,
             decorations = this[DECORATIONS] ?: defaults.decorations,
+            textScale = this[TEXT_SCALE] ?: defaults.textScale,
+            highContrast = this[HIGH_CONTRAST] ?: defaults.highContrast,
+            vibration = this[VIBRATION] ?: defaults.vibration,
         ).clamped()
     }
 
@@ -88,6 +94,9 @@ class DataStoreSettingsRepository private constructor(
         private val TONE_TIMBRE = stringPreferencesKey("tone_timbre")
         private val KEYER_SKIN = stringPreferencesKey("keyer_skin")
         private val DECORATIONS = stringSetPreferencesKey("decorations")
+        private val TEXT_SCALE = floatPreferencesKey("text_scale")
+        private val HIGH_CONTRAST = booleanPreferencesKey("high_contrast")
+        private val VIBRATION = booleanPreferencesKey("vibration")
 
         /** Repositorio sobre un fichero concreto (pruebas). */
         fun create(file: File, parentScope: CoroutineScope): DataStoreSettingsRepository {

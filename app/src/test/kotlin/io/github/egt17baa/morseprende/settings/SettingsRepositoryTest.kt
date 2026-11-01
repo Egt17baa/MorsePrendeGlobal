@@ -3,6 +3,7 @@ package io.github.egt17baa.morseprende.settings
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.flow.first
+import androidx.datastore.preferences.core.edit
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -70,5 +71,37 @@ class SettingsRepositoryTest {
         assertEquals("tone_sine", s.toneTimbre)
         assertEquals("key_coral", s.keyerSkin)
         assertEquals(emptySet<String>(), s.decorations)
+    }
+
+    @Test fun new_settings_persist() = runTest {
+        val f = File(context.filesDir, "settings-access.preferences_pb")
+        val first = DataStoreSettingsRepository.create(f, backgroundScope)
+        first.update { it.copy(textScale = 1.3f, highContrast = true, vibration = false) }
+        first.close()
+        val s = DataStoreSettingsRepository.create(f, backgroundScope).settings.first()
+        assertEquals(1.3f, s.textScale, 1e-6f)
+        assertEquals(true, s.highContrast)
+        assertEquals(false, s.vibration)
+    }
+
+    @Test fun old_settings_load_with_new_defaults() = runTest {
+        // Un fichero de la 0.6.x: no tiene las claves nuevas.
+        val f = File(context.filesDir, "settings-old.preferences_pb")
+        val store = androidx.datastore.preferences.core.PreferenceDataStoreFactory.create(scope = backgroundScope, produceFile = { f })
+        store.edit { it[androidx.datastore.preferences.core.intPreferencesKey("char_wpm")] = 20 }
+        // Otro DataStore sobre el mismo fichero: se espera a que el primero termine de escribir.
+        val bytes = f.readBytes()
+        val copy = File(context.filesDir, "settings-old-copy.preferences_pb").apply { writeBytes(bytes) }
+        val s = DataStoreSettingsRepository.create(copy, backgroundScope).settings.first()
+        assertEquals(20, s.charWpm)
+        assertEquals(1f, s.textScale, 1e-6f)
+        assertEquals(false, s.highContrast)
+        assertEquals(true, s.vibration)
+    }
+
+    @Test fun text_scale_clamped() {
+        assertEquals(1.3f, AppSettings(textScale = 2f).clamped().textScale, 1e-6f)
+        assertEquals(1.15f, AppSettings(textScale = 1.1f).clamped().textScale, 1e-6f)
+        assertEquals(1f, AppSettings(textScale = 0.5f).clamped().textScale, 1e-6f)
     }
 }

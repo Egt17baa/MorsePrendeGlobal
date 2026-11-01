@@ -20,6 +20,11 @@ data class AppSettings(
     val toneTimbre: String = "tone_sine",
     val keyerSkin: String = "key_coral",
     val decorations: Set<String> = emptySet(),
+    /** Accesibilidad: tamaño del texto (uno de [TEXT_SCALES]) y alto contraste. */
+    val textScale: Float = 1f,
+    val highContrast: Boolean = false,
+    /** Vibración del juego (respuesta del manipulador y misiones de vibración). */
+    val vibration: Boolean = true,
 ) {
     /** Timbre de sonido correspondiente al objeto equipado. */
     val timbre: Timbre
@@ -37,11 +42,15 @@ data class AppSettings(
             effectiveWpm = effectiveWpm.coerceIn(MorseTiming.MIN_WPM, char),
             toneHz = toneHz.coerceIn(MIN_TONE_HZ, MAX_TONE_HZ),
             volume = volume.coerceIn(0f, 1f),
+            textScale = TEXT_SCALES.minBy { kotlin.math.abs(it - textScale) },
         )
     }
 
     companion object {
         const val MIN_TONE_HZ = 400
         const val MAX_TONE_HZ = 1000
+
+        /** Normal, grande y muy grande (se multiplica por el tamaño de letra del sistema). */
+        val TEXT_SCALES = listOf(1f, 1.15f, 1.3f)
     }
 }
