@@ -44,6 +44,8 @@ import io.github.egt17baa.morseprende.ui.rewards.RewardPanel
 fun DailyScreen(viewModel: DailyViewModel, onBack: () -> Unit) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     DisposableEffect(Unit) { onDispose { viewModel.abandon() } }
+    // Si se sale de la app, el mensaje deja de sonar.
+    androidx.lifecycle.compose.LifecycleEventEffect(androidx.lifecycle.Lifecycle.Event.ON_STOP) { viewModel.abandon() }
     DailyContent(state, onPlay = viewModel::play, onAnswer = viewModel::answer, onBack = onBack)
 }
 

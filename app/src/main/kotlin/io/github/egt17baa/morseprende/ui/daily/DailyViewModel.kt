@@ -74,7 +74,10 @@ class DailyViewModel(
             val chapters = runCatching { content.chapters() }.getOrDefault(emptyList())
             val completed = progress.progress.first().keys
             val learned = ProgressRules.learnedChars(chapters, completed)
-            val message = DailyChallenge.messageFor(day, content.dailyPhrases(), chapters.flatMap { it.words }, learned)
+            // La frase se elige una vez al día: aunque se aprendan letras más tarde, no cambia.
+            val message = daily.phraseFor(day) {
+                DailyChallenge.messageFor(day, content.dailyPhrases(), chapters.flatMap { it.words }, learned)
+            }
             val done = daily.completed.first()
             ui.update {
                 it.copy(

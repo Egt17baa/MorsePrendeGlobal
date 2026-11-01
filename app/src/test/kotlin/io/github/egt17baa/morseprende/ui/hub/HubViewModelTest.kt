@@ -7,6 +7,7 @@ import io.github.egt17baa.morseprende.game.content.LibraryCard
 import io.github.egt17baa.morseprende.game.content.MissionType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -123,5 +124,21 @@ class HubViewModelTest {
         assertEquals(2, s.streak)
         assertEquals("lamp_polar", s.lampColor)
         assertEquals(setOf("decor_gulls"), s.decorations)
+    }
+
+    @Test fun daily_card_turns_pending_after_midnight() = runTest {
+        Dispatchers.setMain(UnconfinedTestDispatcher(testScheduler))
+        var now = java.time.LocalDate.of(2026, 11, 1)
+        val daily = io.github.egt17baa.morseprende.data.daily.FakeDailyRepository(setOf(now))
+        val vm = HubViewModel(
+            FakeContentSource(listOf(FakeContentSource.realChapter1), cards), FakeProgressRepository.completed("c1m1" to 2),
+            FakeSeenCardsRepository(emptySet()), today = { now }, daily = daily,
+        )
+        backgroundScope.launch { vm.state.collect {} }
+        assertEquals(DailyCard(doneToday = true), vm.state.value.daily)
+        // La app sigue abierta (en recientes) y pasa la medianoche: al volver, hay mensaje nuevo.
+        now = now.plusDays(1)
+        vm.refreshDay()
+        assertEquals(DailyCard(doneToday = false), vm.state.value.daily)
     }
 }

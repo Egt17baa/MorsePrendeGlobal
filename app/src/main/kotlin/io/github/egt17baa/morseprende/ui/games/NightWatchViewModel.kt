@@ -26,6 +26,8 @@ data class NightWatchUiState(
     val score: Int = 0,
     val strikes: Int = 0,
     val lampOn: Boolean = false,
+    /** Color de la luz comprado en la tienda. */
+    val lampColor: String = "lamp_cream",
     /** El móvil no pudo vibrar: los mensajes de vibración van por sonido. */
     val vibrationFallback: Boolean = false,
     val feedback: Feedback? = null,
@@ -59,7 +61,7 @@ class NightWatchViewModel(deps: GameDeps) : GameViewModelBase(deps, GameId.NIGHT
         val prefs = settings.value
         val g = NightWatchGame(chapterWords, learned, prefs.effectiveWpm, deps.random, vibrationAllowed = prefs.vibration)
         game = g
-        ui.value = NightWatchUiState(phase = GamePhase.PLAYING, canRepeat = true).synced(g)
+        ui.value = NightWatchUiState(phase = GamePhase.PLAYING, canRepeat = true, lampColor = prefs.lampColor).synced(g)
         playCurrent()
     }
 
@@ -87,12 +89,28 @@ class NightWatchViewModel(deps: GameDeps) : GameViewModelBase(deps, GameId.NIGHT
         playCurrent()
     }
 
+    /**
+     * Al salir (atrás, llamada, otra app) la guardia termina, pero lo conseguido cuenta: en un modo
+     * infinito, perderlo todo por salir sería un castigo.
+     */
     fun abandon() {
-        if (ui.value.phase == GamePhase.PLAYING) {
-            player.stop()
-            game = null
+        if (ui.value.phase != GamePhase.PLAYING) return
+        player.stop()
+        val g = game
+        game = null
+        if (g == null || g.score == 0) {
             ui.update { it.copy(phase = GamePhase.READY, feedback = null, lampOn = false) }
+            return
         }
+        ui.update { it.synced(g).copy(phase = GamePhase.OVER, feedback = null, lampOn = false) }
+        saveOnce(g.score, g.hour, g.outcomes) { isRecord, reward -> ui.update { it.copy(isNewRecord = isRecord, reward = reward) } }
+    }
+
+    /** «No noto la vibración»: el mensaje (y los siguientes de vibración) van por sonido. */
+    fun useSound() {
+        if (ui.value.phase != GamePhase.PLAYING || ui.value.channel != NightChannel.VIBRATION || ui.value.vibrationFallback) return
+        ui.update { it.copy(vibrationFallback = true) }
+        playCurrent()
     }
 
     private fun NightWatchUiState.synced(g: NightWatchGame) = copy(
@@ -111,6 +129,11 @@ class NightWatchViewModel(deps: GameDeps) : GameViewModelBase(deps, GameId.NIGHT
             charWpm = minOf(charWpm, TranslatorViewModel.FLASH_SAFE_WPM)
             effective = minOf(effective, charWpm)
         }
+        if (channel == NightChannel.VIBRATION && !ui.value.vibrationFallback) {
+            // Pulsos más cortos que 80 ms no se distinguen con la mano.
+            charWpm = minOf(charWpm, VIBRATION_MAX_WPM)
+            effective = minOf(effective, charWpm)
+        }
         val signals = MorseTiming(charWpm, minOf(effective, charWpm)).signalsFor(MorseCodec.encode(g.current.text).morse)
         val output = when {
             channel == NightChannel.LIGHT -> lamp
@@ -119,6 +142,10 @@ class NightWatchViewModel(deps: GameDeps) : GameViewModelBase(deps, GameId.NIGHT
             else -> deps.outputs.create(OutputKind.SOUND, prefs, noise = g.noise)
         }
         player.play(signals, listOf(output))
+    }
+
+    companion object {
+        const val VIBRATION_MAX_WPM = 15
     }
 
     /** Sin vibrador (o con ahorro de batería): se avisa y se repite por sonido. */

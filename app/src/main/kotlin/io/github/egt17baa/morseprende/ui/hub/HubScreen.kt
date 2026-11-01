@@ -42,6 +42,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Path
@@ -69,6 +70,8 @@ data class HubCallbacks(
 @Composable
 fun HubScreen(viewModel: HubViewModel, callbacks: HubCallbacks) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    // Si la app quedó abierta tras la medianoche, el reto del día vuelve a estar pendiente.
+    androidx.lifecycle.compose.LifecycleEventEffect(androidx.lifecycle.Lifecycle.Event.ON_RESUME) { viewModel.refreshDay() }
     HubContent(state, callbacks)
 }
 
@@ -229,7 +232,12 @@ private fun DailyChallengeCard(card: DailyCard, onOpen: () -> Unit) {
         ),
     ) {
         Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-            Text(if (card.doneToday) "✓" else "✉", style = MaterialTheme.typography.headlineMedium)
+            // El símbolo es decorativo: TalkBack lee solo el título y el estado.
+            Text(
+                if (card.doneToday) "✓" else "✉",
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier.clearAndSetSemantics {},
+            )
             Spacer(Modifier.width(16.dp))
             Column {
                 Text(stringResource(R.string.hub_daily), style = MaterialTheme.typography.titleMedium)

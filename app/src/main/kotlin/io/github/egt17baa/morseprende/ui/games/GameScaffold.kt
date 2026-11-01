@@ -5,6 +5,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -30,10 +33,13 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import io.github.egt17baa.morseprende.R
 
-/** Marco común de los minijuegos. */
+/**
+ * Marco común de los minijuegos. [scrollable]: para los que se juegan con teclado; la columna queda
+ * por encima del teclado y se desplaza (no admite hijos con `weight`).
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GameScaffold(title: String, onBack: () -> Unit, content: @Composable ColumnScope.() -> Unit) {
+fun GameScaffold(title: String, onBack: () -> Unit, scrollable: Boolean = false, content: @Composable ColumnScope.() -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -48,6 +54,7 @@ fun GameScaffold(title: String, onBack: () -> Unit, content: @Composable ColumnS
             Modifier
                 .fillMaxSize()
                 .padding(padding)
+                .then(if (scrollable) Modifier.imePadding().verticalScroll(rememberScrollState()) else Modifier)
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally,

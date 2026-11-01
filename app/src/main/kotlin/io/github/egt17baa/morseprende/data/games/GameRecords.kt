@@ -14,7 +14,8 @@ enum class GameId { STORM, FLASH, INTERCEPT, NIGHT_WATCH }
 
 /**
  * @property bestExtra Interceptación: máxima velocidad (PPM, mayor es mejor). Destello rápido:
- * mejor tiempo medio de reacción en ms (menor es mejor; 0 = sin dato).
+ * mejor tiempo medio de reacción en ms (menor es mejor; 0 = sin dato). Guardia nocturna: hora más
+ * tardía alcanzada (0 = 22:00, 8 = 06:00), guardada aparte del mejor número de mensajes.
  */
 data class GameRecord(val game: GameId, val bestScore: Int, val bestExtra: Int, val plays: Int)
 

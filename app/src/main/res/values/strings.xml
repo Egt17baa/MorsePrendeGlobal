@@ -65,7 +65,7 @@
     <string name="mission_type_hint">Tu respuesta</string>
     <string name="mission_check">Comprobar</string>
     <string name="daily_title">Mensaje del día</string>
-    <string name="daily_intro">Esta noche llega un mensaje nuevo al faro. Escúchalo y escribe lo que dice.</string>
+    <string name="daily_intro">Hoy llega un mensaje nuevo al faro. Escúchalo y escribe lo que dice.</string>
     <string name="daily_listen">Escuchar el mensaje</string>
     <string name="daily_wrong">Todavía no. Escúchalo otra vez con calma.</string>
     <string name="daily_hint">Pista</string>
@@ -183,7 +183,7 @@
     <string name="ach_enye">La letra de casa</string>
     <string name="ach_enye_desc">Completa la misión extra de la Ñ.</string>
     <string name="ach_completionist">Farero legendario</string>
-    <string name="ach_completionist_desc">Consigue tres estrellas en todas las misiones de la campaña.</string>
+    <string name="ach_completionist_desc">Consigue tres estrellas en todas las misiones de la campaña, también en los repasos y en la misión extra.</string>
     <string name="ach_reader">Ratón de biblioteca</string>
     <string name="ach_reader_desc">Lee todas las fichas de la biblioteca.</string>
 

@@ -38,7 +38,7 @@ fun InterceptContent(
     onNext: () -> Unit,
     onBack: () -> Unit,
 ) {
-    GameScaffold(stringResource(R.string.game_intercept), onBack) {
+    GameScaffold(stringResource(R.string.game_intercept), onBack, scrollable = true) {
         when (state.phase) {
             GamePhase.LOADING -> Unit
             GamePhase.LOCKED -> LockedPanel()

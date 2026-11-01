@@ -21,6 +21,7 @@ import io.github.egt17baa.morseprende.playback.SignalPlayer
 import io.github.egt17baa.morseprende.settings.AppSettings
 import io.github.egt17baa.morseprende.settings.SettingsRepository
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
@@ -94,8 +95,12 @@ abstract class GameViewModelBase(protected val deps: GameDeps, private val gameI
         player.play(signals, listOf(deps.outputs.create(OutputKind.SOUND, settings.value)))
     }
 
+    /** Partida actual: el resultado de una partida anterior que llegue tarde no toca la nueva. */
+    private var generation = 0
+
     protected fun beginGame() {
         saved = false
+        generation++
     }
 
     /** Guarda récord y resultados por carácter una sola vez por partida. */
@@ -107,11 +112,13 @@ abstract class GameViewModelBase(protected val deps: GameDeps, private val gameI
     ) {
         if (saved) return
         saved = true
-        viewModelScope.launch {
+        val mine = generation
+        // Aunque se salga de la pantalla justo al terminar, el récord y la recompensa se guardan.
+        viewModelScope.launch(NonCancellable) {
             val isRecord = deps.records.recordGame(gameId, score, extra)
             deps.charStats.record(outcomes, gentle = true)
             val reward = deps.rewards?.onGameFinished(score, isRecord)
-            onSaved(isRecord, reward)
+            if (mine == generation) onSaved(isRecord, reward)
         }
     }
 

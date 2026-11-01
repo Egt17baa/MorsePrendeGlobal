@@ -9,11 +9,11 @@ import io.github.egt17baa.morseprende.game.content.Chapter
 import io.github.egt17baa.morseprende.game.content.LibraryCard
 import io.github.egt17baa.morseprende.game.content.MissionType
 import io.github.egt17baa.morseprende.game.progress.ProgressRules
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.stateIn
 import io.github.egt17baa.morseprende.data.activity.ActivityRepository
@@ -77,14 +77,23 @@ class HubViewModel(
     private val chapters: List<Chapter>? = runCatching { content.chapters() }.getOrNull()
     private val cards: List<LibraryCard> = runCatching { content.libraryCards() }.getOrDefault(emptyList())
 
+    /** Día de hoy; se vuelve a leer al volver a la app ([refreshDay]), por si pasó la medianoche. */
+    private val day = MutableStateFlow(today())
+
+    /** Llamar al volver a primer plano: si la app siguió abierta tras la medianoche, el Faro se actualiza. */
+    fun refreshDay() {
+        day.value = today()
+    }
+
     private val extras = combine(
         economy?.balance ?: flowOf(0),
         activity?.playedDays ?: flowOf(emptySet()),
         settings?.settings ?: flowOf(AppSettings()),
-    ) { balance, days, prefs -> Triple(balance, Streak.current(days, today()), prefs) }
+        day,
+    ) { balance, days, prefs, d -> Triple(balance, Streak.current(days, d), prefs) }
 
     /** null = sin reto diario (pruebas); si no, si ya se hizo hoy. */
-    private val dailyDone = daily?.completed?.map<Set<LocalDate>, Boolean?> { today() in it } ?: flowOf(null)
+    private val dailyDone = daily?.completed?.let { done -> combine(done, day) { set, d -> d in set } } ?: flowOf<Boolean?>(null)
 
     val state: StateFlow<HubUiState> = combine(progress.progress, seenCards.seen, extras, dailyDone) { progressMap, seen, (balance, streak, prefs), doneToday ->
         val chs = chapters ?: return@combine HubUiState(error = true, balance = balance, streak = streak)

@@ -41,9 +41,10 @@ class DailyViewModelTest {
         daily: FakeDailyRepository,
         progress: FakeProgressRepository = FakeProgressRepository.completed("t1" to 3),
         today: LocalDate = day,
+        phrases: List<String> = listOf("SOS", "OSO", "FARO"),
     ): DailyViewModel {
         Dispatchers.setMain(UnconfinedTestDispatcher(testScheduler))
-        val content = FakeContentSource(listOf(MissionTestContent.chapter), daily = listOf("SOS", "OSO", "FARO"))
+        val content = FakeContentSource(listOf(MissionTestContent.chapter), daily = phrases)
         val rewards = RewardsService(
             content, progress, FakeGameRecordsRepository(), FakeSeenCardsRepository(), economy,
             FakeActivityRepository(), FakeAchievementsRepository(), today = { today }, now = { 1L },
@@ -103,5 +104,15 @@ class DailyViewModelTest {
         assertEquals(DailyPhase.READY, v.state.value.phase)
         v.answer("XYZ"); v.answer("XYZ")
         assertEquals(io.github.egt17baa.morseprende.game.daily.DailyChallenge.hint(v.state.value.message!!, 2), v.state.value.hint)
+    }
+
+    @Test fun daily_phrase_fixed_for_the_day() = runTest {
+        val daily = FakeDailyRepository()
+        val first = vm(daily).also { runCurrent() }.state.value.message!!
+        // Más tarde el mismo día la lista de frases posibles cambia (letras nuevas): la frase no.
+        val other = listOf("SOS", "OSO").first { it != first }
+        assertEquals(first, vm(daily, phrases = listOf(other)).also { runCurrent() }.state.value.message)
+        // Al día siguiente sí cambia.
+        assertEquals(other, vm(daily, phrases = listOf(other), today = day.plusDays(1)).also { runCurrent() }.state.value.message)
     }
 }

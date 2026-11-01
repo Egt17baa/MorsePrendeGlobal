@@ -386,4 +386,44 @@ class GameViewModelsTest {
         assertEquals(6, rec.bestScore)
         assertEquals(1, rec.bestExtra)
     }
+
+    @Test fun night_vibration_slow_and_can_switch_to_sound() = runTest {
+        val d = deps()
+        val outputs = FakeOutputFactory(this)
+        val vm = night(d, AppSettings(charWpm = 25, effectiveWpm = 25, vibration = true), outputs)
+        vm.start()
+        runCurrent()
+        // Hasta el 6.º mensaje (vibración).
+        repeat(5) { advanceTimeBy(60_000); vm.answer(vm.state.value.text!!); vm.next(); runCurrent() }
+        assertEquals(io.github.egt17baa.morseprende.game.games.NightChannel.VIBRATION, vm.state.value.channel)
+        advanceTimeBy(60_000)
+        val vib = outputs.created.last { it.first == io.github.egt17baa.morseprende.playback.OutputKind.VIBRATION }.second
+        // A mano no se leen pulsos de 48 ms: la vibración nunca pasa de 15 PPM (punto de 80 ms).
+        val shortest = vib.played.flatten().minOf { it.durationMs }
+        assertTrue("pulso más corto $shortest ms", shortest >= 80)
+        // «No noto la vibración»: el mismo mensaje se repite por sonido.
+        val sounds = outputs.created.count { it.first == io.github.egt17baa.morseprende.playback.OutputKind.SOUND }
+        vm.useSound()
+        runCurrent()
+        assertTrue(vm.state.value.vibrationFallback)
+        assertEquals(sounds + 1, outputs.created.count { it.first == io.github.egt17baa.morseprende.playback.OutputKind.SOUND })
+    }
+
+    @Test fun night_abandon_keeps_the_run() = runTest {
+        val d = deps()
+        val vm = night(d, AppSettings(vibration = false), FakeOutputFactory(this))
+        playNight(vm, 6)
+        // Salir (atrás, llamada…) a mitad de guardia guarda lo conseguido.
+        vm.abandon()
+        runCurrent()
+        assertEquals(GamePhase.OVER, vm.state.value.phase)
+        val rec = d.records.records.value[GameId.NIGHT_WATCH]!!
+        assertEquals(6, rec.bestScore)
+        assertEquals(1, rec.bestExtra)
+        // Sin aciertos no se guarda nada.
+        val empty = night(d, AppSettings(vibration = false), FakeOutputFactory(this))
+        empty.start(); runCurrent(); empty.abandon(); runCurrent()
+        assertEquals(GamePhase.READY, empty.state.value.phase)
+        assertEquals(1, d.records.games.count { it.first == GameId.NIGHT_WATCH })
+    }
 }

@@ -10,5 +10,13 @@ class FakeDailyRepository(initial: Set<LocalDate> = emptySet()) : DailyRepositor
         completed.value = completed.value + day
         return true
     }
-    override suspend fun clear() { completed.value = emptySet() }
+    var phrase: Pair<LocalDate, String>? = null
+    override suspend fun phraseFor(day: LocalDate, choose: () -> String?): String? {
+        phrase?.takeIf { it.first == day }?.let { return it.second }
+        return choose()?.also { phrase = day to it }
+    }
+    override suspend fun clear() {
+        completed.value = emptySet()
+        phrase = null
+    }
 }

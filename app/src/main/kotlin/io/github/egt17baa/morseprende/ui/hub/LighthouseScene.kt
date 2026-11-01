@@ -219,6 +219,8 @@ private fun DrawScope.drawDecorations(decorations: Set<String>, cx: Float, tower
         for (i in 0 until 7) {
             val x = size.width * (0.08f + i * 0.14f)
             if (kotlin.math.abs(x - cx) < size.width * 0.08f) continue
+            // Con la casa del farero, los farolillos que quedarían tapados por ella no se dibujan.
+            if ("decor_house" in decorations && x > cx + size.width * 0.08f && x < cx + size.width * 0.27f) continue
             val c = Offset(x, seaTop - size.height * 0.015f)
             drawCircle(Brush.radialGradient(listOf(BeamCream.copy(alpha = 0.7f), Color.Transparent), center = c, radius = size.width * 0.03f), radius = size.width * 0.03f, center = c)
             drawCircle(BeamCream, radius = size.width * 0.008f, center = c)
