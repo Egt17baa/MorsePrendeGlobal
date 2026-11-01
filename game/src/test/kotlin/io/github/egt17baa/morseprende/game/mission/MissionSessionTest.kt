@@ -132,4 +132,35 @@ class MissionSessionTest {
         s.answer("ESTO ES SOS")
         assertEquals(listOf(CharOutcome('S', true), CharOutcome('O', false), CharOutcome('S', false)), s.outcomes)
     }
+
+    @Test fun snapshot_resumes_at_same_exercise_with_same_score() {
+        val exercises = listOf(
+            Exercise.Listen(listOf('S', 'O')),
+            Exercise.ReceiveChoice("S", listOf("S", "O")),
+            Exercise.ReceiveTyped("SOS"),
+            Exercise.Send("O"),
+            final,
+        )
+        val s = MissionSession(exercises)
+        s.continueListen()
+        s.answer("S")      // bien
+        s.answer("OSO")    // mal
+        val json = s.snapshot().toJson()
+        val restored = MissionSession.restore(MissionSnapshot.fromJson(json)!!)!!
+        assertEquals(3, restored.index)
+        assertEquals(exercises, restored.exercises)
+        assertEquals(s.outcomes, restored.outcomes)
+        restored.send("O")
+        restored.answer("ESTO ES SOS")
+        // 2 de 3 puntuables: igual que si no se hubiera salido.
+        assertEquals(MissionResult(2, 3, MissionSession.stars(2.0 / 3)), restored.result())
+    }
+
+    @Test fun broken_or_invalid_snapshot_is_ignored() {
+        assertEquals(null, MissionSnapshot.fromJson("{no es json"))
+        val s = MissionSession(listOf(final))
+        val bad = s.snapshot().copy(index = 5)
+        assertEquals(null, MissionSession.restore(bad))
+        assertEquals(null, MissionSession.restore(s.snapshot().copy(exercises = emptyList())))
+    }
 }

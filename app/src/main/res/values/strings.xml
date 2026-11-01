@@ -217,6 +217,8 @@
     <string name="mission_channel_light">Solo luz: mira el faro y descifra los destellos.</string>
     <string name="mission_channel_vibration">Solo vibración: sujeta el móvil y siente el pulso.</string>
     <string name="mission_channel_vibration_fallback">Sin vibración (o no se nota): esta misión se hace por sonido.</string>
+    <string name="mission_resume">Continuar (ejercicio %1$d de %2$d)</string>
+    <string name="mission_start_over">Empezar de nuevo</string>
     <string name="mission_vibration_use_sound">No noto la vibración: usar sonido</string>
     <string name="prosign_bt">BT · separación</string>
     <string name="prosign_ar">AR · fin de mensaje</string>

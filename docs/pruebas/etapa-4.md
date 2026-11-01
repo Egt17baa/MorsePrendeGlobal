@@ -1,4 +1,4 @@
-# Pruebas en el móvil: Etapa 4 (capítulos 2 y 3, versión 0.6.1)
+# Pruebas en el móvil: Etapa 4 (capítulos 2 y 3, versión 0.6.2)
 
 Instala `morseprende-0.6.0.apk` **encima** (sin desinstalar). En Ajustes de Android → Aplicaciones → MorsePrende debe poner versión 0.6.0.
 
@@ -47,6 +47,13 @@ Instala `morseprende-0.6.0.apk` **encima** (sin desinstalar). En Ajustes de Andr
 - [ ] Las palabras suenan enteras, sin cortes ni chasquidos entre letras, también después de un ejercicio de enviar.
 - [ ] En silencio no se oye nada raro (si acercas el oído al altavoz con el volumen al máximo, como mucho un
       susurro casi imperceptible).
+
+## Seguir una misión a medias (0.6.2)
+- [ ] Sal de una misión a mitad (por ejemplo en el ejercicio 13 de 14) con la flecha atrás: al volver a entrar
+      aparece «Continuar (ejercicio 13 de 14)» y sigue justo ahí, con lo acertado antes.
+- [ ] Lo mismo cerrando la app del todo (o bloqueando el móvil) y volviendo a abrirla.
+- [ ] «Empezar de nuevo» arranca desde el ejercicio 1 y olvida la partida guardada.
+- [ ] Al terminar la misión ya no ofrece continuar la próxima vez.
 
 ## General
 - [ ] Modo avión: todo igual. Si algo falla, anota en qué misión estabas y qué pasó.

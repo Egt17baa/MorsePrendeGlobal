@@ -40,6 +40,11 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import io.github.egt17baa.morseprende.data.save.MissionSaveStore
+import io.github.egt17baa.morseprende.data.save.NoMissionSaves
+import io.github.egt17baa.morseprende.game.mission.MissionSnapshot
 import kotlin.random.Random
 
 /**
@@ -58,6 +63,7 @@ class MissionViewModel(
     private val random: Random = Random.Default,
     playerScope: CoroutineScope? = null,
     private val clock: () -> Long = { SystemClock.uptimeMillis() },
+    private val saves: MissionSaveStore = NoMissionSaves,
 ) : ViewModel() {
 
     private val settings: StateFlow<AppSettings> = settings.settings.stateIn(viewModelScope, SharingStarted.Eagerly, AppSettings())
@@ -81,6 +87,10 @@ class MissionViewModel(
     private var sidetone: Sidetone? = null
     private var pendingAdvance = false
     private var recorded = false
+    /** Partida a medias que se puede retomar desde el briefing. */
+    private var pendingResume: MissionSnapshot? = null
+    /** Las escrituras del guardado van en orden (borrar y guardar nunca se adelantan). */
+    private val saveLock = Mutex()
 
     init {
         val loaded = runCatching {
@@ -100,6 +110,14 @@ class MissionViewModel(
             ui.value = MissionUiState(phase = MissionPhase.ERROR)
         } else {
             ui.value = briefingState(mission, initialSession)
+            viewModelScope.launch {
+                val saved = saves.load(missionId)?.let(MissionSnapshot::fromJson)
+                    ?.takeIf { it.index > 0 && MissionSession.restore(it) != null }
+                if (saved != null && pendingResume == null && ui.value.phase == MissionPhase.BRIEFING) {
+                    pendingResume = saved
+                    ui.update { it.copy(resumeAt = saved.index, exerciseCount = saved.exercises.size) }
+                }
+            }
         }
     }
 
@@ -110,20 +128,38 @@ class MissionViewModel(
         title = m.title,
         briefing = m.briefing,
         debriefing = m.debriefing,
-        exerciseCount = s.exercises.size,
+        exerciseCount = pendingResume?.exercises?.size ?: s.exercises.size,
         newChars = m.newChars.toSet(),
+        resumeAt = pendingResume?.index,
     )
 
+    /** Empieza de cero (y descarta la partida a medias, si la había). */
     fun start() {
         if (session == null || ui.value.phase != MissionPhase.BRIEFING) return
         val m = mission
         val ch = chapter
+        discardSave()
         // Se planifica al empezar con las cajas de Leitner actuales (los repasos insisten en lo fallado).
         if (m != null && ch != null) session = MissionSession(MissionPlanner.plan(m, ch, random, boxes.value, allChapters))
+        beginExercises()
+    }
+
+    /** Sigue la partida guardada por el ejercicio donde se dejó. */
+    fun resume() {
+        if (ui.value.phase != MissionPhase.BRIEFING) return
+        val restored = pendingResume?.let(MissionSession::restore) ?: return start()
+        pendingResume = null
+        session = restored
+        ui.update { it.copy(resumeAt = null) }
+        beginExercises()
+    }
+
+    private fun beginExercises() {
         val prefs = settings.value
         keyer = KeyerDecoder(1200L / prefs.effectiveWpm)
         sidetone = sidetoneFactory.create(prefs)
-        ui.update { it.copy(phase = MissionPhase.EXERCISE) }
+        val count = session?.exercises?.size ?: 0
+        ui.update { it.copy(phase = MissionPhase.EXERCISE, exerciseCount = count) }
         enterExercise()
     }
 
@@ -196,6 +232,7 @@ class MissionViewModel(
         val result = s.answer(text)
         pendingAdvance = result.advanced
         ui.update { it.copy(feedback = Feedback(result.correct, result.expected), hintLevel = s.hintLevel) }
+        persist()
     }
 
     fun keyDown(atMs: Long = clock()) {
@@ -257,6 +294,7 @@ class MissionViewModel(
         ui.update {
             it.copy(feedback = Feedback(result.correct, result.expected), attemptsLeft = result.attemptsLeft, keyerPending = "")
         }
+        persist()
     }
 
     /** Quita el feedback y pasa al siguiente ejercicio (o repite el actual si toca). */
@@ -282,6 +320,8 @@ class MissionViewModel(
         val m = mission ?: return
         val ch = chapter ?: return
         if (ui.value.phase == MissionPhase.EXERCISE) {
+            // Lo hecho hasta aquí ya está guardado: el briefing ofrece seguir por donde iba.
+            pendingResume = session?.takeIf { !it.isFinished && it.index > 0 }?.snapshot()
             val fresh = MissionSession(MissionPlanner.plan(m, ch, random, chapters = allChapters))
             session = fresh
             pendingAdvance = false
@@ -371,6 +411,21 @@ class MissionViewModel(
         }
         val limit = mission?.timeLimitSeconds
         if (limit != null && (exercise is Exercise.ReceiveChoice || exercise is Exercise.ReceiveTyped)) startTimer(limit, s.index)
+        persist()
+    }
+
+    /** Guarda la partida para poder seguirla luego (desde el segundo ejercicio; terminada, no). */
+    private fun persist() {
+        val s = session ?: return
+        if (s.isFinished || s.index == 0) return
+        val json = s.snapshot().toJson()
+        viewModelScope.launch { saveLock.withLock { saves.save(missionId, json) } }
+    }
+
+    private fun discardSave() {
+        pendingResume = null
+        if (ui.value.resumeAt != null) ui.update { it.copy(resumeAt = null) }
+        viewModelScope.launch { saveLock.withLock { saves.clear(missionId) } }
     }
 
     private fun finish() {
@@ -380,6 +435,7 @@ class MissionViewModel(
         ui.update { it.copy(phase = MissionPhase.DEBRIEFING, exercise = null, stars = result.stars) }
         if (recorded) return
         recorded = true
+        discardSave()
         viewModelScope.launch {
             val previous = progress.progress.first()[missionId]?.bestStars ?: 0
             ui.update { it.copy(previousBest = previous) }

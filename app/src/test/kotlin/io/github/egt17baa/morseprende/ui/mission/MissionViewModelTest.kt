@@ -52,6 +52,7 @@ class MissionViewModelTest {
         missionId: String = "t1",
         progress: FakeProgressRepository = FakeProgressRepository(),
         charStats: FakeCharStatsRepository = FakeCharStatsRepository(),
+        saves: io.github.egt17baa.morseprende.data.save.MissionSaveStore = io.github.egt17baa.morseprende.data.save.NoMissionSaves,
     ): Env {
         Dispatchers.setMain(UnconfinedTestDispatcher(testScheduler))
         val clock = longArrayOf(0)
@@ -59,6 +60,7 @@ class MissionViewModelTest {
         val vm = MissionViewModel(
             missionId, content, progress, FakeSettingsRepository(settings), FakeOutputFactory(this), sidetones,
             charStats = charStats, random = Random(1), playerScope = backgroundScope, clock = { clock[0] },
+            saves = saves,
         )
         return Env(vm, progress, charStats, sidetones, clock)
     }
@@ -687,5 +689,77 @@ class MissionViewModelTest {
         assertTrue("tono cerrado fuera de enviar", e.sidetones.created.all { it.closed })
         e.vm.replay()
         assertTrue(e.sidetones.created.all { it.closed })
+    }
+
+    /** Responde bien hasta llegar al ejercicio [target] (índice). */
+    private fun Env.answerUntil(target: Int) {
+        while (s.exerciseIndex < target) {
+            when (val x = s.exercise) {
+                is Exercise.Listen -> vm.continueListen()
+                is Exercise.ReceiveChoice -> { vm.answer(x.answer); vm.next() }
+                is Exercise.ReceiveTyped -> { vm.answer(x.answer); vm.next() }
+                is Exercise.Send -> repeat(3) { vm.dot(); vm.submitSend(); vm.next() }
+                else -> error("inesperado: $x")
+            }
+        }
+    }
+
+    @Test fun leaving_mid_mission_offers_resume_at_same_exercise() = runTest {
+        val saves = io.github.egt17baa.morseprende.data.save.InMemoryMissionSaveStore()
+        val e = env(saves = saves)
+        e.vm.start()
+        e.answerUntil(3)
+        val exercise = e.s.exercise
+        e.vm.abandon()
+        assertEquals(MissionPhase.BRIEFING, e.s.phase)
+        assertEquals(3, e.s.resumeAt)
+        e.vm.resume()
+        assertEquals(MissionPhase.EXERCISE, e.s.phase)
+        assertEquals(3, e.s.exerciseIndex)
+        assertEquals(exercise, e.s.exercise)
+    }
+
+    @Test fun reopening_the_mission_resumes_after_app_restart() = runTest {
+        val saves = io.github.egt17baa.morseprende.data.save.InMemoryMissionSaveStore()
+        val first = env(saves = saves)
+        first.vm.start()
+        first.answerUntil(4)
+        val exercise = first.s.exercise
+        // El sistema cierra la app sin pasar por abandon(): un ViewModel nuevo lo encuentra guardado.
+        val second = env(saves = saves)
+        runCurrent()
+        assertEquals(4, second.s.resumeAt)
+        second.vm.resume()
+        assertEquals(4, second.s.exerciseIndex)
+        assertEquals(exercise, second.s.exercise)
+    }
+
+    @Test fun start_over_discards_the_saved_game() = runTest {
+        val saves = io.github.egt17baa.morseprende.data.save.InMemoryMissionSaveStore()
+        val e = env(saves = saves)
+        e.vm.start()
+        e.answerUntil(3)
+        e.vm.abandon()
+        e.vm.start()
+        assertEquals(0, e.s.exerciseIndex)
+        assertEquals(null, e.s.resumeAt)
+        assertTrue(saves.saved.isEmpty())
+    }
+
+    @Test fun finishing_clears_the_saved_game() = runTest {
+        val saves = io.github.egt17baa.morseprende.data.save.InMemoryMissionSaveStore()
+        val e = env(saves = saves)
+        e.finishMission()
+        assertEquals(MissionPhase.DEBRIEFING, e.s.phase)
+        assertTrue(saves.saved.isEmpty())
+        assertEquals(1, e.progress.recorded.size)
+    }
+
+    @Test fun nothing_to_resume_at_first_exercise() = runTest {
+        val saves = io.github.egt17baa.morseprende.data.save.InMemoryMissionSaveStore()
+        val e = env(saves = saves)
+        e.vm.start()
+        e.vm.abandon()
+        assertEquals(null, e.s.resumeAt)
     }
 }

@@ -36,6 +36,8 @@ data class MissionUiState(
     val keyerSkin: String = "key_coral",
     /** Contrarreloj del ejercicio de recibir (null = sin límite o aún sonando). */
     val secondsLeft: Int? = null,
+    /** Partida a medias guardada: índice del ejercicio por el que seguir (null = no hay). */
+    val resumeAt: Int? = null,
     /** La misión tiene ruido de radio en los ejercicios. */
     val noisy: Boolean = false,
     /** Por dónde llegan los ejercicios de recibir y el mensaje final. */

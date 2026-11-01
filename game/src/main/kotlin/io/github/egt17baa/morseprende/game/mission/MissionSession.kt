@@ -70,6 +70,10 @@ class MissionSession(val exercises: List<Exercise>) {
         return AnswerResult(ok, e.target, advanced = advance, attemptsLeft = attemptsLeft)
     }
 
+    /** Estado para seguir más tarde (ver [restore]). */
+    fun snapshot(): MissionSnapshot =
+        MissionSnapshot(exercises = exercises, index = index, correct = correct, outcomes = outcomes, attemptsUsed = attemptsUsed, finalFailures = finalFailures)
+
     fun result(): MissionResult {
         check(isFinished) { "La misión no ha terminado" }
         val partial = MissionResult(correct, scoredTotal, 0)
@@ -93,6 +97,20 @@ class MissionSession(val exercises: List<Exercise>) {
 
     companion object {
         const val SEND_ATTEMPTS = 3
+
+        /** Retoma una partida guardada; null si no tiene sentido (vacía, terminada o incoherente). */
+        fun restore(snapshot: MissionSnapshot): MissionSession? {
+            if (snapshot.exercises.isEmpty() || snapshot.index !in snapshot.exercises.indices) return null
+            if (snapshot.correct < 0 || snapshot.attemptsUsed !in 0 until SEND_ATTEMPTS || snapshot.finalFailures < 0) return null
+            return MissionSession(snapshot.exercises).apply {
+                index = snapshot.index
+                correct = snapshot.correct
+                charOutcomes += snapshot.outcomes
+                attemptsUsed = snapshot.attemptsUsed
+                finalFailures = snapshot.finalFailures
+                hintLevel = minOf(MAX_HINT_LEVEL, finalFailures / 2)
+            }
+        }
         private const val MAX_HINT_LEVEL = 2
 
         fun stars(accuracy: Double): Int = when {

@@ -54,6 +54,7 @@ interface MissionActions {
     fun next()
     fun exit()
     fun useSound()
+    fun resume()
 }
 
 @Composable
@@ -84,6 +85,7 @@ fun MissionScreen(viewModel: MissionViewModel, onExit: () -> Unit) {
         override fun next() = viewModel.next()
         override fun exit() = onExit()
         override fun useSound() = viewModel.useSound()
+        override fun resume() = viewModel.resume()
     }
     MissionContent(state, actions)
 }
@@ -147,7 +149,18 @@ fun MissionContent(state: MissionUiState, actions: MissionActions) {
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 when (state.phase) {
-                    MissionPhase.BRIEFING -> LogbookPanel(state.briefing, stringResource(R.string.mission_start), actions::start)
+                    MissionPhase.BRIEFING -> {
+                        val resumeAt = state.resumeAt
+                        if (resumeAt != null && state.exerciseCount > 0) {
+                            // Partida a medias: se sigue por donde se dejó, o se empieza de nuevo.
+                            LogbookPanel(state.briefing, stringResource(R.string.mission_resume, resumeAt + 1, state.exerciseCount), actions::resume)
+                            androidx.compose.material3.OutlinedButton(onClick = actions::start, modifier = Modifier.fillMaxWidth()) {
+                                Text(stringResource(R.string.mission_start_over))
+                            }
+                        } else {
+                            LogbookPanel(state.briefing, stringResource(R.string.mission_start), actions::start)
+                        }
+                    }
                     MissionPhase.EXERCISE -> ExercisePanel(state, actions)
                     MissionPhase.DEBRIEFING -> DebriefingPanel(state, actions)
                     MissionPhase.ERROR -> ErrorPanel(actions)

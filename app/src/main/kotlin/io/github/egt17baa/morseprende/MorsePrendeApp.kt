@@ -30,6 +30,8 @@ class AppContainer(context: Context) {
     val content: ContentSource = AssetContentSource(appContext)
     val sidetone: SidetoneFactory = AndroidSidetoneFactory(appContext)
     val seenCards: SeenCardsRepository = DataStoreSeenCardsRepository(appContext)
+    val missionSaves: io.github.egt17baa.morseprende.data.save.MissionSaveStore =
+        io.github.egt17baa.morseprende.data.save.FileMissionSaveStore(java.io.File(appContext.filesDir, "partidas"))
     private val database: AppDatabase by lazy { AppDatabase.create(appContext) }
     val progress: ProgressRepository by lazy { RoomProgressRepository(database) }
     val charStats: CharStatsRepository by lazy { RoomCharStatsRepository(database) }

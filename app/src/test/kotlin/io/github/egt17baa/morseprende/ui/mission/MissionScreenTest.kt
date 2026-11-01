@@ -62,6 +62,7 @@ class MissionScreenTest {
         override fun next() { calls += "next" }
         override fun exit() { calls += "exit" }
         override fun useSound() { calls += "useSound" }
+        override fun resume() { calls += "resume" }
     }
 
     @Test fun briefing_shows_and_starts() {
@@ -236,5 +237,14 @@ class MissionScreenTest {
         val scroll = compose.onNodeWithTag("mission_scroll").fetchSemanticsNode()
         assertTrue(lamp.boundsInRoot.bottom <= scroll.boundsInRoot.top + 0.5f)
         assertTrue(header.boundsInRoot.bottom <= scroll.boundsInRoot.top + 0.5f)
+    }
+
+    @Test fun briefing_with_saved_game_offers_continue_and_restart() {
+        val r = Recorder()
+        val state = MissionUiState(title = "Niebla en la bocana", briefing = "Aprende E y T", exerciseCount = 14, resumeAt = 12)
+        compose.setContent { MissionContent(state, r) }
+        compose.onNodeWithText(context.getString(R.string.mission_resume, 13, 14)).performScrollTo().performClick()
+        compose.onNodeWithText(str(R.string.mission_start_over)).performScrollTo().performClick()
+        assertEquals(listOf("resume", "start"), r.calls)
     }
 }

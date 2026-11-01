@@ -4,6 +4,7 @@ import io.github.egt17baa.morseprende.core.MorseCodec
 import kotlin.random.Random
 
 /** Resultado de un carácter en un ejercicio. */
+@kotlinx.serialization.Serializable
 data class CharOutcome(val char: Char, val correct: Boolean)
 
 /**
