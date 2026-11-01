@@ -75,6 +75,21 @@ class HubViewModelTest {
         assertEquals(1f, after.chapters[0].progress, 1e-6f)
     }
 
+    @Test fun chapter3_section_present() = runTest {
+        Dispatchers.setMain(UnconfinedTestDispatcher(testScheduler))
+        val all = listOf(FakeContentSource.realChapter1, FakeContentSource.realChapter2, FakeContentSource.realChapter3)
+        fun vm3(progress: FakeProgressRepository) = HubViewModel(FakeContentSource(all, cards), progress, FakeSeenCardsRepository(emptySet()))
+        val required = (all[0].missions + all[1].missions).filter { !it.optional }.map { it.id to 1 }
+        val before = vm3(FakeProgressRepository.completed(*required.filter { it.first != "c2f" }.toTypedArray())).state.value
+        assertEquals(listOf(1, 2, 3), before.chapters.map { it.id })
+        assertEquals("Señal Estelar", before.chapters[2].title)
+        assertFalse(before.chapters[2].unlocked)
+        // Sin hacer la Ñ opcional, el capítulo 3 se abre al terminar c2f.
+        val after = vm3(FakeProgressRepository.completed(*required.toTypedArray())).state.value
+        assertTrue(after.chapters[2].unlocked)
+        assertTrue(after.chapters[2].nodes.first().isNext)
+    }
+
     @Test fun optional_node_marked() = runTest {
         val nodes = vm().state.value.chapters[1].nodes
         assertTrue(nodes.single { it.id == "c2x" }.optional)

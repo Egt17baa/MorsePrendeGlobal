@@ -3,6 +3,8 @@ package io.github.egt17baa.morseprende.ui.hub
 import android.content.Context
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.test.core.app.ApplicationProvider
@@ -61,5 +63,17 @@ class HubScreenTest {
         compose.setContent { HubContent(state.copy(balance = 120), HubCallbacks(onShop = { shop++ })) }
         compose.onNodeWithText(context.resources.getQuantityString(R.plurals.hub_balance, 120, 120)).performClick()
         assertEquals(1, shop)
+    }
+
+    @Test fun coming_soon_hidden_when_chapter3_exists() {
+        fun section(id: Int) = ChapterSection(id, "Capítulo $id", state.nodes.map { it.copy(id = "c${id}_" + it.id) }, unlocked = id == 1, progress = 0f)
+        compose.setContent { HubContent(state.copy(chapters = listOf(section(1), section(2), section(3))), HubCallbacks()) }
+        compose.onAllNodesWithText(context.getString(R.string.hub_coming_soon)).assertCountEquals(0)
+    }
+
+    @Test fun coming_soon_shown_without_chapter3() {
+        fun section(id: Int) = ChapterSection(id, "Capítulo $id", state.nodes.map { it.copy(id = "c${id}_" + it.id) }, unlocked = id == 1, progress = 0f)
+        compose.setContent { HubContent(state.copy(chapters = listOf(section(1), section(2))), HubCallbacks()) }
+        compose.onNodeWithText(context.getString(R.string.hub_coming_soon)).performScrollTo()
     }
 }
