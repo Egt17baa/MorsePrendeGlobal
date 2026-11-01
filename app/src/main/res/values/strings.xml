@@ -8,6 +8,8 @@
     <string name="hub_chapter2_title">Operación Sombra</string>
     <string name="hub_chapter3_title">Señal Estelar</string>
     <string name="hub_coming_soon">Próximamente</string>
+    <string name="hub_unlock_after">Se desbloquea al terminar el capítulo %1$d</string>
+    <string name="hub_extra">%1$s · Extra</string>
     <string name="hub_locked">Bloqueada</string>
     <string name="hub_library">Biblioteca</string>
     <string name="hub_translator">Traductor</string>

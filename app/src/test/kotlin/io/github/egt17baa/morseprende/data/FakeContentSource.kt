@@ -18,5 +18,10 @@ class FakeContentSource(
         val realChapter1: Chapter by lazy {
             ContentParser.chapter(File("src/main/assets/content/es/chapter1.json").readText())
         }
+
+        /** El capítulo 2 real. */
+        val realChapter2: Chapter by lazy {
+            ContentParser.chapter(File("src/main/assets/content/es/chapter2.json").readText())
+        }
     }
 }

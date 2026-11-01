@@ -112,14 +112,22 @@ fun HubContent(state: HubUiState, callbacks: HubCallbacks) {
                 Text(stringResource(R.string.hub_error), style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
                 return@Column
             }
-            Text(
-                stringResource(R.string.hub_chapter, 1, state.chapterTitle),
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.secondary,
-            )
-            MissionPath(state.nodes, callbacks.onMission)
-            LockedChapter(stringResource(R.string.hub_chapter, 2, stringResource(R.string.hub_chapter2_title)))
-            LockedChapter(stringResource(R.string.hub_chapter, 3, stringResource(R.string.hub_chapter3_title)))
+            val sections = state.chapters.ifEmpty { listOf(ChapterSection(1, state.chapterTitle, state.nodes, true, state.glow)) }
+            sections.forEach { section ->
+                Text(
+                    stringResource(R.string.hub_chapter, section.id, section.title),
+                    style = MaterialTheme.typography.titleLarge,
+                    color = if (section.unlocked) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                if (section.unlocked) {
+                    MissionPath(section.nodes, callbacks.onMission)
+                } else {
+                    LockedChapter(stringResource(R.string.hub_chapter, section.id, section.title), stringResource(R.string.hub_unlock_after, section.id - 1))
+                }
+            }
+            if (sections.none { it.id == 3 }) {
+                LockedChapter(stringResource(R.string.hub_chapter, 3, stringResource(R.string.hub_chapter3_title)), stringResource(R.string.hub_coming_soon))
+            }
         }
     }
 }
@@ -171,7 +179,7 @@ private fun MissionRow(node: MissionNode, x: Float, prevX: Float?, onMission: (S
             horizontalAlignment = if (textOnRight) Alignment.Start else Alignment.End,
         ) {
             Text(
-                node.title,
+                if (node.optional) stringResource(R.string.hub_extra, node.title) else node.title,
                 style = MaterialTheme.typography.titleSmall,
                 color = if (node.unlocked) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = if (textOnRight) TextAlign.Start else TextAlign.End,
@@ -184,11 +192,12 @@ private fun MissionRow(node: MissionNode, x: Float, prevX: Float?, onMission: (S
 @Composable
 private fun NodeBadge(node: MissionNode, size: androidx.compose.ui.unit.Dp) {
     val fill = if (node.unlocked) BeamCream else SeaMist
+    val badgeSize = if (node.optional) size * 0.7f else size
     val shape = if (node.type == MissionType.REVIEW) RoundedCornerShape(12.dp) else CircleShape
     val ring = if (node.isNext) Modifier.border(4.dp, Coral, shape) else Modifier
     Box(
         Modifier
-            .size(size)
+            .size(badgeSize)
             .then(if (node.type == MissionType.REVIEW) Modifier.rotate(45f) else Modifier)
             .background(if (node.type == MissionType.FINALE && node.unlocked) Coral else fill, shape)
             .then(ring),
@@ -205,14 +214,14 @@ private fun NodeBadge(node: MissionNode, size: androidx.compose.ui.unit.Dp) {
 }
 
 @Composable
-private fun LockedChapter(title: String) {
+private fun LockedChapter(title: String, subtitle: String) {
     Card(Modifier.fillMaxWidth()) {
         Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
             Icon(Icons.Filled.Lock, contentDescription = null)
             Spacer(Modifier.width(12.dp))
             Column {
                 Text(title, style = MaterialTheme.typography.titleMedium)
-                Text(stringResource(R.string.hub_coming_soon), style = MaterialTheme.typography.bodySmall)
+                Text(subtitle, style = MaterialTheme.typography.bodySmall)
             }
         }
     }

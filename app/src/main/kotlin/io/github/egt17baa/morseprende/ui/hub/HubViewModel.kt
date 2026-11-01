@@ -29,11 +29,17 @@ data class MissionNode(
     val stars: Int,
     val unlocked: Boolean,
     val isNext: Boolean,
+    /** Misión extra (no bloquea la campaña). */
+    val optional: Boolean = false,
 )
+
+/** Un capítulo de la campaña en el mapa del faro. */
+data class ChapterSection(val id: Int, val title: String, val nodes: List<MissionNode>, val unlocked: Boolean, val progress: Float)
 
 data class HubUiState(
     val chapterTitle: String = "",
     val nodes: List<MissionNode> = emptyList(),
+    val chapters: List<ChapterSection> = emptyList(),
     /** Progreso del capítulo (0..1): da brillo y alcance al haz del faro. */
     val glow: Float = 0f,
     val error: Boolean = false,
@@ -72,12 +78,10 @@ class HubViewModel(
 
     val state: StateFlow<HubUiState> = combine(progress.progress, seenCards.seen, extras) { progressMap, seen, (balance, streak, prefs) ->
         val chs = chapters ?: return@combine HubUiState(error = true, balance = balance, streak = streak)
-        val chapter = chs.first()
         val completed = progressMap.keys
         val next = ProgressRules.nextMission(chs, completed)
-        HubUiState(
-            chapterTitle = chapter.title,
-            nodes = chapter.missions.map { m ->
+        val sections = chs.map { chapter ->
+            val nodes = chapter.missions.map { m ->
                 MissionNode(
                     id = m.id,
                     title = m.title,
@@ -85,9 +89,18 @@ class HubViewModel(
                     stars = progressMap[m.id]?.bestStars ?: 0,
                     unlocked = ProgressRules.isUnlocked(m.id, chs, completed),
                     isNext = m.id == next?.id,
+                    optional = m.optional,
                 )
-            },
-            glow = ProgressRules.chapterProgress(chapter, completed),
+            }
+            ChapterSection(chapter.id, chapter.title, nodes, nodes.firstOrNull()?.unlocked ?: false, ProgressRules.chapterProgress(chapter, completed))
+        }
+        val required = chs.flatMap { it.missions }.filter { !it.optional }
+        HubUiState(
+            chapterTitle = sections.first().title,
+            nodes = sections.first().nodes,
+            chapters = sections,
+            // El brillo del faro crece con toda la campaña (sin contar las misiones extra).
+            glow = if (required.isEmpty()) 0f else required.count { it.id in completed }.toFloat() / required.size,
             newCards = ProgressRules.unlockedCards(cards, completed).count { it.id !in seen },
             balance = balance,
             streak = streak,

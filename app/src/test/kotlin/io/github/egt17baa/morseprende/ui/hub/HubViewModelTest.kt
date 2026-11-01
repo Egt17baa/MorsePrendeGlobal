@@ -35,7 +35,7 @@ class HubViewModelTest {
         fail: Boolean = false,
     ): HubViewModel {
         Dispatchers.setMain(UnconfinedTestDispatcher(testScheduler))
-        return HubViewModel(FakeContentSource(listOf(FakeContentSource.realChapter1), cards, fail), progress, FakeSeenCardsRepository(seen))
+        return HubViewModel(FakeContentSource(listOf(FakeContentSource.realChapter1, FakeContentSource.realChapter2), cards, fail), progress, FakeSeenCardsRepository(seen))
     }
 
     @Test fun nodes_reflect_progress() = runTest {
@@ -57,9 +57,28 @@ class HubViewModelTest {
         assertFalse(s.nodes[1].unlocked)
     }
 
-    @Test fun glow_is_chapter_progress() = runTest {
+    @Test fun glow_counts_both_chapters() = runTest {
         assertEquals(0f, vm().state.value.glow, 1e-6f)
-        assertEquals(0.25f, vm(FakeProgressRepository.completed("c1m1" to 1, "c1m2" to 2)).state.value.glow, 1e-6f)
+        // 2 de 26 misiones obligatorias (8 + 18; la Ñ opcional no cuenta).
+        assertEquals(2f / 26f, vm(FakeProgressRepository.completed("c1m1" to 1, "c1m2" to 2)).state.value.glow, 1e-6f)
+    }
+
+    @Test fun chapter2_locked_until_c1f() = runTest {
+        val ch1 = FakeContentSource.realChapter1.missions.map { it.id to 2 }
+        val before = vm(FakeProgressRepository.completed(*ch1.filter { it.first != "c1f" }.toTypedArray())).state.value
+        assertEquals(listOf(1, 2), before.chapters.map { it.id })
+        assertTrue(before.chapters[0].unlocked)
+        assertFalse(before.chapters[1].unlocked)
+        val after = vm(FakeProgressRepository.completed(*ch1.toTypedArray())).state.value
+        assertTrue(after.chapters[1].unlocked)
+        assertTrue(after.chapters[1].nodes.first().isNext)
+        assertEquals(1f, after.chapters[0].progress, 1e-6f)
+    }
+
+    @Test fun optional_node_marked() = runTest {
+        val nodes = vm().state.value.chapters[1].nodes
+        assertTrue(nodes.single { it.id == "c2x" }.optional)
+        assertEquals(1, nodes.count { it.optional })
     }
 
     @Test fun new_cards_counts_unlocked_unseen() = runTest {
