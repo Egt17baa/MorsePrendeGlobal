@@ -53,8 +53,10 @@ Datos comprobados en noviembre de 2026; Google los cambia a menudo, así que Pla
    - Si el repositorio es público: el enlace al fichero en GitHub
      (`…/blob/main/docs/publicacion/politica-privacidad.md`) o GitHub Pages.
    - Si es privado: cópiala en una página gratuita (por ejemplo, Google Sites).
-   - Antes de publicar, cambia `‹tu correo de contacto›` por un correo real **en el fichero** y vuelve
-     a compilar: así la versión de la app también lo lleva.
+   - El contacto de la política es el usuario egt17baa de GitHub. Si algún día lo cambias, edita el
+     fichero y vuelve a compilar: la versión de la app se copia de él.
+   - En «Datos de contacto» de la ficha, Play exige también un correo electrónico; escríbelo allí al
+     rellenarlo (no hace falta guardarlo en el repositorio).
 5. **Ficha de Play Store.** Copia los textos de `ficha-google-play.md` y sube los gráficos de
    `graficos/`.
 6. **Contenido de la app.** Rellena los formularios con las respuestas de `ficha-google-play.md`:
@@ -62,7 +64,7 @@ Datos comprobados en noviembre de 2026; Google los cambia a menudo, así que Pla
    - anuncios;
    - acceso a la app;
    - clasificación de contenido;
-   - público objetivo (decide entre la opción A y la B);
+   - público objetivo: 13 años o más (ver la ficha);
    - seguridad de los datos;
    - ID de publicidad;
    - el resto de declaraciones.

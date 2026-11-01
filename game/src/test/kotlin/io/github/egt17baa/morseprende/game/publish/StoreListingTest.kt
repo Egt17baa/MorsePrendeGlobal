@@ -53,4 +53,13 @@ class StoreListingTest {
         /** Palabras de los encabezados de sección de la descripción completa. */
         val SECTION_WORDS = setOf("CAMPAÑA", "HISTORIA", "ESCUCHAR", "INTELIGENTE", "MINIJUEGOS", "BIBLIOTECA", "TRADUCTOR", "PRIVACIDAD", "RESPETA")
     }
+
+    @Test fun privacy_policy_is_complete() {
+        val policy = File(checkNotNull(System.getProperty("politica.path")) { "falta politica.path" }).readText()
+        assertFalse("quedan huecos sin rellenar", policy.contains("‹") || listing.contains("‹"))
+        assertTrue(policy.contains("https://github.com/egt17baa"))
+        assertTrue(policy.contains("13 años o más"))
+        // Público objetivo decidido: 13+ en la ficha, sin menores de 13.
+        assertTrue(listing.contains("Decisión: **solo 13 años o más.**"))
+    }
 }

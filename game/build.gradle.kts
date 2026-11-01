@@ -19,6 +19,9 @@ tasks.test {
     val ficha = rootProject.file("docs/publicacion/ficha-google-play.md")
     inputs.file(ficha).withPathSensitivity(PathSensitivity.RELATIVE).withPropertyName("ficha")
     systemProperty("ficha.path", ficha.absolutePath)
+    val politica = rootProject.file("docs/publicacion/politica-privacidad.md")
+    inputs.file(politica).withPathSensitivity(PathSensitivity.RELATIVE).withPropertyName("politica")
+    systemProperty("politica.path", politica.absolutePath)
 }
 
 dependencies {

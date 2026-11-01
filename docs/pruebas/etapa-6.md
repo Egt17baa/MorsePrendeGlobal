@@ -6,10 +6,9 @@ Instala el APK encima del anterior: no se pierde el progreso.
       licencia de la tipografía y la licencia Apache 2.0, y se puede desplazar hasta el final.
 - [ ] La flecha atrás vuelve a Ajustes.
 - [ ] Ajustes → Acerca de → «Política de privacidad» muestra la política completa, legible y sin
-      símbolos raros (asteriscos, almohadillas). El hueco «‹tu correo de contacto›» es normal hasta que
-      decidas publicar.
+      símbolos raros (asteriscos, almohadillas). Al final aparece el contacto: egt17baa en GitHub, y en
+      «Menores», que la app es para 13 años o más.
 - [ ] Mira los gráficos de `docs/publicacion/graficos/` y los textos de `docs/publicacion/ficha-google-play.md`:
       dime si quieres cambiar algo de la ficha antes de publicar algún día.
-- [ ] Cuando vayas a publicar, decide el público objetivo (opción A o B en la ficha) y lee el paso 3
-      de `docs/publicacion/como-publicar.md` (firma) antes de subir nada.
+- [ ] Cuando vayas a publicar, lee el paso 3 de `docs/publicacion/como-publicar.md` (firma) antes de subir nada.
 - [ ] Lo de la Etapa 5 (`docs/pruebas/etapa-5.md`) sigue igual.

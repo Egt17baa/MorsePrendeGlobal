@@ -60,7 +60,10 @@ Primera versión: campaña completa en tres capítulos, minijuegos, biblioteca, 
 - Tipo: **Juego** (o «App»; las dos encajan. Como juego destaca más la campaña; como app, en Educación).
 - Categoría recomendada: **Juegos → Educativos** (si se elige App: **Educación**).
 - Etiquetas sugeridas: Educativo, Trivia/Palabras, Un jugador, Sin conexión.
-- Correo de contacto: ‹tu correo de contacto› (obligatorio; Play lo muestra en la ficha).
+- Contacto: usuario **egt17baa** de GitHub. En «Datos de contacto de la ficha», pon como sitio web
+  `https://github.com/egt17baa`. Play exige además un **correo electrónico** en ese apartado (es
+  obligatorio y se muestra en la ficha): tendrás que escribir uno al rellenarlo; no se guarda en el
+  repositorio.
 - Política de privacidad: URL pública de `politica-privacidad.md` (ver `como-publicar.md`).
 
 ## Contenido de la app (formularios de Play Console)
@@ -100,22 +103,17 @@ pueden usar destellos de linterna o pantalla; la app avisa antes y por defecto l
 
 - **Toda la funcionalidad está disponible sin restricciones** (no hay inicio de sesión).
 
-### Público objetivo y contenido (decisión tuya al publicar)
+### Público objetivo y contenido
 
-Play pregunta las edades a las que se dirige la app. Hay que elegir una de estas dos opciones; ser
-ambiguo no vale, porque si la ficha resulta atractiva para niños pero no se declaran menores de 13,
-Play puede rechazar la app.
+Decisión: **solo 13 años o más.**
 
-- **Opción A: solo 13 años o más** (13-15, 16-17, 18+). No aplica la política de familias, pero hay
-  que cuidar que la ficha no se dirija a niños (los textos y gráficos actuales no usan personajes
-  infantiles ni lenguaje para niños) y responder **No** a «¿podría atraer a niños?» solo si es
-  verdad. Si Play no está de acuerdo, pedirá cambiar la ficha o pasar a la opción B.
-- **Opción B: incluir también menores de 13** (por ejemplo, 9-12). Hay que cumplir la política de
-  «Diseñado para familias». La app ya cumple lo principal: sin anuncios, sin recogida de datos, sin
-  compras, sin enlaces fuera de la app y con aviso de destellos. Supone una revisión más detallada
-  de Google y declararlo en el formulario.
-- Para un juego educativo de Morse pensado para todo el mundo, la **opción B** es la más honesta si
-  quieres que lo jueguen niños; la **A**, la más sencilla si no.
+- Edades objetivo: marca **13-15, 16-17 y 18 o más** (ninguna de menores de 13).
+- ¿La ficha podría atraer a niños sin querer? **No**: los textos y gráficos se dirigen a cualquier
+  persona que quiera aprender Morse (historia, radio, espionaje, accesibilidad), sin personajes
+  infantiles ni lenguaje para niños. Al no incluir menores de 13 no aplica la política de familias.
+- Mantén la ficha así: si en el futuro se añaden elementos claramente infantiles, Play podría pedir
+  cambiar la ficha o declarar menores de 13 (y cumplir la política de familias).
+- La política de privacidad ya dice que la app está dirigida a personas de 13 años o más.
 
 ### Otras declaraciones
 

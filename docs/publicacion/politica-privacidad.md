@@ -50,7 +50,8 @@ restaura si vuelves a instalarla (puedes borrarla desde los ajustes de copia de 
 
 ## Menores
 
-La app no recoge datos personales de nadie, tampoco de menores de 13 años.
+La app está dirigida a personas de **13 años o más**. En cualquier caso, no recoge datos personales
+de nadie, tampoco de menores.
 
 ## Cambios
 
@@ -58,7 +59,7 @@ Si esta política cambia, se publicará la nueva versión en esta misma direcci�
 
 ## Contacto
 
-‹tu correo de contacto›
+Usuario **egt17baa** en GitHub: https://github.com/egt17baa
 
 ---
 
@@ -71,4 +72,5 @@ accounts, no ads, no in-app purchases, no analytics and no third-party services,
 data with anyone. The only permission is VIBRATE (Morse by vibration and keyer feedback). Android's
 own backup may include the app's data in your Google backup if you enable it (that copy survives
 uninstalling and is restored on reinstall). You can erase all progress in Settings or by
-uninstalling the app. Contact: ‹your contact e-mail›.
+uninstalling the app. The app is intended for people aged 13 and over. Contact: GitHub user egt17baa,
+https://github.com/egt17baa.
