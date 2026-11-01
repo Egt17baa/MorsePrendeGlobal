@@ -47,7 +47,7 @@ class ShopViewModelTest {
     @Test fun lists_catalog_with_balance() = runTest {
         val e = env(70)
         assertEquals(70, e.vm.state.value.balance)
-        assertEquals(15, e.vm.state.value.items.size)
+        assertEquals(io.github.egt17baa.morseprende.game.economy.Shop.items.size, e.vm.state.value.items.size)
         assertTrue(e.vm.item("lamp_cream").owned)
         assertTrue(e.vm.item("lamp_cream").equipped)
     }
