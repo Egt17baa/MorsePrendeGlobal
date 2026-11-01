@@ -12,14 +12,14 @@ fun chapterColors(base: ColorScheme, chapterId: Int, dark: Boolean, highContrast
     if (highContrast) return base
     return when (chapterId) {
         2 -> if (dark) {
-            base.copy(primary = Amber, onPrimary = SeaNight, secondary = SignalGrey, primaryContainer = Olive, onPrimaryContainer = Amber, outline = Olive)
+            base.copy(primary = Amber, onPrimary = SeaNight, secondary = SignalGrey, primaryContainer = Olive, onPrimaryContainer = Amber, outline = Olive, outlineVariant = Olive)
         } else {
-            base.copy(primary = Olive, onPrimary = White, secondary = SignalGrey, primaryContainer = Amber, onPrimaryContainer = SeaNight, outline = Olive)
+            base.copy(primary = Olive, onPrimary = White, secondary = SignalGrey, primaryContainer = Amber, onPrimaryContainer = SeaNight, outline = Olive, outlineVariant = Olive.copy(alpha = 0.55f))
         }
         3 -> if (dark) {
-            base.copy(primary = StarWhite, onPrimary = DeepViolet, secondary = Magenta, primaryContainer = DeepViolet, onPrimaryContainer = StarWhite, outline = DeepViolet)
+            base.copy(primary = StarWhite, onPrimary = DeepViolet, secondary = Magenta, primaryContainer = DeepViolet, onPrimaryContainer = StarWhite, outline = DeepViolet, outlineVariant = Magenta.copy(alpha = 0.6f))
         } else {
-            base.copy(primary = DeepViolet, onPrimary = White, secondary = Magenta, primaryContainer = StarWhite, onPrimaryContainer = DeepViolet, outline = DeepViolet)
+            base.copy(primary = DeepViolet, onPrimary = White, secondary = Magenta, primaryContainer = StarWhite, onPrimaryContainer = DeepViolet, outline = DeepViolet, outlineVariant = DeepViolet.copy(alpha = 0.55f))
         }
         else -> base
     }

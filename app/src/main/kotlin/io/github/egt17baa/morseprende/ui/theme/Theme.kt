@@ -45,7 +45,7 @@ private val LightColors = lightColorScheme(
     onBackground = SeaNight,
     surface = White,
     onSurface = SeaNight,
-    surfaceVariant = Sand,
+    surfaceVariant = Color(0xFFDCE5E3),
     onSurfaceVariant = SeaDeep,
     primaryContainer = BeamCream,
     onPrimaryContainer = SeaNight,
@@ -57,7 +57,8 @@ private val LightColors = lightColorScheme(
     surfaceContainerHigh = White,
     surfaceContainerHighest = Sand,
     outline = Lagoon,
-    outlineVariant = Sand,
+    // Borde de los botones con contorno: tiene que verse sobre la arena del fondo.
+    outlineVariant = Lagoon.copy(alpha = 0.55f),
 )
 
 /** Alto contraste: negro y blanco puros, con un primario muy visible. */

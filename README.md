@@ -4,11 +4,13 @@ Juego educativo para Android que enseña **código Morse jugando**. Eres el fare
 barcos, espías y señales del espacio te hablan en Morse, y para avanzar tienes que aprender a
 recibir y a enviar. Totalmente gratis, sin anuncios y sin conexión a internet.
 
-> Estado: **Etapa 4 (0.6.2)**: campaña completa en tres capítulos, «El Faro», «Operación Sombra»
+> Estado: **Etapa 5 (0.7.0)**: campaña completa en tres capítulos, «El Faro», «Operación Sombra»
 > (todas las letras, números, la Ñ como extra, ruido de radio y contrarreloj) y «Señal Estelar»
 > (signos de puntuación, prosignos AR y BT, misiones de velocidad y señales solo de luz o solo de
 > vibración). También: repaso inteligente, tres minijuegos con récords, Destellos con tienda
-> estética, logros, racha suave, biblioteca con 14 fichas, traductor y ajustes.
+> estética, logros, racha suave, biblioteca con 14 fichas, traductor y ajustes con accesibilidad
+> (tamaño de texto, alto contraste, limitar destellos, vibración) y borrar progreso. Paleta propia por
+> capítulo y tipografía Atkinson Hyperlegible (OFL) incluida.
 
 - Diseño: [`docs/superpowers/specs/2026-10-31-juego-morse-faro-design.md`](docs/superpowers/specs/2026-10-31-juego-morse-faro-design.md)
 - Plan de la etapa 1: [`docs/superpowers/plans/2026-10-31-etapa-1-nucleo-y-traductor.md`](docs/superpowers/plans/2026-10-31-etapa-1-nucleo-y-traductor.md)
@@ -17,7 +19,8 @@ recibir y a enviar. Totalmente gratis, sin anuncios y sin conexión a internet.
 - Plan de la etapa 3b: [`docs/superpowers/plans/2026-11-01-etapa-3b-destellos-tienda-logros-racha.md`](docs/superpowers/plans/2026-11-01-etapa-3b-destellos-tienda-logros-racha.md)
 - Plan de la etapa 4a: [`docs/superpowers/plans/2026-11-01-etapa-4a-operacion-sombra.md`](docs/superpowers/plans/2026-11-01-etapa-4a-operacion-sombra.md)
 - Plan de la etapa 4b: [`docs/superpowers/plans/2026-11-01-etapa-4b-senal-estelar.md`](docs/superpowers/plans/2026-11-01-etapa-4b-senal-estelar.md)
-- Pruebas en el móvil: [`docs/pruebas/etapa-4.md`](docs/pruebas/etapa-4.md)
+- Plan de la etapa 5: [`docs/superpowers/plans/2026-11-01-etapa-5-pulido-accesibilidad.md`](docs/superpowers/plans/2026-11-01-etapa-5-pulido-accesibilidad.md)
+- Pruebas en el móvil: [`docs/pruebas/etapa-4.md`](docs/pruebas/etapa-4.md) y [`docs/pruebas/etapa-5.md`](docs/pruebas/etapa-5.md)
 - Fuentes de la biblioteca: [`docs/biblioteca/fuentes.md`](docs/biblioteca/fuentes.md)
 
 ## Compilar

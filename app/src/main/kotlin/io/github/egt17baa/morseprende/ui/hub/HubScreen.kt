@@ -53,9 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.egt17baa.morseprende.R
 import io.github.egt17baa.morseprende.game.content.MissionType
-import io.github.egt17baa.morseprende.ui.theme.BeamCream
 import io.github.egt17baa.morseprende.ui.theme.Coral
-import io.github.egt17baa.morseprende.ui.theme.SeaMist
 
 data class HubCallbacks(
     val onMission: (String) -> Unit = {},
@@ -188,22 +186,23 @@ private fun MissionRow(node: MissionNode, x: Float, prevX: Float?, onMission: (S
                 color = if (node.unlocked) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = if (textOnRight) TextAlign.Start else TextAlign.End,
             )
-            if (node.unlocked) Text("✦".repeat(node.stars) + "✧".repeat(3 - node.stars), color = BeamCream)
+            if (node.unlocked) Text("✦".repeat(node.stars) + "✧".repeat(3 - node.stars), color = MaterialTheme.colorScheme.primary)
         }
     }
 }
 
 @Composable
 private fun NodeBadge(node: MissionNode, size: androidx.compose.ui.unit.Dp) {
-    val fill = if (node.unlocked) BeamCream else SeaMist
+    // Colores del tema del capítulo (ChapterTheme): crema y coral en el Faro, ámbar en Sombra…
+    val fill = if (node.unlocked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
     val badgeSize = if (node.optional) size * 0.7f else size
     val shape = if (node.type == MissionType.REVIEW) RoundedCornerShape(12.dp) else CircleShape
-    val ring = if (node.isNext) Modifier.border(4.dp, Coral, shape) else Modifier
+    val ring = if (node.isNext) Modifier.border(4.dp, MaterialTheme.colorScheme.secondary, shape) else Modifier
     Box(
         Modifier
             .size(badgeSize)
             .then(if (node.type == MissionType.REVIEW) Modifier.rotate(45f) else Modifier)
-            .background(if (node.type == MissionType.FINALE && node.unlocked) Coral else fill, shape)
+            .background(if (node.type == MissionType.FINALE && node.unlocked) MaterialTheme.colorScheme.secondary else fill, shape)
             .then(ring),
         contentAlignment = Alignment.Center,
     ) {
@@ -211,6 +210,7 @@ private fun NodeBadge(node: MissionNode, size: androidx.compose.ui.unit.Dp) {
             Icon(
                 Icons.Filled.Lock,
                 contentDescription = stringResource(R.string.hub_locked),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = if (node.type == MissionType.REVIEW) Modifier.rotate(-45f) else Modifier,
             )
         }
