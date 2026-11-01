@@ -34,7 +34,7 @@ object ProgressRules {
     fun learnedChars(chapters: List<Chapter>, completed: Set<String>): Set<Char> =
         chapters.flatMap { it.missions }.filter { it.id in completed }.flatMap { it.newChars }.toSet()
 
-    private val gameUnlocks = mapOf("STORM" to "c1m2", "FLASH" to "c1m3", "INTERCEPT" to "c1r1")
+    private val gameUnlocks = mapOf("STORM" to "c1m2", "FLASH" to "c1m3", "INTERCEPT" to "c1r1", "NIGHT_WATCH" to "c3f")
 
     /** Misión que desbloquea cada minijuego (spec §7.5: se desbloquean al avanzar). */
     fun gameUnlockMission(game: String): String? = gameUnlocks[game]
