@@ -16,6 +16,22 @@ object ToneSynth {
     /** Margen respecto al máximo para no saturar el altavoz. */
     private const val HEADROOM = 0.8
 
+    /**
+     * Nivel del relleno de los silencios (unos −63 dBFS): inaudible, pero distinto de cero.
+     */
+    const val KEEP_ALIVE_LEVEL = 24
+
+    /**
+     * Relleno para los silencios entre pitidos. Muchos móviles apagan el amplificador del altavoz
+     * cuando reciben ceros exactos y tardan en volver a encenderlo con el siguiente sonido: se
+     * perdía el principio de cada letra (una S sonaba como un solo «pi») y se oían chasquidos.
+     * Un susurro aleatorio de amplitud mínima, nunca cero, lo mantiene despierto.
+     */
+    fun keepAlive(samples: Int, random: Random = Random(7)): ShortArray = ShortArray(samples) {
+        val magnitude = random.nextInt(1, KEEP_ALIVE_LEVEL + 1)
+        (if (random.nextBoolean()) magnitude else -magnitude).toShort()
+    }
+
     fun samplesFor(durationMs: Long, sampleRate: Int): Int = (durationMs * sampleRate / 1000).toInt()
 
     fun render(

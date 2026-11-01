@@ -150,6 +150,7 @@ class MissionViewModel(
             charWpm = minOf(charWpm, TranslatorViewModel.FLASH_SAFE_WPM)
             effectiveWpm = minOf(effectiveWpm, charWpm)
         }
+        if (!keyIsDown) closeSidetone()
         val signals = MorseTiming(charWpm, effectiveWpm).signalsFor(MorseCodec.encode(text).morse)
         val output = when {
             channel == Channel.LIGHT -> lamp
@@ -331,6 +332,12 @@ class MissionViewModel(
         }
     }
 
+    private fun closeSidetone() {
+        releaseKey()
+        sidetone?.close()
+        sidetone = null
+    }
+
     private fun releaseAudio() {
         player.stop()
         releaseKey()
@@ -350,6 +357,9 @@ class MissionViewModel(
             return
         }
         val exercise = s.current
+        // El tono en vivo (canal de baja latencia) solo existe en los ejercicios de enviar: si
+        // sigue abierto mientras suena la señal de recibir, en el móvil se oyen chasquidos y cortes.
+        if (exercise !is Exercise.Send) closeSidetone()
         ui.update {
             it.copy(
                 exercise = exercise, exerciseIndex = s.index, feedback = null, sentText = "", keyerPending = "",

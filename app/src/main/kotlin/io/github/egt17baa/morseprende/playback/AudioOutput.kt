@@ -9,6 +9,7 @@ import io.github.egt17baa.morseprende.core.Signal
 import io.github.egt17baa.morseprende.core.Timbre
 import io.github.egt17baa.morseprende.core.ToneSynth
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import kotlin.math.min
@@ -34,18 +35,21 @@ class AudioOutput(
     override val startLatencyMs: Long = LEAD_IN_MS
 
     private val lock = Any()
-    private val silence = ShortArray(CHUNK_SAMPLES)
+    /** Silencio «despierto» (ver [ToneSynth.keepAlive]); con volumen 0, ceros de verdad. */
+    private val silence = if (volume > 0f) ToneSynth.keepAlive(CHUNK_SAMPLES) else ShortArray(CHUNK_SAMPLES)
     private var track: AudioTrack? = null
 
     override suspend fun play(signals: List<Signal>) = withContext(Dispatchers.IO) {
         val audioTrack = createTrack()
         synchronized(lock) { track = audioTrack }
         var finishedNormally = false
+        var framesWritten = 0L
         try {
             audioTrack.play()
             val random = kotlin.random.Random(System.nanoTime())
             for (signal in withPadding(signals)) {
-                // Los silencios reutilizan un bloque de ceros (sin ruido): no se reserva memoria por pausa.
+                // Los silencios reutilizan un bloque de relleno casi inaudible (sin ruido): no se
+                // reserva memoria por pausa y el amplificador del altavoz no se apaga entre letras.
                 val pcm = if (signal.on || noise > 0f) {
                     ToneSynth.render(signal, sampleRate, freqHz, volume, timbre = timbre, noise = noise, random = random)
                 } else {
@@ -63,15 +67,18 @@ class AudioOutput(
                     }
                     if (written <= 0) return@withContext
                     offset += written
+                    framesWritten += written
                 }
             }
+            // release() corta lo que queda en el búfer: antes de parar se espera, todavía
+            // reproduciendo, a que suene entero. Si no, se perdía el final de la señal.
+            awaitDrain(audioTrack, framesWritten)
             finishedNormally = true
         } finally {
             synchronized(lock) {
                 if (track === audioTrack) track = null
                 runCatching {
                     if (finishedNormally) {
-                        // En streaming, stop() deja sonar lo que queda en el búfer.
                         audioTrack.stop()
                     } else {
                         audioTrack.pause()
@@ -82,6 +89,22 @@ class AudioOutput(
             }
         }
     }
+
+    /**
+     * Espera (cancelable) a que el altavoz reproduzca todo lo escrito, como mucho el tiempo del
+     * búfer más un margen, por si el móvil no avanza la posición.
+     */
+    private suspend fun awaitDrain(audioTrack: AudioTrack, framesWritten: Long) {
+        val deadline = System.nanoTime() + (bufferMs(audioTrack) + DRAIN_MARGIN_MS) * 1_000_000
+        while (System.nanoTime() < deadline) {
+            val head = audioTrack.playbackHeadPosition.toLong() and 0xFFFFFFFFL
+            if (head >= framesWritten) return
+            delay(DRAIN_POLL_MS)
+        }
+    }
+
+    private fun bufferMs(audioTrack: AudioTrack): Long =
+        audioTrack.bufferSizeInFrames.toLong() * 1000 / sampleRate
 
     override fun stop() {
         synchronized(lock) {
@@ -118,10 +141,11 @@ class AudioOutput(
         const val TAIL_SILENCE_MS = 150L
 
         /**
-         * Silencio inicial: muchos móviles tardan 100–300 ms en «despertar» el amplificador del
-         * altavoz y lo que suena en ese tiempo no se oye (una S, ···, se oía como un solo punto).
+         * Silencio inicial (con el relleno de [ToneSynth.keepAlive]): muchos móviles tardan
+         * 100–400 ms en «despertar» el amplificador del altavoz y lo que suena en ese tiempo no se
+         * oye (una S, ···, se oía como un solo punto). Con ceros exactos algunos ni despiertan.
          */
-        const val LEAD_IN_MS = 300L
+        const val LEAD_IN_MS = 400L
 
         /**
          * Silencio al principio (ver [LEAD_IN_MS]) y al final: así lo último que queda en el búfer
@@ -131,6 +155,8 @@ class AudioOutput(
             listOf(Signal(false, LEAD_IN_MS)) + signals + Signal(false, TAIL_SILENCE_MS)
 
         private const val DEFAULT_SAMPLE_RATE = 48_000
+        private const val DRAIN_MARGIN_MS = 200L
+        private const val DRAIN_POLL_MS = 10L
         private const val CHUNK_SAMPLES = 1_024
 
         /** Margen de búfer contra cortes: en el traductor la latencia no es crítica. */

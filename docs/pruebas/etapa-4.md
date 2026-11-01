@@ -1,4 +1,4 @@
-# Pruebas en el móvil: Etapa 4 (capítulos 2 y 3, versión 0.6.0)
+# Pruebas en el móvil: Etapa 4 (capítulos 2 y 3, versión 0.6.1)
 
 Instala `morseprende-0.6.0.apk` **encima** (sin desinstalar). En Ajustes de Android → Aplicaciones → MorsePrende debe poner versión 0.6.0.
 
@@ -41,6 +41,12 @@ Instala `morseprende-0.6.0.apk` **encima** (sin desinstalar). En Ajustes de Andr
 - [ ] Al terminar la final: logro «Mirador de estrellas», ficha «El Morse hoy» y el faro ya no muestra
       «Próximamente».
 - [ ] Biblioteca: 14 fichas; las nuevas son «AR, BT y SK», «Escribir con dos botones» y «El Morse hoy».
+
+## Sonido (0.6.1)
+- [ ] En «¿Qué has oído?» una S suena con sus tres puntos (···) y una O con sus tres rayas: ya no un solo «pi».
+- [ ] Las palabras suenan enteras, sin cortes ni chasquidos entre letras, también después de un ejercicio de enviar.
+- [ ] En silencio no se oye nada raro (si acercas el oído al altavoz con el volumen al máximo, como mucho un
+      susurro casi imperceptible).
 
 ## General
 - [ ] Modo avión: todo igual. Si algo falla, anota en qué misión estabas y qué pasó.

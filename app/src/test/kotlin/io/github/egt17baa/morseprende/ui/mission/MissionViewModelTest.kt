@@ -248,7 +248,7 @@ class MissionViewModelTest {
         assertTrue(e.sidetones.last.closed)
         e.advanceToSend()
         e.vm.keyDown()
-        assertEquals(2, e.sidetones.created.size)
+        assertTrue("los tonos anteriores están cerrados", e.sidetones.created.dropLast(1).all { it.closed })
         assertEquals(listOf("down"), e.sidetones.last.calls)
         assertEquals(emptyList<Pair<String, Int>>(), e.progress.recorded)
     }
@@ -669,5 +669,23 @@ class MissionViewModelTest {
         runCurrent()
         assertTrue(c.e.s.channelFallback)
         assertEquals(OutputKind.SOUND, c.outputs.created.last().first)
+    }
+
+    @Test fun sidetone_released_outside_send_exercises() = runTest {
+        // En el móvil, el canal de baja latencia del tono en vivo sonando a la vez que la señal
+        // de recibir provoca chasquidos y cortes: solo debe existir en los ejercicios de enviar.
+        val e = env()
+        e.advanceToSend()
+        e.keyDot(0)
+        e.at(200)
+        assertTrue(e.sidetones.created.isNotEmpty())
+        while (e.s.exercise is Exercise.Send) {
+            e.vm.submitSend()
+            e.vm.next()
+        }
+        assertEquals(MissionPhase.EXERCISE, e.s.phase)
+        assertTrue("tono cerrado fuera de enviar", e.sidetones.created.all { it.closed })
+        e.vm.replay()
+        assertTrue(e.sidetones.created.all { it.closed })
     }
 }

@@ -96,4 +96,14 @@ class ToneSynthTest {
         val expected = 0.8 / 1.5 * 0.5 * Short.MAX_VALUE
         assertTrue("peak=$peak", peak > expected * 0.95 && peak <= expected + 1)
     }
+
+    @Test fun keep_alive_is_tiny_but_never_digital_silence() {
+        // Muchos amplificadores de móvil se apagan con ceros exactos y tardan en despertar
+        // (se comían el principio de cada letra): el relleno no puede ser cero, pero sí inaudible.
+        val block = ToneSynth.keepAlive(1024)
+        assertEquals(1024, block.size)
+        assertTrue(block.all { abs(it.toInt()) <= ToneSynth.KEEP_ALIVE_LEVEL })
+        assertTrue(block.count { it.toInt() != 0 } > 1000)
+        assertTrue(ToneSynth.KEEP_ALIVE_LEVEL in 8..64)
+    }
 }
