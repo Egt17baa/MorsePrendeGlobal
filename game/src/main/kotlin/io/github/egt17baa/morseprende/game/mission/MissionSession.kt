@@ -101,10 +101,22 @@ class MissionSession(val exercises: List<Exercise>) {
             else -> 1
         }
 
-        /** Compara sin distinguir mayúsculas, tildes ni espacios sobrantes. */
+        /**
+         * Compara sin distinguir mayúsculas, tildes ni espacios sobrantes. Los espacios junto a
+         * un signo tampoco cuentan: algunos teclados del móvil los ponen o los quitan solos.
+         */
         fun matches(response: String, expected: String): Boolean {
-            val normalizedResponse = MorseCodec.normalizeText(response)
-            return normalizedResponse.isNotEmpty() && normalizedResponse == MorseCodec.normalizeText(expected)
+            val normalizedResponse = looseSpacing(MorseCodec.normalizeText(response))
+            return normalizedResponse.isNotEmpty() && normalizedResponse == looseSpacing(MorseCodec.normalizeText(expected))
+        }
+
+        /** Quita los espacios que tocan un signo (carácter a carácter, sin expresiones regulares). */
+        private fun looseSpacing(text: String): String = buildString {
+            text.forEachIndexed { i, c ->
+                val touchesSign = c == ' ' &&
+                    (text.getOrNull(i - 1)?.isLetterOrDigit() == false || text.getOrNull(i + 1)?.isLetterOrDigit() == false)
+                if (!touchesSign) append(c)
+            }
         }
     }
 }

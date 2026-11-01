@@ -76,4 +76,11 @@ class HubScreenTest {
         compose.setContent { HubContent(state.copy(chapters = listOf(section(1), section(2))), HubCallbacks()) }
         compose.onNodeWithText(context.getString(R.string.hub_coming_soon)).performScrollTo()
     }
+
+    @Test fun locked_chapter_title_shown_once() {
+        fun section(id: Int) = ChapterSection(id, "Título $id", state.nodes.map { it.copy(id = "c${id}_" + it.id) }, unlocked = id == 1, progress = 0f)
+        compose.setContent { HubContent(state.copy(chapters = listOf(section(1), section(2), section(3))), HubCallbacks()) }
+        compose.onAllNodesWithText(context.getString(R.string.hub_chapter, 2, "Título 2")).assertCountEquals(1)
+        compose.onAllNodesWithText(context.getString(R.string.hub_chapter, 1, "Título 1")).assertCountEquals(1)
+    }
 }

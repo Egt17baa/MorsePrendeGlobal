@@ -35,7 +35,7 @@ object ToneSynth {
             return pcm
         }
 
-        val amplitude = volume.coerceIn(0f, 1f) * HEADROOM * Short.MAX_VALUE
+        val amplitude = toneAmplitude(volume, noise)
         val rampSamples = samplesFor(min(rampMs.toLong(), signal.durationMs / 2), sampleRate)
         val step = 2 * PI * freqHz / sampleRate
         for (i in 0 until count) {
@@ -52,12 +52,19 @@ object ToneSynth {
     }
 
     /**
-     * Ruido de radio uniforme de amplitud `noise × 0,8 × volumen` sumado a todas las muestras
-     * (también a los silencios), limitado para que nunca sature ni dé la vuelta.
+     * Amplitud del tono: con ruido se reduce a `0,8 × volumen / (1 + ruido)` para que tono y ruido
+     * juntos nunca pasen de 0,8 del máximo (sin saturar ni recortar).
+     */
+    private fun toneAmplitude(volume: Float, noise: Float): Double =
+        volume.coerceIn(0f, 1f) * HEADROOM / (1 + noise.coerceIn(0f, 1f)) * Short.MAX_VALUE
+
+    /**
+     * Ruido de radio uniforme sumado a todas las muestras (también a los silencios). Su amplitud
+     * es `ruido ×` la del tono, así que la relación señal/ruido no depende del volumen.
      */
     fun addNoise(pcm: ShortArray, noise: Float, volume: Float, random: Random) {
         if (noise <= 0f || volume <= 0f) return
-        val amplitude = noise.coerceIn(0f, 1f) * HEADROOM * volume.coerceIn(0f, 1f) * Short.MAX_VALUE
+        val amplitude = toneAmplitude(volume, noise) * noise.coerceIn(0f, 1f)
         for (i in pcm.indices) {
             val v = pcm[i] + (random.nextDouble(-1.0, 1.0) * amplitude).toInt()
             pcm[i] = v.coerceIn(Short.MIN_VALUE.toInt(), Short.MAX_VALUE.toInt()).toShort()

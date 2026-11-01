@@ -12,6 +12,14 @@ class MissionSessionTest {
 
     private val final = Exercise.FinalMessage(StoryMessage("Gaviota", "ESTO ES SOS"))
 
+    @Test fun matches_ignores_spacing_around_punctuation() {
+        assertTrue(MissionSession.matches("hola,faro.", "HOLA, FARO."))
+        assertTrue(MissionSession.matches("cielo+", "CIELO +"))
+        assertTrue(MissionSession.matches("ok ?", "OK?"))
+        assertFalse(MissionSession.matches("holafaro", "HOLA FARO"))
+        assertFalse(MissionSession.matches("hola,faro", "HOLA, FARO."))
+    }
+
     @Test fun matches_is_lenient() {
         assertTrue(MissionSession.matches("  hola  mundo ", "HOLA MUNDO"))
         assertTrue(MissionSession.matches("canción", "CANCION"))

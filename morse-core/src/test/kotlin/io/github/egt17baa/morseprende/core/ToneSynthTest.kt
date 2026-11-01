@@ -81,10 +81,19 @@ class ToneSynthTest {
     }
 
     @Test fun noise_never_clips_at_full_volume() {
-        val pcm = ToneSynth.render(Signal(true, 500), 48000, 600, 1f, noise = 0.5f, random = kotlin.random.Random(2))
-        assertTrue(pcm.all { it in Short.MIN_VALUE..Short.MAX_VALUE })
-        // Con tono a 0,8 del máximo más ruido de hasta 0,4 se limitaría: nunca debe dar la vuelta (wrap).
-        val wrapped = (1 until pcm.size).count { abs(pcm[it] - pcm[it - 1]) > Short.MAX_VALUE }
-        assertEquals(0, wrapped)
+        // Tono y ruido juntos se quedan por debajo del máximo: hay margen, no se recorta.
+        for (noise in listOf(0.25f, 0.35f, 0.5f)) {
+            val pcm = ToneSynth.render(Signal(true, 500), 48000, 600, 1f, noise = noise, random = kotlin.random.Random(2))
+            val peak = pcm.maxOf { abs(it.toInt()) }
+            assertTrue("noise=$noise peak=$peak", peak < Short.MAX_VALUE * 0.81)
+        }
+    }
+
+    @Test fun noise_keeps_signal_to_noise_ratio() {
+        val pcm = ToneSynth.render(Signal(false, 50), 48000, 600, 1f, noise = 0.5f, random = kotlin.random.Random(3))
+        val peak = pcm.maxOf { abs(it.toInt()) }
+        // Ruido = tono × noise, con el tono reducido a 0,8 / (1 + noise).
+        val expected = 0.8 / 1.5 * 0.5 * Short.MAX_VALUE
+        assertTrue("peak=$peak", peak > expected * 0.95 && peak <= expected + 1)
     }
 }

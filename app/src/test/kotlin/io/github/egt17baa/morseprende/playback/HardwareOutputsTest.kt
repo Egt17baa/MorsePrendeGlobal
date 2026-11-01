@@ -81,6 +81,16 @@ class HardwareOutputsTest {
         assertFalse(shadowOf(vibrator).isVibrating)
     }
 
+    @Suppress("DEPRECATION")
+    @Test fun vibration_in_battery_saver_reports_failure() = runTest {
+        shadowOf(context.getSystemService(android.os.PowerManager::class.java)).setIsPowerSaveMode(true)
+        val vibrator = context.getSystemService(Vibrator::class.java)
+        var failed = 0
+        VibrationOutput(context, onFailure = { failed++ }).play(listOf(Signal(true, 60)))
+        assertEquals(1, failed)
+        assertFalse(shadowOf(vibrator).isVibrating)
+    }
+
     @Test fun audio_play_completes() = runBlocking {
         withTimeout(5_000) {
             AudioOutput(context, freqHz = 600, volume = 0.5f).play(listOf(Signal(true, 50), Signal(false, 50)))

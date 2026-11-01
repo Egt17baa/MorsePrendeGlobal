@@ -18,6 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
@@ -59,6 +61,7 @@ class MissionScreenTest {
         override fun submitSend() { calls += "submit" }
         override fun next() { calls += "next" }
         override fun exit() { calls += "exit" }
+        override fun useSound() { calls += "useSound" }
     }
 
     @Test fun briefing_shows_and_starts() {
@@ -198,5 +201,40 @@ class MissionScreenTest {
         current = state.copy(channelFallback = true)
         compose.onNodeWithText(str(R.string.mission_type_title)).assertExists()
         compose.onNodeWithText(str(R.string.mission_channel_vibration_fallback)).assertExists()
+    }
+
+    @Test fun vibration_channel_offers_sound_instead() {
+        val r = Recorder()
+        val vib = io.github.egt17baa.morseprende.game.content.Channel.VIBRATION
+        val state = MissionUiState(phase = MissionPhase.EXERCISE, exercise = Exercise.ReceiveTyped("SOS"), exerciseCount = 5, channel = vib)
+        var current by androidx.compose.runtime.mutableStateOf(state)
+        compose.setContent { MissionContent(current, r) }
+        compose.onNodeWithText(str(R.string.mission_vibration_use_sound)).performClick()
+        assertEquals(listOf("useSound"), r.calls)
+        current = state.copy(channelFallback = true)
+        compose.onAllNodesWithText(str(R.string.mission_vibration_use_sound)).assertCountEquals(0)
+    }
+
+    @Test fun prosigns_named_in_listen() {
+        val state = MissionUiState(phase = MissionPhase.EXERCISE, exercise = Exercise.Listen(listOf('=', '+')), exerciseCount = 5)
+        compose.setContent { MissionContent(state, Recorder()) }
+        compose.onNodeWithText(str(R.string.prosign_bt)).performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText(str(R.string.prosign_ar)).performScrollTo().assertIsDisplayed()
+    }
+
+    @Test fun timer_and_lamp_stay_outside_scroll() {
+        val state = MissionUiState(
+            phase = MissionPhase.EXERCISE, exercise = Exercise.ReceiveTyped("SOS"), exerciseCount = 5, secondsLeft = 9,
+            channel = io.github.egt17baa.morseprende.game.content.Channel.LIGHT,
+        )
+        compose.setContent { MissionContent(state, Recorder()) }
+        // El panel desplazable está debajo: el faro y el reloj no se van al abrir el teclado.
+        compose.onNodeWithTag("mission_scroll").assertExists()
+        compose.onNodeWithTag("mission_header").assertIsDisplayed()
+        val header = compose.onNodeWithTag("mission_header").fetchSemanticsNode()
+        val lamp = compose.onNodeWithTag("mission_lamp").fetchSemanticsNode()
+        val scroll = compose.onNodeWithTag("mission_scroll").fetchSemanticsNode()
+        assertTrue(lamp.boundsInRoot.bottom <= scroll.boundsInRoot.top + 0.5f)
+        assertTrue(header.boundsInRoot.bottom <= scroll.boundsInRoot.top + 0.5f)
     }
 }

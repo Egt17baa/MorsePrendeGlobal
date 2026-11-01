@@ -167,6 +167,16 @@ class MissionViewModel(
         scope.launch { replay() }
     }
 
+    /**
+     * «No noto la vibración»: el móvil dice que vibra pero el jugador no lo siente (ahorro de
+     * batería, vibración desactivada en los ajustes…). Se pasa a sonido y se repite.
+     */
+    fun useSound() {
+        if (mission?.channel != Channel.VIBRATION || ui.value.channelFallback) return
+        ui.update { it.copy(channelFallback = true) }
+        replay()
+    }
+
     fun continueListen() {
         val s = session ?: return
         if (s.current !is Exercise.Listen) return
@@ -285,15 +295,18 @@ class MissionViewModel(
 
     /**
      * Contrarreloj: empieza cuando termina de sonar el ejercicio y, si se agota, cuenta como fallo
-     * (una sola vez y solo si el ejercicio sigue siendo el mismo).
+     * (una sola vez y solo si el ejercicio sigue siendo el mismo). Mientras suena una repetición
+     * se para: un segundo que acaba con la señal sonando no se descuenta.
      */
     private fun startTimer(limit: Int, exerciseIndex: Int) {
         cancelTimer()
         timerJob = scope.launch {
-            player.isPlaying.first { !it }
-            for (left in limit downTo 1) {
+            var left = limit
+            while (left > 0) {
+                player.isPlaying.first { !it }
                 ui.update { it.copy(secondsLeft = left) }
                 delay(1_000)
+                if (!player.isPlaying.value) left--
             }
             ui.update { it.copy(secondsLeft = null) }
             if (session?.index == exerciseIndex && ui.value.feedback == null && ui.value.phase == MissionPhase.EXERCISE) {
@@ -399,7 +412,8 @@ class MissionViewModel(
 
     private companion object {
         const val DEFAULT_UNIT_MS = 120L
-        const val UNKNOWN_CHAR = '?'
+        /** Una letra mal formada: no es ningún carácter de la tabla (tampoco «?», que se enseña). */
+        const val UNKNOWN_CHAR = MorseCodec.UNKNOWN
     }
 }
 

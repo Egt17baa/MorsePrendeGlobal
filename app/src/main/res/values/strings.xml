@@ -216,5 +216,9 @@
     <string name="settings_limit_flashes_help">Con la linterna o la pantalla, el Morse va como máximo a 7 PPM (unos 3 destellos por segundo) para reducir el riesgo para personas fotosensibles.</string>
     <string name="mission_channel_light">Solo luz: mira el faro y descifra los destellos.</string>
     <string name="mission_channel_vibration">Solo vibración: sujeta el móvil y siente el pulso.</string>
-    <string name="mission_channel_vibration_fallback">Tu móvil no puede vibrar: esta misión se hace por sonido.</string>
+    <string name="mission_channel_vibration_fallback">Sin vibración (o no se nota): esta misión se hace por sonido.</string>
+    <string name="mission_vibration_use_sound">No noto la vibración: usar sonido</string>
+    <string name="prosign_bt">BT · separación</string>
+    <string name="prosign_ar">AR · fin de mensaje</string>
+    <string name="output_failed_vibration">No se pudo vibrar: puede que el móvil no tenga vibrador o que el ahorro de batería esté activado.</string>
 </resources>

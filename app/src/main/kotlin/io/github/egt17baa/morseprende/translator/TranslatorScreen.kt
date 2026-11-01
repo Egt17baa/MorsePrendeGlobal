@@ -103,7 +103,10 @@ fun TranslatorScreen(viewModel: TranslatorViewModel, onBack: () -> Unit) {
                     Notice(stringResource(R.string.translator_speed_limited))
                 }
                 s.failedOutputs.forEach { kind ->
-                    Notice(stringResource(R.string.output_failed, stringResource(kind.label)))
+                    Notice(
+                        if (kind == io.github.egt17baa.morseprende.playback.OutputKind.VIBRATION) stringResource(R.string.output_failed_vibration)
+                        else stringResource(R.string.output_failed, stringResource(kind.label)),
+                    )
                 }
                 SpeedControl(s.charWpm, viewModel::setSpeed)
                 OutputChips(s, viewModel::toggleOutput)

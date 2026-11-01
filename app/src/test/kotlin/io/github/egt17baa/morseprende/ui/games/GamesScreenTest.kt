@@ -43,12 +43,18 @@ class GamesScreenTest {
         compose.onNodeWithText(context.getString(R.string.game_locked)).assertIsDisplayed()
     }
 
-    @Test fun storm_keyboard_with_36_keys_all_reachable() {
+    @Test fun storm_keyboard_with_45_keys_fits_without_scrolling() {
         val typed = mutableListOf<Char>()
-        val letters = ('A'..'Z').toList() + ('0'..'9').toList()
+        val letters = (('A'..'Z').toList() + 'Ñ' + ('0'..'9').toList() + listOf('.', ',', '?', '/', '\'', '!', '=', '+')).sorted()
         compose.setContent { StormContent(StormUiState(phase = GamePhase.PLAYING, letters = letters), onStart = {}, onInput = { typed += it }, onBack = {}) }
-        compose.onNodeWithText("9").performScrollTo().performClick()
-        compose.onNodeWithText("A").performScrollTo().performClick()
-        assertEquals(listOf('9', 'A'), typed)
+        // Todas las teclas se ven a la vez: en plena partida no hay que desplazar nada.
+        letters.forEach { compose.onNodeWithText(it.toString()).assertIsDisplayed() }
+        compose.onNodeWithText("Z").performClick()
+        compose.onNodeWithText("+").performClick()
+        assertEquals(listOf('Z', '+'), typed)
+    }
+
+    @Test fun storm_keyboard_puts_letters_first() {
+        assertEquals(listOf('A', 'Z', 'Ñ', '1', '9', '+', '?'), stormKeyOrder(listOf('?', '1', 'Z', '+', 'A', '9', 'Ñ')))
     }
 }

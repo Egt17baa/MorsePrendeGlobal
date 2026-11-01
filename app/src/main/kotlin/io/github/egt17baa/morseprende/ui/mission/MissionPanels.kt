@@ -66,6 +66,12 @@ fun ExercisePanel(state: MissionUiState, actions: MissionActions) {
     state.feedback?.let { FeedbackPanel(it, actions) }
 }
 
+private fun prosignLabel(c: Char): Int? = when (c) {
+    '=' -> R.string.prosign_bt
+    '+' -> R.string.prosign_ar
+    else -> null
+}
+
 @Composable
 private fun ListenPanel(e: Exercise.Listen, actions: MissionActions) {
     Text(stringResource(R.string.mission_listen_title), style = MaterialTheme.typography.titleLarge)
@@ -73,11 +79,11 @@ private fun ListenPanel(e: Exercise.Listen, actions: MissionActions) {
         Card(Modifier.fillMaxWidth()) {
             Row(Modifier.padding(20.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text(c.toString(), fontSize = 56.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-                Text(
-                    MorseDisplay.pretty(MorseAlphabet.codeFor(c).orEmpty()),
-                    style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier.padding(start = 24.dp),
-                )
+                Column(Modifier.padding(start = 24.dp)) {
+                    Text(MorseDisplay.pretty(MorseAlphabet.codeFor(c).orEmpty()), style = MaterialTheme.typography.headlineMedium)
+                    // «=» y «+» se enseñan como los prosignos BT y AR.
+                    prosignLabel(c)?.let { Text(stringResource(it), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.secondary) }
+                }
             }
         }
     }

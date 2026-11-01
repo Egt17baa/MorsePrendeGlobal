@@ -399,14 +399,14 @@ class MissionViewModelTest {
         assertEquals(null, e.s.reward)
     }
 
-    private fun TestScope.timedEnv(noise: Float = 0.25f, limit: Int? = 5): Pair<Env, FakeOutputFactory> {
+    private fun TestScope.timedEnv(noise: Float = 0.25f, limit: Int? = 5, wpm: Int = 12): Pair<Env, FakeOutputFactory> {
         Dispatchers.setMain(UnconfinedTestDispatcher(testScheduler))
         val m = MissionTestContent.chapter.missions.single().copy(noise = noise, timeLimitSeconds = limit)
         val chapter = MissionTestContent.chapter.copy(missions = listOf(m))
         val outputs = FakeOutputFactory(this)
         val progress = FakeProgressRepository()
         val vm = MissionViewModel(
-            "t1", FakeContentSource(listOf(chapter)), progress, FakeSettingsRepository(AppSettings(charWpm = 12, effectiveWpm = 12)),
+            "t1", FakeContentSource(listOf(chapter)), progress, FakeSettingsRepository(AppSettings(charWpm = wpm, effectiveWpm = wpm)),
             outputs, FakeSidetoneFactory(), random = Random(1), playerScope = backgroundScope,
         )
         return Env(vm, progress, FakeCharStatsRepository(), FakeSidetoneFactory(), longArrayOf(0)) to outputs
@@ -587,5 +587,87 @@ class MissionViewModelTest {
             runCurrent()
         }
         assertTrue(checked > 0)
+    }
+
+    @Test fun invalid_code_never_matches_question_mark() = runTest {
+        val c = channelEnv(newChars = listOf('?'), words = listOf("?", "??"))
+        c.e.vm.start()
+        var sends = 0
+        while (c.e.s.phase == MissionPhase.EXERCISE && sends < 3) {
+            when (val x = c.e.s.exercise) {
+                is Exercise.Listen -> c.e.vm.continueListen()
+                is Exercise.ReceiveChoice -> { c.e.vm.answer(x.answer); c.e.vm.next() }
+                is Exercise.ReceiveTyped -> { c.e.vm.answer(x.answer); c.e.vm.next() }
+                is Exercise.Send -> {
+                    // Una letra mal formada por cada «?» del objetivo: nunca puede contar como «?».
+                    repeat(x.target.length) {
+                        repeat(6) { c.e.vm.dot() }
+                        c.e.vm.nextLetter()
+                    }
+                    c.e.vm.submitSend()
+                    assertEquals("enviado: ${c.e.s.sentText}", false, c.e.s.feedback?.correct)
+                    sends++
+                    c.e.vm.next()
+                }
+                else -> break
+            }
+            runCurrent()
+        }
+        assertTrue(sends > 0)
+    }
+
+    @Test fun timer_pauses_while_replaying() = runTest {
+        // A 5 PPM cada letra dura más de un segundo: la repetición cruza varios ticks del reloj.
+        val (e, _) = timedEnv(limit = 5, wpm = 5)
+        e.vm.start()
+        e.vm.continueListen()
+        runCurrent()
+        while (e.s.isPlaying) { advanceTimeBy(50); runCurrent() }
+        advanceTimeBy(1_500)
+        runCurrent()
+        val before = e.s.secondsLeft!!
+        e.vm.replay()
+        runCurrent()
+        assertTrue(e.s.isPlaying)
+        while (e.s.isPlaying) {
+            assertEquals("mientras suena no corre el tiempo", before, e.s.secondsLeft)
+            advanceTimeBy(50)
+            runCurrent()
+        }
+        // Al acabar la repetición quedan los mismos segundos que antes.
+        advanceTimeBy((before - 1) * 1_000L)
+        runCurrent()
+        assertEquals(null, e.s.feedback)
+        advanceTimeBy(2_500)
+        runCurrent()
+        assertEquals(false, e.s.feedback?.correct)
+    }
+
+    @Test fun replay_during_first_play_does_not_start_timer() = runTest {
+        val (e, _) = timedEnv(limit = 5)
+        e.vm.start()
+        e.vm.continueListen()
+        runCurrent()
+        assertTrue(e.s.isPlaying)
+        e.vm.replay()
+        runCurrent()
+        assertTrue(e.s.isPlaying)
+        assertEquals(null, e.s.secondsLeft)
+        while (e.s.isPlaying) { advanceTimeBy(50); runCurrent() }
+        advanceTimeBy(4_200)
+        runCurrent()
+        assertEquals(null, e.s.feedback)
+    }
+
+    @Test fun cant_feel_vibration_switches_to_sound() = runTest {
+        val c = channelEnv(channel = Channel.VIBRATION)
+        c.e.vm.start()
+        c.e.vm.continueListen()
+        runCurrent()
+        assertEquals(OutputKind.VIBRATION, c.outputs.created.last().first)
+        c.e.vm.useSound()
+        runCurrent()
+        assertTrue(c.e.s.channelFallback)
+        assertEquals(OutputKind.SOUND, c.outputs.created.last().first)
     }
 }

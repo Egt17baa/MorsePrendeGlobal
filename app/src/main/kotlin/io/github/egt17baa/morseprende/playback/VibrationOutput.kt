@@ -2,6 +2,7 @@ package io.github.egt17baa.morseprende.playback
 
 import android.content.Context
 import android.os.Build
+import android.os.PowerManager
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
@@ -11,9 +12,12 @@ import kotlinx.coroutines.delay
 
 /**
  * Morse por vibración. El patrón completo se entrega al motor de vibración de una vez. Si el
- * móvil no tiene vibrador se avisa con [onFailure].
+ * móvil no tiene vibrador, o tiene el ahorro de batería activado (Android descarta entonces las
+ * vibraciones de las apps), se avisa con [onFailure].
  */
 class VibrationOutput(context: Context, private val onFailure: () -> Unit = {}) : SignalOutput {
+
+    private val power: PowerManager? = context.getSystemService(PowerManager::class.java)
 
     private val vibrator: Vibrator? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         context.getSystemService(VibratorManager::class.java)?.defaultVibrator
@@ -24,7 +28,7 @@ class VibrationOutput(context: Context, private val onFailure: () -> Unit = {}) 
 
     override suspend fun play(signals: List<Signal>) {
         val device = vibrator?.takeIf { it.hasVibrator() }
-        if (device == null) {
+        if (device == null || power?.isPowerSaveMode == true) {
             onFailure()
             return
         }

@@ -2,14 +2,12 @@ package io.github.egt17baa.morseprende.ui.games
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -45,7 +43,6 @@ fun StormScreen(viewModel: StormViewModel, onBack: () -> Unit) {
     StormContent(state, onStart = viewModel::start, onInput = viewModel::input, onBack = onBack)
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun StormContent(state: StormUiState, onStart: () -> Unit, onInput: (Char) -> Unit, onBack: () -> Unit) {
     GameScaffold(stringResource(R.string.game_storm), onBack) {
@@ -60,23 +57,41 @@ fun StormContent(state: StormUiState, onStart: () -> Unit, onInput: (Char) -> Un
                     Text("✦".repeat(state.lives), color = BeamCream, style = MaterialTheme.typography.titleMedium)
                 }
                 // El cielo ocupa el espacio libre: el teclado siempre queda visible, también en pantallas pequeñas.
-                StormSky(state.signals, Modifier.fillMaxWidth().weight(1f).heightIn(min = 160.dp))
-                // Con muchas letras (capítulo 2 en adelante) las teclas se encogen y el teclado se
-                // desplaza, limitado a unas 3 filas para que el cielo siga viéndose.
-                val many = state.letters.size > 12
-                val key = if (many) 44.dp else 64.dp
-                FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    verticalArrangement = Arrangement.spacedBy(6.dp),
-                    modifier = if (many) Modifier.heightIn(max = (key + 6.dp) * 3).verticalScroll(rememberScrollState()) else Modifier,
-                ) {
-                    state.letters.forEach { c ->
+                StormSky(state.signals, Modifier.fillMaxWidth().weight(1f).heightIn(min = 140.dp))
+                StormKeyboard(stormKeyOrder(state.letters), onInput)
+            }
+        }
+    }
+}
+
+/** Letras primero (A–Z y Ñ), luego cifras y al final los signos: lo más frecuente, arriba. */
+internal fun stormKeyOrder(keys: List<Char>): List<Char> =
+    keys.sortedWith(compareBy<Char>({ c -> if (c.isLetter()) 0 else if (c.isDigit()) 1 else 2 }, { it }))
+
+/**
+ * Todas las teclas a la vista, sin desplazar: con pocas letras, teclas grandes; con muchas (hasta
+ * unas 45 en el capítulo 3) se reparten en columnas que llenan el ancho, 8 por fila como máximo.
+ */
+@Composable
+private fun StormKeyboard(keys: List<Char>, onInput: (Char) -> Unit) {
+    val gap = 6.dp
+    BoxWithConstraints(Modifier.fillMaxWidth()) {
+        val columns = when {
+            keys.size <= 12 -> minOf(keys.size, 6).coerceAtLeast(1)
+            keys.size <= 28 -> 7
+            else -> 8
+        }
+        val key = minOf(64.dp, (maxWidth - gap * (columns - 1)) / columns)
+        Column(verticalArrangement = Arrangement.spacedBy(gap), modifier = Modifier.fillMaxWidth()) {
+            keys.chunked(columns).forEach { row ->
+                Row(horizontalArrangement = Arrangement.spacedBy(gap), modifier = Modifier.fillMaxWidth()) {
+                    row.forEach { c ->
                         Button(
                             onClick = { onInput(c) },
                             modifier = Modifier.size(key),
                             contentPadding = androidx.compose.foundation.layout.PaddingValues(0.dp),
                         ) {
-                            Text(c.toString(), fontSize = if (many) 18.sp else 22.sp, fontWeight = FontWeight.Bold)
+                            Text(c.toString(), fontSize = if (key < 48.dp) 17.sp else 22.sp, fontWeight = FontWeight.Bold)
                         }
                     }
                 }
