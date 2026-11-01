@@ -12,11 +12,13 @@ Instala `morseprende-0.6.0.apk` **encima** (sin desinstalar). En Ajustes de Andr
 - [ ] Desde «H L» se oye **ruido de radio** (la etiqueta «Interferencias»); cuanto más avanzas, más ruido.
       Con el volumen al máximo no debe sonar saturado ni roto.
 - [ ] Desde el segundo repaso hay **contrarreloj** (⏱ 15 s y luego 12 s) en los ejercicios de recibir:
-      empieza cuando termina el sonido; si se acaba, cuenta como fallo una sola vez.
+      empieza cuando termina el sonido; si se acaba, cuenta como fallo una sola vez. Al pulsar «Escuchar
+      otra vez» el reloj se para mientras suena y sigue después.
 - [ ] Sal a mitad de un ejercicio con contrarreloj y vuelve: no aparece un fallo «fantasma».
 - [ ] La misión **Ñ** sale como «Extra» (estrella pequeña): avisa de que la Ñ no es Morse internacional.
       Puedes saltártela: la final del capítulo y el capítulo 3 se abren igual.
-- [ ] En la Tormenta, con muchas letras aprendidas, el teclado se desplaza y todas las teclas se pueden pulsar.
+- [ ] En la Tormenta, con muchas letras aprendidas, **todas las teclas se ven a la vez** (letras arriba,
+      luego números y signos) y no hay que desplazar nada.
 - [ ] Al terminar la final: logro «Cazatopos» y fichas nuevas en la biblioteca.
 
 ## Capítulo 3 «Señal Estelar»
@@ -28,6 +30,12 @@ Instala `morseprende-0.6.0.apk` **encima** (sin desinstalar). En Ajustes de Andr
       visto?» y «Ver otra vez». Con «Limitar destellos» activado (Ajustes) parpadea despacio (7 PPM).
 - [ ] **«Solo pulso»**: el móvil vibra en vez de sonar («¿Qué has sentido?», «Sentir otra vez»). Si el móvil
       no vibra, avisa y se hace por sonido, sin quedarse atascada.
+- [ ] Repite «Solo pulso» con el **ahorro de batería** activado: debe pasar sola a sonido. Y prueba el botón
+      «No noto la vibración: usar sonido».
+- [ ] En «Solo luz» o con contrarreloj, al abrir el teclado para escribir, el faro y el reloj siguen visibles.
+- [ ] Al enviar con el manipulador, una letra mal hecha nunca cuenta como «?».
+- [ ] Al escribir, da igual poner o no espacio junto a los signos («hola,faro.» vale por «HOLA, FARO.»).
+- [ ] En «Letras nuevas» de la misión de `= +` aparecen las etiquetas «BT · separación» y «AR · fin de mensaje».
 - [ ] **«Ráfaga»** suena a 20 PPM y la final a 18 PPM, aunque en Ajustes tengas otra velocidad; al salir,
       tus ajustes siguen igual.
 - [ ] Al terminar la final: logro «Mirador de estrellas», ficha «El Morse hoy» y el faro ya no muestra
