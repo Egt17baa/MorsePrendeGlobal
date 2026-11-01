@@ -1,4 +1,4 @@
-# Pruebas en el móvil: Etapa 7 (más enganche, versión 0.9.0)
+# Pruebas en el móvil: Etapa 7 (más enganche, versión 0.9.1)
 
 Instala el APK encima del anterior: no se pierde el progreso.
 
@@ -36,3 +36,10 @@ Instala el APK encima del anterior: no se pierde el progreso.
 ## General
 - [ ] «Borrar progreso» también olvida los mensajes del día hechos.
 - [ ] Modo avión: todo igual.
+
+## Traductor: sonido, vibración y linterna a la vez (0.9.1)
+- [ ] Activa Sonido, Vibración y Linterna y reproduce «SOS SOS». Cada pitido coincide con su vibración y
+      su destello, desde la primera letra hasta la última.
+- [ ] Repite varias veces seguidas (también Parar y otra vez Reproducir): siempre suena.
+- [ ] Si alguna vez no suena, mira si aparece el aviso «No se pudo usar: Sonido» y anota qué salidas tenías
+      activadas.

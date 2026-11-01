@@ -4,7 +4,7 @@ Juego educativo para Android que enseña **código Morse jugando**. Eres el fare
 barcos, espías y señales del espacio te hablan en Morse, y para avanzar tienes que aprender a
 recibir y a enviar. Totalmente gratis, sin anuncios y sin conexión a internet.
 
-> Estado: **Etapa 7 (0.9.0)**, lista para publicar en Google Play cuando se quiera (ver
+> Estado: **Etapa 7 (0.9.1)**, lista para publicar en Google Play cuando se quiera (ver
 > [`docs/publicacion/`](docs/publicacion/como-publicar.md)): campaña completa en tres capítulos, «El Faro», «Operación Sombra»
 > (todas las letras, números, la Ñ como extra, ruido de radio y contrarreloj) y «Señal Estelar»
 > (signos de puntuación, prosignos AR y BT, misiones de velocidad y señales solo de luz o solo de

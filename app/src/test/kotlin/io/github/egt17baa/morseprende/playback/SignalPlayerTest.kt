@@ -3,6 +3,7 @@ package io.github.egt17baa.morseprende.playback
 import io.github.egt17baa.morseprende.core.Signal
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runCurrent
@@ -141,5 +142,53 @@ class SignalPlayerTest {
         player.play(short, listOf(light.output))
         runCurrent()
         assertEquals(listOf(0L to true), light.events)
+    }
+
+    /** Como el audio de verdad: avisa cuando empieza a oírse, que puede ser más tarde de lo previsto. */
+    private fun audioStartingAt(startMs: Long?) = object : SignalOutput {
+        override val startLatencyMs: Long = 300
+        override suspend fun play(signals: List<Signal>) = delay(3_000 + signals.sumOf { it.durationMs })
+        override suspend fun play(signals: List<Signal>, onStarted: () -> Unit) = kotlinx.coroutines.coroutineScope {
+            if (startMs != null) launch { delay(startMs); onStarted() }
+            play(signals)
+        }
+        override fun stop() = Unit
+    }
+
+    @Test fun others_start_when_audio_is_really_heard() = runTest {
+        val player = SignalPlayer(backgroundScope)
+        val light = RecordingOutput(this)
+        // El móvil tarda 150 ms más en preparar el audio: la luz y la vibración lo esperan.
+        player.play(short, listOf(audioStartingAt(450), light.output))
+        advanceTimeBy(449)
+        runCurrent()
+        assertEquals(emptyList<Pair<Long, Boolean>>(), light.events)
+        advanceTimeBy(2)
+        runCurrent()
+        assertEquals(listOf(450L to true), light.events)
+    }
+
+    @Test fun others_do_not_wait_forever_for_audio() = runTest {
+        val player = SignalPlayer(backgroundScope)
+        val light = RecordingOutput(this)
+        // Si el audio nunca avisa, las demás salidas arrancan igualmente (tras un margen).
+        player.play(short, listOf(audioStartingAt(null), light.output))
+        advanceTimeBy(300 + SignalPlayer.START_GRACE_MS + 1)
+        runCurrent()
+        assertEquals(listOf(300L + SignalPlayer.START_GRACE_MS to true), light.events)
+    }
+
+    @Test fun others_start_if_audio_fails() = runTest {
+        val player = SignalPlayer(backgroundScope)
+        val light = RecordingOutput(this)
+        val broken = object : SignalOutput {
+            override val startLatencyMs: Long = 300
+            override suspend fun play(signals: List<Signal>) { delay(20); error("sin audio") }
+            override fun stop() = Unit
+        }
+        player.play(short, listOf(broken, light.output))
+        advanceTimeBy(21)
+        runCurrent()
+        assertEquals(listOf(20L to true), light.events)
     }
 }

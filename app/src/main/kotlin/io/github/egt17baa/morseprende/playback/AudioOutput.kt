@@ -4,6 +4,7 @@ import android.content.Context
 import android.media.AudioAttributes
 import android.media.AudioFormat
 import android.media.AudioManager
+import android.media.AudioTimestamp
 import android.media.AudioTrack
 import io.github.egt17baa.morseprende.core.Signal
 import io.github.egt17baa.morseprende.core.Timbre
@@ -11,6 +12,7 @@ import io.github.egt17baa.morseprende.core.ToneSynth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.math.min
 
@@ -39,13 +41,23 @@ class AudioOutput(
     private val silence = if (volume > 0f) ToneSynth.keepAlive(CHUNK_SAMPLES) else ShortArray(CHUNK_SAMPLES)
     private var track: AudioTrack? = null
 
-    override suspend fun play(signals: List<Signal>) = withContext(Dispatchers.IO) {
+    override suspend fun play(signals: List<Signal>) = play(signals) {}
+
+    override suspend fun play(signals: List<Signal>, onStarted: () -> Unit) = withContext(Dispatchers.IO) {
         val audioTrack = createTrack()
+        // Un AudioTrack que no se pudo crear no suena: mejor avisar que quedarse callado.
+        if (audioTrack.state != AudioTrack.STATE_INITIALIZED) {
+            audioTrack.release()
+            error("AudioTrack sin inicializar")
+        }
         synchronized(lock) { track = audioTrack }
         var finishedNormally = false
         var framesWritten = 0L
+        var watcher: kotlinx.coroutines.Job? = null
         try {
             audioTrack.play()
+            check(audioTrack.playState == AudioTrack.PLAYSTATE_PLAYING) { "AudioTrack no arrancó" }
+            watcher = launch { awaitAudibleStart(audioTrack); onStarted() }
             val random = kotlin.random.Random(System.nanoTime())
             for (signal in withPadding(signals)) {
                 // Los silencios reutilizan un bloque de relleno casi inaudible (sin ruido): no se
@@ -65,7 +77,13 @@ class AudioOutput(
                     } else {
                         audioTrack.write(silence, 0, count)
                     }
-                    if (written <= 0) return@withContext
+                    // 0: la pista se paró (stop()). Negativo: error de verdad (p. ej. el servicio de
+                    // audio perdió la pista); antes se cortaba en silencio, ahora se avisa.
+                    if (written == 0) return@withContext
+                    if (written < 0) {
+                        ensureActive()
+                        error("AudioTrack.write devolvió $written")
+                    }
                     offset += written
                     framesWritten += written
                 }
@@ -75,6 +93,7 @@ class AudioOutput(
             awaitDrain(audioTrack, framesWritten)
             finishedNormally = true
         } finally {
+            watcher?.cancel()
             synchronized(lock) {
                 if (track === audioTrack) track = null
                 runCatching {
@@ -87,6 +106,29 @@ class AudioOutput(
                 }
                 audioTrack.release()
             }
+        }
+    }
+
+    /**
+     * Espera hasta el instante en que el final del silencio inicial sale por el altavoz, es decir,
+     * cuando empieza a oírse la primera señal. Lo calcula con la marca de tiempo del altavoz
+     * (getTimestamp: qué muestra sonó y cuándo). Si el móvil no la da, usa la posición de
+     * reproducción y, como último recurso, un tiempo máximo.
+     */
+    private suspend fun awaitAudibleStart(audioTrack: AudioTrack) {
+        val leadFrames = ToneSynth.samplesFor(LEAD_IN_MS, sampleRate).toLong()
+        val giveUp = System.nanoTime() + (LEAD_IN_MS + START_TIMEOUT_MS) * 1_000_000
+        val stamp = AudioTimestamp()
+        while (System.nanoTime() < giveUp) {
+            if (runCatching { audioTrack.getTimestamp(stamp) }.getOrDefault(false) && stamp.framePosition > 0) {
+                val at = stamp.nanoTime + (leadFrames - stamp.framePosition) * 1_000_000_000L / sampleRate
+                val waitMs = (at - System.nanoTime()) / 1_000_000
+                if (waitMs > 0) delay(waitMs)
+                return
+            }
+            val head = runCatching { audioTrack.playbackHeadPosition.toLong() and 0xFFFFFFFFL }.getOrDefault(0L)
+            if (head >= leadFrames) return
+            delay(START_POLL_MS)
         }
     }
 
@@ -157,6 +199,9 @@ class AudioOutput(
         private const val DEFAULT_SAMPLE_RATE = 48_000
         private const val DRAIN_MARGIN_MS = 200L
         private const val DRAIN_POLL_MS = 10L
+        private const val START_POLL_MS = 5L
+        /** Si en este tiempo (tras el silencio inicial) no se sabe cuándo arrancó el audio, se da por arrancado. */
+        private const val START_TIMEOUT_MS = 600L
         private const val CHUNK_SAMPLES = 1_024
 
         /** Margen de búfer contra cortes: en el traductor la latencia no es crítica. */
