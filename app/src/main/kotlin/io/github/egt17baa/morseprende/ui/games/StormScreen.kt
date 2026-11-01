@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -59,10 +61,22 @@ fun StormContent(state: StormUiState, onStart: () -> Unit, onInput: (Char) -> Un
                 }
                 // El cielo ocupa el espacio libre: el teclado siempre queda visible, también en pantallas pequeñas.
                 StormSky(state.signals, Modifier.fillMaxWidth().weight(1f).heightIn(min = 160.dp))
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                // Con muchas letras (capítulo 2 en adelante) las teclas se encogen y el teclado se
+                // desplaza, limitado a unas 3 filas para que el cielo siga viéndose.
+                val many = state.letters.size > 12
+                val key = if (many) 44.dp else 64.dp
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp),
+                    modifier = if (many) Modifier.heightIn(max = (key + 6.dp) * 3).verticalScroll(rememberScrollState()) else Modifier,
+                ) {
                     state.letters.forEach { c ->
-                        Button(onClick = { onInput(c) }, modifier = Modifier.size(64.dp)) {
-                            Text(c.toString(), fontSize = 22.sp, fontWeight = FontWeight.Bold)
+                        Button(
+                            onClick = { onInput(c) },
+                            modifier = Modifier.size(key),
+                            contentPadding = androidx.compose.foundation.layout.PaddingValues(0.dp),
+                        ) {
+                            Text(c.toString(), fontSize = if (many) 18.sp else 22.sp, fontWeight = FontWeight.Bold)
                         }
                     }
                 }

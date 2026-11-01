@@ -5,6 +5,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.test.core.app.ApplicationProvider
 import io.github.egt17baa.morseprende.R
 import org.junit.Assert.assertEquals
@@ -40,5 +41,14 @@ class GamesScreenTest {
     @Test fun locked_game_explains() {
         compose.setContent { StormContent(StormUiState(phase = GamePhase.LOCKED), onStart = {}, onInput = {}, onBack = {}) }
         compose.onNodeWithText(context.getString(R.string.game_locked)).assertIsDisplayed()
+    }
+
+    @Test fun storm_keyboard_with_36_keys_all_reachable() {
+        val typed = mutableListOf<Char>()
+        val letters = ('A'..'Z').toList() + ('0'..'9').toList()
+        compose.setContent { StormContent(StormUiState(phase = GamePhase.PLAYING, letters = letters), onStart = {}, onInput = { typed += it }, onBack = {}) }
+        compose.onNodeWithText("9").performScrollTo().performClick()
+        compose.onNodeWithText("A").performScrollTo().performClick()
+        assertEquals(listOf('9', 'A'), typed)
     }
 }
