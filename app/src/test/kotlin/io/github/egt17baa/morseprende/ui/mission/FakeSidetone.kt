@@ -9,6 +9,8 @@ class FakeSidetone : Sidetone {
     override fun keyDown() { calls += "down" }
     override fun keyUp() { calls += "up" }
     override fun close() { calls += "close" }
+    var warmed = false
+    override fun warmUp() { warmed = true }
 }
 
 class FakeSidetoneFactory : SidetoneFactory {

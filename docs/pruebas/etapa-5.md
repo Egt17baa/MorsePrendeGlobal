@@ -27,5 +27,14 @@ Instala el APK encima del anterior: no se pierde el progreso.
 ## Ajustes → Acerca de
 - [ ] Aparece la versión 0.7.0, la línea de la tipografía y la de privacidad.
 
+## Arreglos de la revisión
+- [ ] Manipulador: en cada ejercicio de enviar, el **primer punto** ya suena (no se pierde), también
+      después de pulsar «Escuchar» el objetivo.
+- [ ] Al escribir una respuesta, al abrir el teclado la cabecera (faro, reloj) sigue arriba y no queda un hueco raro.
+- [ ] Si sales justo en el «¡Correcto!» del mensaje final sin pulsar Continuar, la misión cuenta como hecha.
+- [ ] «Borrar progreso» muestra «Progreso borrado…» al terminar. Con «Muy grande», el diálogo de
+      confirmación también se ve con letra grande.
+- [ ] Capítulo 3 en modo oscuro: los textos en magenta y la casilla de respuesta se leen bien.
+
 ## General
 - [ ] Modo avión: todo igual.

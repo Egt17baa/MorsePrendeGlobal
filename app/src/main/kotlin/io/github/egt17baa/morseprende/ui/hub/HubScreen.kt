@@ -197,7 +197,7 @@ private fun NodeBadge(node: MissionNode, size: androidx.compose.ui.unit.Dp) {
     val fill = if (node.unlocked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
     val badgeSize = if (node.optional) size * 0.7f else size
     val shape = if (node.type == MissionType.REVIEW) RoundedCornerShape(12.dp) else CircleShape
-    val ring = if (node.isNext) Modifier.border(4.dp, MaterialTheme.colorScheme.secondary, shape) else Modifier
+    val ring = if (node.isNext) Modifier.border(4.dp, io.github.egt17baa.morseprende.ui.theme.nextRingColor(MaterialTheme.colorScheme), shape) else Modifier
     Box(
         Modifier
             .size(badgeSize)

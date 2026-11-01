@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.test.core.app.ApplicationProvider
@@ -27,10 +28,10 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
-/** «Muy grande» con la letra del sistema también al máximo, en un móvil pequeño. */
+/** «Muy grande» con la letra del sistema también al máximo (2,0 en Android 14+), en un móvil pequeño. */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
-@Config(qualifiers = "w360dp-h640dp", fontScale = 1.3f)
+@Config(qualifiers = "w360dp-h640dp", fontScale = 2f)
 class LargeTextTest {
 
     @get:Rule val compose = createComposeRule()
@@ -67,7 +68,10 @@ class LargeTextTest {
         compose.onNodeWithContentDescription(context.getString(R.string.mission_key)).performScrollTo().assertIsDisplayed()
         compose.onNodeWithText(context.getString(R.string.mission_submit)).performScrollTo().assertIsDisplayed()
         screen = 2
-        compose.onNodeWithText("+").assertIsDisplayed()
+        // La última fila del teclado se ve entera (no solo un trozo).
+        val root = compose.onRoot().fetchSemanticsNode().boundsInRoot
+        val plus = compose.onNodeWithText("+").fetchSemanticsNode().boundsInRoot
+        org.junit.Assert.assertTrue("+ en $plus, pantalla $root", plus.bottom <= root.bottom + 0.5f && plus.top >= root.top)
         compose.onNodeWithText("A").assertIsDisplayed()
     }
 }

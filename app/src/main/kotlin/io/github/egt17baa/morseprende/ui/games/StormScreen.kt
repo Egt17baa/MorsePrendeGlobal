@@ -54,7 +54,7 @@ fun StormContent(state: StormUiState, onStart: () -> Unit, onInput: (Char) -> Un
             GamePhase.PLAYING -> {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Text(stringResource(R.string.game_score, state.score), style = MaterialTheme.typography.titleMedium)
-                    Text("✦".repeat(state.lives), color = BeamCream, style = MaterialTheme.typography.titleMedium)
+                    Text("✦".repeat(state.lives), color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.titleMedium)
                 }
                 // El cielo ocupa el espacio libre: el teclado siempre queda visible, también en pantallas pequeñas.
                 StormSky(state.signals, Modifier.fillMaxWidth().weight(1f).heightIn(min = 140.dp))

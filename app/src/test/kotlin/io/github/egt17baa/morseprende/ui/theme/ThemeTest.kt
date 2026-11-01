@@ -61,7 +61,7 @@ class ThemeTest {
         assertEquals(Amber, chapterColors(dark, 2, dark = true, highContrast = false).primary)
         assertEquals(Olive, chapterColors(light, 2, dark = false, highContrast = false).primary)
         assertEquals(StarWhite, chapterColors(dark, 3, dark = true, highContrast = false).primary)
-        assertEquals(Magenta, chapterColors(dark, 3, dark = true, highContrast = false).secondary)
+        assertEquals(MagentaLight, chapterColors(dark, 3, dark = true, highContrast = false).secondary)
         assertEquals(DeepViolet, chapterColors(light, 3, dark = false, highContrast = false).primary)
         assertEquals(dark, chapterColors(dark, 1, dark = true, highContrast = false))
     }
@@ -69,5 +69,24 @@ class ThemeTest {
     @Test fun high_contrast_overrides_chapter_palette() {
         val hc = colorSchemeFor(true, true)
         assertEquals(hc, chapterColors(hc, 3, dark = true, highContrast = true))
+    }
+
+    @Test fun chapter_palettes_are_readable() {
+        for (dark in listOf(true, false)) for (ch in listOf(2, 3)) {
+            val c = chapterColors(colorSchemeFor(dark, false), ch, dark, highContrast = false)
+            val tag = "cap $ch ${if (dark) "oscuro" else "claro"}"
+            assertTrue("$tag secundario/fondo", contrastRatio(c.secondary, c.background) >= 4.5)
+            assertTrue("$tag secundario/tarjeta", contrastRatio(c.secondary, c.surfaceContainerHighest) >= 3.0)
+            assertTrue("$tag borde/fondo", contrastRatio(c.outline, c.background) >= 3.0)
+            assertTrue("$tag texto sobre primario", contrastRatio(c.onPrimary, c.primary) >= 4.5)
+            assertTrue("$tag primario/fondo", contrastRatio(c.primary, c.background) >= 3.0)
+        }
+    }
+
+    @Test fun next_mission_ring_stands_out() {
+        for (dark in listOf(true, false)) for (ch in 1..3) {
+            val c = chapterColors(colorSchemeFor(dark, false), ch, dark, highContrast = false)
+            assertTrue("cap $ch $dark", contrastRatio(nextRingColor(c), c.primary) >= 2.0)
+        }
     }
 }

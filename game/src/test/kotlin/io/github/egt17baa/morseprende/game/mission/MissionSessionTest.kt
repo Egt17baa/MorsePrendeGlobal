@@ -163,4 +163,10 @@ class MissionSessionTest {
         assertEquals(null, MissionSession.restore(bad))
         assertEquals(null, MissionSession.restore(s.snapshot().copy(exercises = emptyList())))
     }
+
+    @Test fun snapshot_json_carries_its_version() {
+        val json = MissionSession(listOf(final)).snapshot().toJson()
+        assertTrue(json, json.contains("\"version\":1"))
+        assertEquals(null, MissionSnapshot.fromJson(json.replace("\"version\":1", "\"version\":99")))
+    }
 }

@@ -142,7 +142,11 @@ fun SettingsScreen(viewModel: SettingsViewModel, onBack: () -> Unit) {
             Help(stringResource(R.string.settings_limit_flashes_help))
 
             SectionTitle(stringResource(R.string.settings_progress_section))
-            ResetProgressButton(viewModel::resetProgress)
+            val resetState by viewModel.resetState.collectAsStateWithLifecycle()
+            ResetProgressButton(enabled = resetState != SettingsViewModel.ResetState.RUNNING, onConfirm = viewModel::resetProgress)
+            if (resetState == SettingsViewModel.ResetState.DONE) {
+                Text(stringResource(R.string.settings_reset_done), color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.bodyMedium)
+            }
 
             SectionTitle(stringResource(R.string.settings_about_section))
             val context = androidx.compose.ui.platform.LocalContext.current
@@ -158,17 +162,17 @@ fun SettingsScreen(viewModel: SettingsViewModel, onBack: () -> Unit) {
 
 /** «Borrar progreso» siempre pide confirmación. */
 @Composable
-private fun ResetProgressButton(onConfirm: () -> Unit) {
+private fun ResetProgressButton(enabled: Boolean, onConfirm: () -> Unit) {
     var asking by remember { mutableStateOf(false) }
-    androidx.compose.material3.OutlinedButton(onClick = { asking = true }, modifier = Modifier.fillMaxWidth()) {
+    androidx.compose.material3.OutlinedButton(onClick = { asking = true }, enabled = enabled, modifier = Modifier.fillMaxWidth()) {
         Text(stringResource(R.string.settings_reset), color = MaterialTheme.colorScheme.error)
     }
     Help(stringResource(R.string.settings_reset_help))
     if (asking) {
         androidx.compose.material3.AlertDialog(
             onDismissRequest = { asking = false },
-            title = { Text(stringResource(R.string.settings_reset_title)) },
-            text = { Text(stringResource(R.string.settings_reset_body)) },
+            title = { io.github.egt17baa.morseprende.ui.theme.DialogText(stringResource(R.string.settings_reset_title)) },
+            text = { io.github.egt17baa.morseprende.ui.theme.DialogText(stringResource(R.string.settings_reset_body)) },
             confirmButton = {
                 androidx.compose.material3.TextButton(onClick = { asking = false; onConfirm() }) {
                     Text(stringResource(R.string.settings_reset_confirm), color = MaterialTheme.colorScheme.error)

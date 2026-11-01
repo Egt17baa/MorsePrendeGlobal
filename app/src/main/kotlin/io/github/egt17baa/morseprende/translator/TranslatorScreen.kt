@@ -137,8 +137,8 @@ fun TranslatorScreen(viewModel: TranslatorViewModel, onBack: () -> Unit) {
     if (s.showFlashWarning) {
         AlertDialog(
             onDismissRequest = viewModel::dismissFlashWarning,
-            title = { Text(stringResource(R.string.flash_warning_title)) },
-            text = { Text(stringResource(R.string.flash_warning_text)) },
+            title = { io.github.egt17baa.morseprende.ui.theme.DialogText(stringResource(R.string.flash_warning_title)) },
+            text = { io.github.egt17baa.morseprende.ui.theme.DialogText(stringResource(R.string.flash_warning_text)) },
             confirmButton = {
                 TextButton(onClick = viewModel::acceptFlashWarning) { Text(stringResource(R.string.flash_warning_accept)) }
             },

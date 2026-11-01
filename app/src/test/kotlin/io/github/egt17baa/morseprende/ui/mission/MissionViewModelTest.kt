@@ -781,4 +781,36 @@ class MissionViewModelTest {
         runCurrent()
         assertTrue(c.outputs.created.none { it.first == OutputKind.VIBRATION })
     }
+
+    @Test fun send_exercise_warms_up_sidetone_and_keeps_it_on_replay() = runTest {
+        // El altavoz tarda en despertar: el tono en vivo se arranca al entrar en enviar, no al primer punto.
+        val e = env()
+        e.advanceToSend()
+        val tone = e.sidetones.last
+        assertTrue(tone.warmed)
+        assertFalse(tone.closed)
+        e.vm.replay()
+        assertFalse("repetir el objetivo no apaga el tono", tone.closed)
+    }
+
+    @Test fun leaving_on_last_feedback_still_records_the_mission() = runTest {
+        val saves = io.github.egt17baa.morseprende.data.save.InMemoryMissionSaveStore()
+        val e = env(saves = saves)
+        e.vm.start()
+        while (e.s.exercise !is Exercise.FinalMessage) {
+            when (val x = e.s.exercise) {
+                is Exercise.Listen -> e.vm.continueListen()
+                is Exercise.ReceiveChoice -> { e.vm.answer(x.answer); e.vm.next() }
+                is Exercise.ReceiveTyped -> { e.vm.answer(x.answer); e.vm.next() }
+                is Exercise.Send -> repeat(3) { e.vm.dot(); e.vm.submitSend(); e.vm.next() }
+                else -> error("inesperado")
+            }
+        }
+        e.vm.answer((e.s.exercise as Exercise.FinalMessage).message.text)
+        // Sale con el «¡Correcto!» en pantalla, sin pulsar Continuar.
+        e.vm.abandon()
+        assertEquals(1, e.progress.recorded.size)
+        assertTrue(saves.saved.isEmpty())
+        assertEquals(MissionPhase.DEBRIEFING, e.s.phase)
+    }
 }

@@ -32,10 +32,20 @@ class SettingsViewModel(
     fun setTextScale(v: Float) = update { it.copy(textScale = v) }
     fun setHighContrast(v: Boolean) = update { it.copy(highContrast = v) }
 
+    enum class ResetState { IDLE, RUNNING, DONE }
+
+    private val _resetState = kotlinx.coroutines.flow.MutableStateFlow(ResetState.IDLE)
+    val resetState: StateFlow<ResetState> = _resetState
+
     /** Borra todo lo jugado (ver [io.github.egt17baa.morseprende.data.AppProgressReset]). */
     fun resetProgress() {
         val r = reset ?: return
-        viewModelScope.launch { r.resetAll() }
+        if (_resetState.value == ResetState.RUNNING) return
+        _resetState.value = ResetState.RUNNING
+        viewModelScope.launch {
+            r.resetAll()
+            _resetState.value = ResetState.DONE
+        }
     }
 
     /** Reproduce "PARIS" con los ajustes actuales. */

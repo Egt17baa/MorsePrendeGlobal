@@ -55,4 +55,13 @@ class SettingsScreenTest {
         assertEquals(1.3f, repo.settings.value.textScale, 1e-6f)
         assertEquals(true, repo.settings.value.highContrast)
     }
+
+    @Test fun reset_shows_done_message() {
+        val vm = SettingsViewModel(FakeSettingsRepository(), reset = { })
+        compose.setContent { SettingsScreen(vm, onBack = {}) }
+        compose.onNodeWithText(str(R.string.settings_reset)).performScrollTo().performClick()
+        compose.onNodeWithText(str(R.string.settings_reset_confirm)).performClick()
+        compose.waitForIdle()
+        compose.onNodeWithText(str(R.string.settings_reset_done)).performScrollTo().assertExists()
+    }
 }

@@ -22,3 +22,10 @@ val SignalGrey = Color(0xFF8C9096)
 val DeepViolet = Color(0xFF3A2A6E)
 val StarWhite = Color(0xFFF3F0FF)
 val Magenta = Color(0xFFD4458C)
+
+// Variantes legibles (contraste WCAG) para textos secundarios y bordes de los capítulos 2 y 3.
+val SignalGreyLight = Color(0xFFD0D3D8)
+val SignalGreyDark = Color(0xFF5C6066)
+val MagentaLight = Color(0xFFFF9ECF)
+val MagentaDark = Color(0xFFB0306F)
+val VioletLight = Color(0xFFB9A8FF)

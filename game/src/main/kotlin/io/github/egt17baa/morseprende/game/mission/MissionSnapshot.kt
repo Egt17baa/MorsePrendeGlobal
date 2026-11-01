@@ -8,9 +8,11 @@ import kotlinx.serialization.json.Json
  * Una partida a medias, para seguir donde se dejó al salir de la misión (o si el sistema cierra
  * la app). Guarda los ejercicios tal cual se planificaron, por dónde iba y lo acertado hasta ahí.
  */
+@OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
 @Serializable
 data class MissionSnapshot(
-    val version: Int = VERSION,
+    /** Siempre se escribe (si no, un fichero viejo se leería como si fuera de la versión actual). */
+    @kotlinx.serialization.EncodeDefault val version: Int = VERSION,
     val exercises: List<Exercise>,
     val index: Int,
     val correct: Int,

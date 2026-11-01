@@ -187,7 +187,8 @@ class MissionViewModel(
             charWpm = minOf(charWpm, TranslatorViewModel.FLASH_SAFE_WPM)
             effectiveWpm = minOf(effectiveWpm, charWpm)
         }
-        if (!keyIsDown) closeSidetone()
+        // En enviar el tono se queda despierto (repetir el objetivo no lo apaga).
+        if (session?.current !is Exercise.Send) closeSidetone()
         val signals = MorseTiming(charWpm, effectiveWpm).signalsFor(MorseCodec.encode(text).morse)
         val output = when {
             channel == Channel.LIGHT -> lamp
@@ -234,6 +235,7 @@ class MissionViewModel(
         pendingAdvance = result.advanced
         ui.update { it.copy(feedback = Feedback(result.correct, result.expected), hintLevel = s.hintLevel) }
         persist()
+        recordResult()
     }
 
     fun keyDown(atMs: Long = clock()) {
@@ -296,6 +298,7 @@ class MissionViewModel(
             it.copy(feedback = Feedback(result.correct, result.expected), attemptsLeft = result.attemptsLeft, keyerPending = "")
         }
         persist()
+        recordResult()
     }
 
     /** Quita el feedback y pasa al siguiente ejercicio (o repite el actual si toca). */
@@ -320,6 +323,11 @@ class MissionViewModel(
         releaseAudio()
         val m = mission ?: return
         val ch = chapter ?: return
+        if (ui.value.phase == MissionPhase.EXERCISE && session?.isFinished == true) {
+            // Salió en la pantalla de «¡Correcto!» de la última respuesta: la misión está terminada.
+            finish()
+            return
+        }
         if (ui.value.phase == MissionPhase.EXERCISE) {
             // Lo hecho hasta aquí ya está guardado: el briefing ofrece seguir por donde iba.
             pendingResume = session?.takeIf { !it.isFinished && it.index > 0 }?.snapshot()
@@ -400,7 +408,12 @@ class MissionViewModel(
         val exercise = s.current
         // El tono en vivo (canal de baja latencia) solo existe en los ejercicios de enviar: si
         // sigue abierto mientras suena la señal de recibir, en el móvil se oyen chasquidos y cortes.
-        if (exercise !is Exercise.Send) closeSidetone()
+        if (exercise !is Exercise.Send) {
+            closeSidetone()
+        } else {
+            // El altavoz tarda en despertar: el tono en vivo arranca ya, no con el primer punto.
+            (sidetone ?: sidetoneFactory.create(settings.value).also { sidetone = it }).warmUp()
+        }
         ui.update {
             it.copy(
                 exercise = exercise, exerciseIndex = s.index, feedback = null, sentText = "", keyerPending = "",
@@ -433,11 +446,23 @@ class MissionViewModel(
         val s = session ?: return
         val result = s.result()
         sidetone?.close()
+        sidetone = null
         ui.update { it.copy(phase = MissionPhase.DEBRIEFING, exercise = null, stars = result.stars) }
-        if (recorded) return
+        recordResult()
+    }
+
+    /**
+     * Guarda el resultado en cuanto la última respuesta termina la misión (aunque el jugador salga
+     * con el «¡Correcto!» en pantalla, sin pulsar Continuar). Solo una vez.
+     */
+    private fun recordResult() {
+        val s = session ?: return
+        if (!s.isFinished || recorded) return
+        val result = s.result()
         recorded = true
         discardSave()
-        viewModelScope.launch {
+        // Fuera de viewModelScope: si se sale de la pantalla justo ahora, el resultado se guarda igual.
+        viewModelScope.launch(kotlinx.coroutines.NonCancellable) {
             val previous = progress.progress.first()[missionId]?.bestStars ?: 0
             ui.update { it.copy(previousBest = previous) }
             progress.recordResult(missionId, result.stars, System.currentTimeMillis())

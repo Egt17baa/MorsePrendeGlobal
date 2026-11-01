@@ -100,6 +100,19 @@ fun colorSchemeFor(dark: Boolean, highContrast: Boolean): ColorScheme = when {
 /** Si el alto contraste está activo (las paletas por capítulo se desactivan). */
 val LocalHighContrast = staticCompositionLocalOf { false }
 
+/**
+ * Densidad con el tamaño de texto de la app. Los diálogos son otra ventana que pone su propia
+ * densidad; este local sí pasa a su contenido, y [DialogText] lo vuelve a aplicar.
+ */
+val LocalAppDensity = staticCompositionLocalOf<Density?> { null }
+
+/** Texto para el contenido de un diálogo, con el tamaño de texto elegido en Ajustes. */
+@Composable
+fun DialogText(text: String) {
+    val density = LocalAppDensity.current ?: LocalDensity.current
+    CompositionLocalProvider(LocalDensity provides density) { androidx.compose.material3.Text(text) }
+}
+
 /** Si el tema actual es oscuro (para elegir la variante de las paletas por capítulo). */
 val LocalDarkTheme = staticCompositionLocalOf { false }
 
@@ -111,8 +124,10 @@ fun MorsePrendeTheme(
     content: @Composable () -> Unit,
 ) {
     val density = LocalDensity.current
+    val scaled = Density(density.density, density.fontScale * textScale)
     CompositionLocalProvider(
-        LocalDensity provides Density(density.density, density.fontScale * textScale),
+        LocalDensity provides scaled,
+        LocalAppDensity provides scaled,
         LocalHighContrast provides highContrast,
         LocalDarkTheme provides darkTheme,
     ) {

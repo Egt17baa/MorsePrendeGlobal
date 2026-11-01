@@ -8,6 +8,7 @@ import android.media.AudioTrack
 import io.github.egt17baa.morseprende.settings.AppSettings
 import kotlin.math.PI
 import io.github.egt17baa.morseprende.core.Timbre
+import io.github.egt17baa.morseprende.core.ToneSynth
 
 /** Tono que suena mientras se mantiene pulsado el manipulador. */
 interface Sidetone {
@@ -16,6 +17,9 @@ interface Sidetone {
 
     /** Libera el audio. Se puede llamar varias veces; después, keyDown/keyUp no hacen nada. */
     fun close()
+
+    /** Abre el audio ya (en silencio despierto) para que el primer punto no se pierda. */
+    fun warmUp() {}
 }
 
 fun interface SidetoneFactory {
@@ -54,6 +58,10 @@ class AudioSidetone(
         isKeyDown = false
     }
 
+    override fun warmUp() {
+        if (!closed) ensureRunning()
+    }
+
     override fun close() {
         val running: Thread?
         synchronized(lock) {
@@ -63,8 +71,8 @@ class AudioSidetone(
             running = thread
             thread = null
         }
+        // Sin esperar en el hilo principal: el hilo es daemon y libera su AudioTrack al salir.
         running?.interrupt()
-        running?.join(JOIN_TIMEOUT_MS)
     }
 
     private fun ensureRunning() {
@@ -83,6 +91,9 @@ class AudioSidetone(
         try {
             track.play()
             val block = ShortArray(BLOCK_SAMPLES)
+            // Con la tecla levantada no se mandan ceros exactos: el amplificador del altavoz se
+            // dormiría y se comería el principio del siguiente punto (ver ToneSynth.keepAlive).
+            val idle = if (volume > 0f) ToneSynth.keepAlive(BLOCK_SAMPLES) else ShortArray(BLOCK_SAMPLES)
             val amplitude = volume.coerceIn(0f, 1f) * HEADROOM * Short.MAX_VALUE
             val rampStep = 1.0 / (RAMP_MS * sampleRate / 1000.0)
             val phaseStep = 2 * PI * freqHz / sampleRate
@@ -92,7 +103,7 @@ class AudioSidetone(
                 val target = if (isKeyDown) 1.0 else 0.0
                 for (i in block.indices) {
                     gain = if (gain < target) minOf(target, gain + rampStep) else maxOf(target, gain - rampStep)
-                    block[i] = (amplitude * gain * timbre.sample(phase)).toInt().toShort()
+                    block[i] = if (gain == 0.0) idle[i] else (amplitude * gain * timbre.sample(phase)).toInt().toShort()
                     phase += phaseStep
                     if (phase > 2 * PI) phase -= 2 * PI
                 }
@@ -135,7 +146,6 @@ class AudioSidetone(
         const val RAMP_MS = 3
         const val HEADROOM = 0.8
         const val IDLE_SLEEP_MS = 2L
-        const val JOIN_TIMEOUT_MS = 500L
     }
 }
 

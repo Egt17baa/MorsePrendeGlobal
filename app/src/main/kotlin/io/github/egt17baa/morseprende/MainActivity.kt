@@ -17,8 +17,10 @@ class MainActivity : ComponentActivity() {
         val container = (application as MorsePrendeApp).container
         setContent {
             // Accesibilidad (alto contraste y tamaño de texto) desde los ajustes guardados.
-            val prefs by container.settings.settings.collectAsStateWithLifecycle(initialValue = AppSettings())
-            MorsePrendeTheme(highContrast = prefs.highContrast, textScale = prefs.textScale) { AppNavHost(container) }
+            // Hasta leer los ajustes (unos milisegundos) no se dibuja nada: así no hay un destello del
+            // tema normal antes del alto contraste ni un salto del tamaño de texto.
+            val prefs: AppSettings? by container.settings.settings.collectAsStateWithLifecycle(initialValue = null)
+            prefs?.let { p -> MorsePrendeTheme(highContrast = p.highContrast, textScale = p.textScale) { AppNavHost(container) } }
         }
     }
 }

@@ -39,7 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.egt17baa.morseprende.R
 import io.github.egt17baa.morseprende.game.content.LibraryCard
-import io.github.egt17baa.morseprende.ui.theme.BeamCream
+import androidx.compose.ui.graphics.Color
 import io.github.egt17baa.morseprende.ui.theme.Coral
 import io.github.egt17baa.morseprende.ui.theme.SeaNight
 
@@ -121,50 +121,52 @@ private fun CardDetail(card: LibraryCard) {
 /** Iconos propios de las fichas, dibujados con trazos sencillos. */
 @Composable
 private fun CardIcon(icon: String, modifier: Modifier = Modifier, iconSize: androidx.compose.ui.unit.Dp = 40.dp) {
+    // Color del tema (crema en oscuro, verde azulado en claro, amarillo en alto contraste).
+    val color = MaterialTheme.colorScheme.primary
     Canvas(modifier.size(iconSize)) {
         val stroke = Stroke(width = size.minDimension / 14)
         when (icon) {
-            "lighthouse" -> drawLighthouse(stroke)
-            "telegraph" -> drawTelegraph(stroke)
-            "ship" -> drawShip(stroke)
-            "radio" -> drawRadio(stroke)
-            "wave" -> drawWave(stroke)
-            else -> drawBook(stroke)
+            "lighthouse" -> drawLighthouse(stroke, color)
+            "telegraph" -> drawTelegraph(stroke, color)
+            "ship" -> drawShip(stroke, color)
+            "radio" -> drawRadio(stroke, color)
+            "wave" -> drawWave(stroke, color)
+            else -> drawBook(stroke, color)
         }
     }
 }
 
-private fun DrawScope.drawLighthouse(stroke: Stroke) {
+private fun DrawScope.drawLighthouse(stroke: Stroke, color: Color) {
     val w = size.width; val h = size.height
     val tower = Path().apply { moveTo(w * 0.38f, h * 0.9f); lineTo(w * 0.44f, h * 0.35f); lineTo(w * 0.56f, h * 0.35f); lineTo(w * 0.62f, h * 0.9f); close() }
-    drawPath(tower, BeamCream, style = stroke)
+    drawPath(tower, color, style = stroke)
     drawRect(Coral, Offset(w * 0.42f, h * 0.2f), Size(w * 0.16f, h * 0.15f))
-    drawLine(BeamCream, Offset(w * 0.6f, h * 0.27f), Offset(w * 0.95f, h * 0.15f), strokeWidth = stroke.width)
+    drawLine(color, Offset(w * 0.6f, h * 0.27f), Offset(w * 0.95f, h * 0.15f), strokeWidth = stroke.width)
 }
 
-private fun DrawScope.drawTelegraph(stroke: Stroke) {
+private fun DrawScope.drawTelegraph(stroke: Stroke, color: Color) {
     val w = size.width; val h = size.height
-    drawRect(BeamCream, Offset(w * 0.1f, h * 0.7f), Size(w * 0.8f, h * 0.15f), style = stroke)
+    drawRect(color, Offset(w * 0.1f, h * 0.7f), Size(w * 0.8f, h * 0.15f), style = stroke)
     drawLine(Coral, Offset(w * 0.25f, h * 0.55f), Offset(w * 0.8f, h * 0.45f), strokeWidth = stroke.width * 1.5f)
-    drawCircle(BeamCream, radius = w * 0.08f, center = Offset(w * 0.8f, h * 0.42f))
+    drawCircle(color, radius = w * 0.08f, center = Offset(w * 0.8f, h * 0.42f))
 }
 
-private fun DrawScope.drawShip(stroke: Stroke) {
+private fun DrawScope.drawShip(stroke: Stroke, color: Color) {
     val w = size.width; val h = size.height
     val hull = Path().apply { moveTo(w * 0.1f, h * 0.6f); lineTo(w * 0.9f, h * 0.6f); lineTo(w * 0.75f, h * 0.82f); lineTo(w * 0.25f, h * 0.82f); close() }
-    drawPath(hull, BeamCream, style = stroke)
+    drawPath(hull, color, style = stroke)
     drawRect(Coral, Offset(w * 0.35f, h * 0.35f), Size(w * 0.3f, h * 0.25f))
-    drawLine(BeamCream, Offset(w * 0.5f, h * 0.35f), Offset(w * 0.5f, h * 0.12f), strokeWidth = stroke.width)
+    drawLine(color, Offset(w * 0.5f, h * 0.35f), Offset(w * 0.5f, h * 0.12f), strokeWidth = stroke.width)
 }
 
-private fun DrawScope.drawRadio(stroke: Stroke) {
+private fun DrawScope.drawRadio(stroke: Stroke, color: Color) {
     val w = size.width; val h = size.height
-    drawRect(BeamCream, Offset(w * 0.15f, h * 0.4f), Size(w * 0.7f, h * 0.45f), style = stroke)
+    drawRect(color, Offset(w * 0.15f, h * 0.4f), Size(w * 0.7f, h * 0.45f), style = stroke)
     drawCircle(Coral, radius = w * 0.1f, center = Offset(w * 0.35f, h * 0.62f))
-    drawLine(BeamCream, Offset(w * 0.6f, h * 0.4f), Offset(w * 0.8f, h * 0.1f), strokeWidth = stroke.width)
+    drawLine(color, Offset(w * 0.6f, h * 0.4f), Offset(w * 0.8f, h * 0.1f), strokeWidth = stroke.width)
 }
 
-private fun DrawScope.drawWave(stroke: Stroke) {
+private fun DrawScope.drawWave(stroke: Stroke, color: Color) {
     val w = size.width; val h = size.height
     val wave = Path().apply {
         moveTo(0f, h * 0.5f)
@@ -173,14 +175,14 @@ private fun DrawScope.drawWave(stroke: Stroke) {
         quadraticTo(w * 0.625f, h * 0.2f, w * 0.75f, h * 0.5f)
         quadraticTo(w * 0.875f, h * 0.8f, w, h * 0.5f)
     }
-    drawPath(wave, BeamCream, style = stroke)
+    drawPath(wave, color, style = stroke)
     drawCircle(Coral, radius = w * 0.06f, center = Offset(w * 0.25f, h * 0.5f))
 }
 
-private fun DrawScope.drawBook(stroke: Stroke) {
+private fun DrawScope.drawBook(stroke: Stroke, color: Color) {
     val w = size.width; val h = size.height
-    drawRect(BeamCream, Offset(w * 0.12f, h * 0.2f), Size(w * 0.36f, h * 0.6f), style = stroke)
-    drawRect(BeamCream, Offset(w * 0.52f, h * 0.2f), Size(w * 0.36f, h * 0.6f), style = stroke)
+    drawRect(color, Offset(w * 0.12f, h * 0.2f), Size(w * 0.36f, h * 0.6f), style = stroke)
+    drawRect(color, Offset(w * 0.52f, h * 0.2f), Size(w * 0.36f, h * 0.6f), style = stroke)
     drawLine(Coral, Offset(w * 0.2f, h * 0.4f), Offset(w * 0.4f, h * 0.4f), strokeWidth = stroke.width)
     drawCircle(Coral, radius = w * 0.03f, center = Offset(w * 0.62f, h * 0.4f), style = Stroke(stroke.width))
 }

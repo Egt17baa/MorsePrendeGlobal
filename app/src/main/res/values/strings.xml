@@ -223,6 +223,7 @@
     <string name="settings_reset_title">¿Borrar todo el progreso?</string>
     <string name="settings_reset_body">Se borran las estrellas, el repaso, los récords, los Destellos y lo comprado en la tienda, la racha, los logros, las fichas leídas y las misiones a medias. No se puede deshacer.</string>
     <string name="settings_reset_confirm">Borrar</string>
+    <string name="settings_reset_done">Progreso borrado: la campaña empieza de nuevo.</string>
     <string name="settings_reset_cancel">Cancelar</string>
     <string name="settings_about_section">Acerca de</string>
     <string name="settings_about_version">MorsePrende: El Faro, versión %1$s.</string>
