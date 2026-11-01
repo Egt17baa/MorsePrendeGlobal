@@ -13,9 +13,10 @@ class AssetContentSourceTest {
     @Test fun asset_content_loads_both_chapters() {
         val source = AssetContentSource(ApplicationProvider.getApplicationContext<android.content.Context>())
         val chapters = source.chapters()
-        assertEquals(listOf(1, 2), chapters.map { it.id })
+        assertEquals(listOf(1, 2, 3), chapters.map { it.id })
         assertEquals(8, chapters[0].missions.size)
         assertEquals(19, chapters[1].missions.size)
+        assertEquals(10, chapters[2].missions.size)
     }
 
     @Test fun broken_json_throws_content_load_exception() {

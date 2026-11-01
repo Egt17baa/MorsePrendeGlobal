@@ -1,0 +1,78 @@
+{
+  "id": 3,
+  "title": "Señal Estelar",
+  "intro": "La luz que parpadea en el cielo no es una estrella: es una estación orbital que llama al faro de Punta Silencio. Y detrás de ella llega otra señal que nadie sabe de dónde viene.",
+  "words": [
+    "HOLA.", "SI,", "NO.", "OK?", "QUIEN?", "DONDE?", "AQUI.", "FIN.", "CAMBIO.", "YA!",
+    "HOLA!", "VAMOS!", "1/2", "3/4", "24/7", "A=B", "2+2=4", "FIN+", "ECO", "LUZ",
+    "ORBITA", "ESTRELLA", "SATELITE", "COHETE", "LUNA", "MARTE", "CIELO", "ESPACIO", "ANTENA", "COMETA",
+    "GALAXIA", "PLANETA", "RADAR", "PULSO", "ONDA", "TIERRA", "CAPSULA", "ROVER", "SOL", "NOCHE",
+    "MISION", "CODIGO", "MENSAJE", "PAZ", "AMIGOS", "HOLA?", "VEGA", "ORION", "'ECO'"
+  ],
+  "missions": [
+    {
+      "id": "c3m1", "type": "LESSON", "title": "Una luz que no es estrella",
+      "briefing": "Desde lo alto de la torre ves la luz: parpadea en Morse. Remedios saca un cuaderno nuevo: «Para hablar con el cielo hacen falta signos. El punto es punto-raya tres veces; la coma, dos rayas, dos puntos y dos rayas».",
+      "newChars": [".", ","],
+      "finalMessage": { "from": "Estación orbital Vega", "text": "AQUI ESTACION ORBITAL VEGA. HOLA, FARO." },
+      "debriefing": "¡Es la estación Vega! Su tripulación usa el Morse como respaldo cuando fallan las comunicaciones digitales. Y os han elegido a vosotros."
+    },
+    {
+      "id": "c3m2", "type": "LESSON", "title": "¿Quién está ahí?",
+      "briefing": "Vega detecta una segunda señal que no reconoce. «La interrogación es punto, punto, raya, raya, punto, punto; la barra, raya, punto, punto, raya, punto», te explica la operadora de la estación.",
+      "newChars": ["?", "/"],
+      "finalMessage": { "from": "Estación orbital Vega", "text": "QUIEN ESTA AHI? CANAL 7/9" },
+      "debriefing": "En el canal 7/9 solo se oye un eco que repite vuestro propio mensaje, unos segundos después. Como si alguien estuviera aprendiendo."
+    },
+    {
+      "id": "c3r1", "type": "REVIEW", "title": "Enlace estable",
+      "briefing": "Hay que mantener el enlace con Vega durante su paso sobre la isla. Repasa todo: letras, números y los nuevos signos.",
+      "finalMessage": { "from": "Estación orbital Vega", "text": "RECIBIDO, CAMBIO." },
+      "debriefing": "Vega se pone por el horizonte. Volverá en noventa minutos. El eco, en cambio, no se va."
+    },
+    {
+      "id": "c3m3", "type": "LESSON", "title": "Separar y terminar",
+      "briefing": "Los operadores usan prosignos: señales que no son letras sino órdenes. «BT suena como el signo igual, raya, tres puntos, raya: separa partes del mensaje. AR suena como el signo más, punto, raya, punto, raya, punto: significa fin del mensaje».",
+      "newChars": ["=", "+"],
+      "finalMessage": { "from": "Estación orbital Vega", "text": "MENSAJE = LUCES EN EL CIELO +" },
+      "debriefing": "Ahora tus mensajes tienen principio, partes y final, como los de un operador profesional. El eco empieza a usar BT y AR también."
+    },
+    {
+      "id": "c3m4", "type": "LESSON", "title": "No es un satélite",
+      "briefing": "La señal desconocida responde por fin con palabras propias. «El apóstrofo es punto, cuatro rayas y un punto; la exclamación, raya, punto, raya, punto, raya, raya. Prepárate para cualquier cosa».",
+      "newChars": ["'", "!"],
+      "finalMessage": { "from": "Señal desconocida", "text": "NO ES UN SATELITE! ES 'ECO'" },
+      "debriefing": "Se llama a sí misma «Eco». Aprendió Morse escuchando durante años las señales de los faros de la Tierra."
+    },
+    {
+      "id": "c3r2", "type": "REVIEW", "title": "Todos los signos",
+      "briefing": "Eco quiere conversar, y Vega necesita que traduzcas. Repasa todos los signos antes de la próxima ventana de contacto.",
+      "finalMessage": { "from": "Estación orbital Vega", "text": "TODOS LOS SIGNOS, LISTOS!" },
+      "debriefing": "La tripulación de Vega aplaude por radio. Remedios, a tu lado, se seca una lágrima: «Nunca pensé que el faro hablaría con las estrellas»."
+    },
+    {
+      "id": "c3l", "type": "REVIEW", "title": "Solo luz", "channel": "LIGHT",
+      "briefing": "Una tormenta solar corta la radio. Eco responde con lo único que le queda: destellos de luz. Mira el faro de la pantalla y descifra sin sonido.",
+      "finalMessage": { "from": "Eco", "text": "LA LUZ RESPONDE." },
+      "debriefing": "Has leído un mensaje solo con los ojos, como Jeremiah Denton o como los marinos que leían los faros. Eco parpadea de alegría."
+    },
+    {
+      "id": "c3v", "type": "REVIEW", "title": "Solo pulso", "channel": "VIBRATION",
+      "briefing": "La niebla tapa el cielo y la radio sigue muerta. Remedios apoya tu mano sobre la vieja consola: «Siente el pulso». Los mensajes llegan como vibraciones.",
+      "finalMessage": { "from": "Eco", "text": "SIENTE EL PULSO." },
+      "debriefing": "Has descifrado Morse con el tacto. Hay personas que se comunican así cada día. El Morse no necesita oídos ni ojos: solo un ritmo."
+    },
+    {
+      "id": "c3s", "type": "REVIEW", "title": "Ráfaga", "wpm": 20,
+      "briefing": "La ventana de contacto con Vega dura solo unos segundos. Los mensajes llegan a 20 palabras por minuto: la velocidad de un operador de verdad.",
+      "finalMessage": { "from": "Estación orbital Vega", "text": "MAS RAPIDO, OPERADOR!" },
+      "debriefing": "Has seguido el ritmo de una ráfaga a 20 PPM. Ya no traduces letra a letra: oyes palabras."
+    },
+    {
+      "id": "c3f", "type": "FINALE", "title": "La señal estelar", "wpm": 18,
+      "briefing": "Eco va a enviar su último mensaje antes de alejarse. Vega lo retransmite a todos los faros de la Tierra, pero solo tú puedes descifrarlo a tiempo.",
+      "finalMessage": { "from": "Eco", "text": "HOLA, TIERRA. SOMOS ECO. GRACIAS POR ESCUCHAR. +" },
+      "debriefing": "Eco se aleja entre las estrellas. Remedios te da las llaves del faro: «Ahora el farero eres tú». Esa noche enciendes la luz y, por costumbre, la haces parpadear: ··· ‒‒‒ ···. Fin de la campaña… por ahora."
+    }
+  ]
+}

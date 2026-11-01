@@ -11,6 +11,7 @@ object RealContent {
     val dir = File("../app/src/main/assets/content/es")
     val chapter1: Chapter by lazy { ContentParser.chapter(File(dir, "chapter1.json").readText()) }
     val chapter2: Chapter by lazy { ContentParser.chapter(File(dir, "chapter2.json").readText()) }
+    val chapter3: Chapter by lazy { ContentParser.chapter(File(dir, "chapter3.json").readText()) }
     val library: List<LibraryCard> by lazy { ContentParser.libraryCards(File(dir, "library.json").readText()) }
 }
 
@@ -99,6 +100,46 @@ class RealContentTest {
             repeat(10) { seed ->
                 val ex = io.github.egt17baa.morseprende.game.mission.MissionPlanner.plan(m, RealContent.chapter2, kotlin.random.Random(seed), chapters = chapters)
                 ex.forEach { e ->
+                    val texts = when (e) {
+                        is io.github.egt17baa.morseprende.game.mission.Exercise.ReceiveChoice -> e.options + e.answer
+                        is io.github.egt17baa.morseprende.game.mission.Exercise.ReceiveTyped -> listOf(e.answer)
+                        is io.github.egt17baa.morseprende.game.mission.Exercise.Send -> listOf(e.target)
+                        else -> emptyList()
+                    }
+                    texts.forEach { t -> assertTrue("${m.id}: $t", t.all { it in learned }) }
+                }
+            }
+        }
+    }
+
+    @Test fun real_chapter3_is_valid() {
+        val ch3 = RealContent.chapter3
+        assertEquals(emptyList<String>(), ContentValidator.validate(listOf(chapter1, RealContent.chapter2, ch3), emptyList()))
+        assertEquals(listOf("c3m1", "c3m2", "c3r1", "c3m3", "c3m4", "c3r2", "c3l", "c3v", "c3s", "c3f"), ch3.missions.map { it.id })
+        assertEquals(listOf(".,", "?/", "=+", "'!"), ch3.missions.filter { it.type == MissionType.LESSON }.map { it.newChars.joinToString("") })
+        assertEquals(Channel.LIGHT, ch3.missions.single { it.id == "c3l" }.channel)
+        assertEquals(Channel.VIBRATION, ch3.missions.single { it.id == "c3v" }.channel)
+        assertEquals(20, ch3.missions.single { it.id == "c3s" }.wpm)
+        assertEquals(18, ch3.missions.single { it.id == "c3f" }.wpm)
+        assertEquals(MissionType.FINALE, ch3.missions.last().type)
+        assertTrue("words=${ch3.words.size}", ch3.words.size >= 40)
+        assertTrue(ch3.missions.last().finalMessage.text.any { it in ".,?!" })
+    }
+
+    @Test fun chapter3_unlocks_after_c2f_without_enye() {
+        val chapters = listOf(chapter1, RealContent.chapter2, RealContent.chapter3)
+        val done = (chapter1.missions + RealContent.chapter2.missions).filter { !it.optional }.map { it.id }.toSet()
+        assertTrue(io.github.egt17baa.morseprende.game.progress.ProgressRules.isUnlocked("c3m1", chapters, done))
+        assertFalse(io.github.egt17baa.morseprende.game.progress.ProgressRules.isUnlocked("c3m1", chapters, done - "c2f"))
+    }
+
+    @Test fun planner_works_for_every_chapter3_mission() {
+        val chapters = listOf(chapter1, RealContent.chapter2, RealContent.chapter3)
+        for (m in RealContent.chapter3.missions) {
+            val learned = ContentValidator.learnedCharsUpTo(chapters, m.id)
+            assertFalse("${m.id}: Ñ", 'Ñ' in learned)
+            repeat(10) { seed ->
+                io.github.egt17baa.morseprende.game.mission.MissionPlanner.plan(m, RealContent.chapter3, kotlin.random.Random(seed), chapters = chapters).forEach { e ->
                     val texts = when (e) {
                         is io.github.egt17baa.morseprende.game.mission.Exercise.ReceiveChoice -> e.options + e.answer
                         is io.github.egt17baa.morseprende.game.mission.Exercise.ReceiveTyped -> listOf(e.answer)
