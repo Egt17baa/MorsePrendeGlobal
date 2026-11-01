@@ -131,6 +131,39 @@
     <string name="ach_reader">Ratón de biblioteca</string>
     <string name="ach_reader_desc">Lee todas las fichas de la biblioteca.</string>
 
+    <!-- Tienda -->
+    <string name="shop_title">Tienda del faro</string>
+    <string name="shop_balance">✦ %1$d Destellos</string>
+    <string name="shop_intro">Los Destellos se ganan jugando y solo sirven para decorar: no dan ventajas ni se compran con dinero.</string>
+    <string name="shop_cat_lamp">Luz del faro</string>
+    <string name="shop_cat_tone">Sonido del pitido</string>
+    <string name="shop_cat_keyer">Manipulador</string>
+    <string name="shop_cat_decor">Decoración de la isla</string>
+    <string name="shop_buy">Comprar (%1$d)</string>
+    <string name="shop_equip">Equipar</string>
+    <string name="shop_equipped">Equipado</string>
+    <string name="shop_place">Poner</string>
+    <string name="shop_remove">Quitar</string>
+    <string name="shop_listen">Escuchar</string>
+    <string name="shop_bought">¡Comprado!</string>
+    <string name="shop_not_enough">Te faltan %1$d Destellos.</string>
+    <string name="shop_ok">Vale</string>
+    <string name="item_lamp_cream">Crema de faro</string>
+    <string name="item_lamp_emerald">Verde esmeralda</string>
+    <string name="item_lamp_harbor">Rojo de puerto</string>
+    <string name="item_lamp_polar">Azul polar</string>
+    <string name="item_lamp_amber">Ámbar de radio</string>
+    <string name="item_tone_sine">Pitido puro</string>
+    <string name="item_tone_soft">Pitido suave</string>
+    <string name="item_tone_classic">Zumbador clásico</string>
+    <string name="item_key_coral">Aro coral</string>
+    <string name="item_key_brass">Aro de latón</string>
+    <string name="item_key_silver">Aro de plata</string>
+    <string name="item_decor_gulls">Gaviotas</string>
+    <string name="item_decor_boat">Barca de pesca</string>
+    <string name="item_decor_flags">Banderines</string>
+    <string name="item_decor_lanterns">Farolillos</string>
+
     <!-- Ajustes -->
     <string name="settings_title">Ajustes</string>
     <string name="settings_speed_section">Velocidad</string>
