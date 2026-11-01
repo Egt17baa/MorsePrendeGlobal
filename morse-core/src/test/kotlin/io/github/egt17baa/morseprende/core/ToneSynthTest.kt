@@ -67,4 +67,24 @@ class ToneSynthTest {
             }
         }
     }
+
+    @Test fun noise_zero_is_identical() {
+        val clean = ToneSynth.render(Signal(true, 100), 48000, 600, 1f)
+        val zero = ToneSynth.render(Signal(true, 100), 48000, 600, 1f, noise = 0f)
+        assertTrue(clean.contentEquals(zero))
+    }
+
+    @Test fun noise_fills_silence() {
+        val pcm = ToneSynth.render(Signal(false, 50), 48000, 600, 1f, noise = 0.3f, random = kotlin.random.Random(1))
+        val peak = pcm.maxOf { abs(it.toInt()) }
+        assertTrue("peak=$peak", peak > 0.2 * 0.8 * Short.MAX_VALUE && peak <= 0.3 * 0.8 * Short.MAX_VALUE + 1)
+    }
+
+    @Test fun noise_never_clips_at_full_volume() {
+        val pcm = ToneSynth.render(Signal(true, 500), 48000, 600, 1f, noise = 0.5f, random = kotlin.random.Random(2))
+        assertTrue(pcm.all { it in Short.MIN_VALUE..Short.MAX_VALUE })
+        // Con tono a 0,8 del máximo más ruido de hasta 0,4 se limitaría: nunca debe dar la vuelta (wrap).
+        val wrapped = (1 until pcm.size).count { abs(pcm[it] - pcm[it - 1]) > Short.MAX_VALUE }
+        assertEquals(0, wrapped)
+    }
 }

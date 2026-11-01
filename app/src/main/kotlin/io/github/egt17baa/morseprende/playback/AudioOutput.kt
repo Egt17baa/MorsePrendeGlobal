@@ -22,6 +22,8 @@ class AudioOutput(
     private val freqHz: Int,
     private val volume: Float,
     private val timbre: Timbre = Timbre.SINE,
+    /** Ruido de radio (0 = limpio); también suena en los silencios. */
+    val noise: Float = 0f,
 ) : SignalOutput {
 
     private val sampleRate: Int = context.getSystemService(AudioManager::class.java)
@@ -41,9 +43,14 @@ class AudioOutput(
         var finishedNormally = false
         try {
             audioTrack.play()
+            val random = kotlin.random.Random(System.nanoTime())
             for (signal in withPadding(signals)) {
-                // Los silencios reutilizan un bloque de ceros: no se reserva memoria por pausa.
-                val pcm = if (signal.on) ToneSynth.render(signal, sampleRate, freqHz, volume, timbre = timbre) else null
+                // Los silencios reutilizan un bloque de ceros (sin ruido): no se reserva memoria por pausa.
+                val pcm = if (signal.on || noise > 0f) {
+                    ToneSynth.render(signal, sampleRate, freqHz, volume, timbre = timbre, noise = noise, random = random)
+                } else {
+                    null
+                }
                 val total = ToneSynth.samplesFor(signal.durationMs, sampleRate)
                 var offset = 0
                 while (offset < total) {

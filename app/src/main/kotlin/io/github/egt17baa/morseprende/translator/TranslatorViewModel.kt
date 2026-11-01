@@ -100,7 +100,7 @@ class TranslatorViewModel(
         }
         ui.update { it.copy(speedLimitedForFlashes = limited, failedOutputs = emptySet()) }
         val byOutput = s.outputs.associateBy { kind ->
-            if (kind == OutputKind.SCREEN) screenOutput else outputs.create(kind, prefs) { markFailed(kind) }
+            if (kind == OutputKind.SCREEN) screenOutput else outputs.create(kind, prefs, onFailure = { markFailed(kind) })
         }
         player.play(timing.signalsFor(s.morseToPlay), byOutput.keys.toList()) { failed ->
             byOutput[failed]?.let(::markFailed)

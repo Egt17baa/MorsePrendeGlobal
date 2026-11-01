@@ -3,6 +3,7 @@ package io.github.egt17baa.morseprende.core
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.min
+import kotlin.random.Random
 
 /**
  * Genera PCM de 16 bits, mono, para un [Signal].
@@ -24,10 +25,15 @@ object ToneSynth {
         volume: Float,
         rampMs: Int = 5,
         timbre: Timbre = Timbre.SINE,
+        noise: Float = 0f,
+        random: Random = Random(0),
     ): ShortArray {
         val count = samplesFor(signal.durationMs, sampleRate)
         val pcm = ShortArray(count)
-        if (!signal.on || volume <= 0f) return pcm
+        if (!signal.on || volume <= 0f) {
+            addNoise(pcm, noise, volume, random)
+            return pcm
+        }
 
         val amplitude = volume.coerceIn(0f, 1f) * HEADROOM * Short.MAX_VALUE
         val rampSamples = samplesFor(min(rampMs.toLong(), signal.durationMs / 2), sampleRate)
@@ -41,6 +47,20 @@ object ToneSynth {
             }
             pcm[i] = (amplitude * envelope * timbre.sample(step * i)).toInt().toShort()
         }
+        addNoise(pcm, noise, volume, random)
         return pcm
+    }
+
+    /**
+     * Ruido de radio uniforme de amplitud `noise × 0,8 × volumen` sumado a todas las muestras
+     * (también a los silencios), limitado para que nunca sature ni dé la vuelta.
+     */
+    fun addNoise(pcm: ShortArray, noise: Float, volume: Float, random: Random) {
+        if (noise <= 0f || volume <= 0f) return
+        val amplitude = noise.coerceIn(0f, 1f) * HEADROOM * volume.coerceIn(0f, 1f) * Short.MAX_VALUE
+        for (i in pcm.indices) {
+            val v = pcm[i] + (random.nextDouble(-1.0, 1.0) * amplitude).toInt()
+            pcm[i] = v.coerceIn(Short.MIN_VALUE.toInt(), Short.MAX_VALUE.toInt()).toShort()
+        }
     }
 }

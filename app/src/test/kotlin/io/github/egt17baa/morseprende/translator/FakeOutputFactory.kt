@@ -32,7 +32,7 @@ class FakeOutputFactory(
 ) : OutputFactory {
     val created = mutableListOf<Pair<OutputKind, RecordingSignalOutput>>()
 
-    override fun create(kind: OutputKind, settings: AppSettings, onFailure: () -> Unit): SignalOutput {
+    override fun create(kind: OutputKind, settings: AppSettings, onFailure: () -> Unit, noise: Float): SignalOutput {
         require(kind != OutputKind.SCREEN) { "SCREEN la crea el ViewModel" }
         if (kind in failing) {
             return object : SignalOutput {

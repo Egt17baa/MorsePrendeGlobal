@@ -96,10 +96,10 @@ class HardwareOutputsTest {
     @Test fun factory_creates_hardware_outputs() {
         val factory = AndroidOutputFactory(context)
         val settings = AppSettings()
-        assertTrue(factory.create(OutputKind.SOUND, settings) {} is AudioOutput)
-        assertTrue(factory.create(OutputKind.VIBRATION, settings) {} is VibrationOutput)
-        assertTrue(factory.create(OutputKind.TORCH, settings) {} is TorchOutput)
-        assertFailsWith<IllegalArgumentException> { factory.create(OutputKind.SCREEN, settings) {} }
+        assertTrue(factory.create(OutputKind.SOUND, settings) is AudioOutput)
+        assertTrue(factory.create(OutputKind.VIBRATION, settings) is VibrationOutput)
+        assertTrue(factory.create(OutputKind.TORCH, settings) is TorchOutput)
+        assertFailsWith<IllegalArgumentException> { factory.create(OutputKind.SCREEN, settings) }
     }
 
     @Test fun audio_pads_start_and_end_so_no_element_is_cut() = kotlin.test.assertEquals(
@@ -116,5 +116,10 @@ class HardwareOutputsTest {
         // Sin cámaras con flash no se puede encender: se avisa en vez de fallar en silencio.
         TorchOutput(context, onFailure = { failures++ }).play(listOf(Signal(true, 60), Signal(false, 60), Signal(true, 60)))
         assertEquals(1, failures)
+    }
+
+    @Test fun factory_passes_noise() {
+        val out = AndroidOutputFactory(context).create(OutputKind.SOUND, AppSettings(), onFailure = {}, noise = 0.25f)
+        assertEquals(0.25f, (out as AudioOutput).noise, 1e-6f)
     }
 }
