@@ -166,7 +166,7 @@ private fun SendPanel(e: Exercise.Send, state: MissionUiState, actions: MissionA
     )
     Text(stringResource(R.string.mission_attempts, state.attemptsLeft), style = MaterialTheme.typography.labelLarge)
     if (state.feedback == null) {
-        KeyerPad(state.keyerMode, actions, io.github.egt17baa.morseprende.ui.theme.Cosmetics.keyerRing(state.keyerSkin))
+        KeyerPad(state.keyerMode, actions, io.github.egt17baa.morseprende.ui.theme.Cosmetics.keyerRing(state.keyerSkin), haptics = state.vibrationEnabled)
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             OutlinedButton(onClick = actions::deleteLast, modifier = Modifier.weight(1f)) { Text(stringResource(R.string.mission_delete)) }
             TextButton(onClick = actions::replay, modifier = Modifier.weight(1f)) { Text(stringResource(R.string.mission_listen_again)) }
@@ -252,7 +252,7 @@ fun ErrorPanel(actions: MissionActions) {
 /** Texto según el canal por el que llega la señal (si el móvil no vibra, se oye). */
 private fun MissionUiState.byChannel(sound: Int, light: Int, vibration: Int): Int = when (channel) {
     io.github.egt17baa.morseprende.game.content.Channel.LIGHT -> light
-    io.github.egt17baa.morseprende.game.content.Channel.VIBRATION -> if (channelFallback) sound else vibration
+    io.github.egt17baa.morseprende.game.content.Channel.VIBRATION -> if (channelFallback || !vibrationEnabled) sound else vibration
     io.github.egt17baa.morseprende.game.content.Channel.SOUND -> sound
 }
 

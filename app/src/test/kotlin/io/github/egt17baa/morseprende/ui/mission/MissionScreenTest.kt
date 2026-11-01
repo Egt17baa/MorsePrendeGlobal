@@ -247,4 +247,13 @@ class MissionScreenTest {
         compose.onNodeWithText(str(R.string.mission_start_over)).performScrollTo().performClick()
         assertEquals(listOf("resume", "start"), r.calls)
     }
+
+    @Test fun vibration_disabled_notice() {
+        val vib = io.github.egt17baa.morseprende.game.content.Channel.VIBRATION
+        val state = MissionUiState(phase = MissionPhase.EXERCISE, exercise = Exercise.ReceiveTyped("SOS"), exerciseCount = 5, channel = vib, vibrationEnabled = false)
+        compose.setContent { MissionContent(state, Recorder()) }
+        compose.onNodeWithText(str(R.string.mission_channel_vibration_disabled)).assertExists()
+        compose.onAllNodesWithText(str(R.string.mission_vibration_use_sound)).assertCountEquals(0)
+        compose.onNodeWithText(str(R.string.mission_type_title)).assertExists()
+    }
 }

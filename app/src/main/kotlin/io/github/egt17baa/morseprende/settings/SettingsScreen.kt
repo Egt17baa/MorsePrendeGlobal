@@ -90,6 +90,11 @@ fun SettingsScreen(viewModel: SettingsViewModel, onBack: () -> Unit) {
                 Icon(Icons.Filled.PlayArrow, contentDescription = null)
                 Text(stringResource(R.string.settings_test_sound), modifier = Modifier.padding(start = 8.dp))
             }
+            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(R.string.settings_vibration), modifier = Modifier.weight(1f))
+                Switch(checked = s.vibration, onCheckedChange = viewModel::setVibration)
+            }
+            Help(stringResource(R.string.settings_vibration_help))
 
             SectionTitle(stringResource(R.string.settings_keyer_section))
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

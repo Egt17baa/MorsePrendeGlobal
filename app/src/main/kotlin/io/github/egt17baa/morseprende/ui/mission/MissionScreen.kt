@@ -192,14 +192,19 @@ private fun ChannelBanner(state: MissionUiState, actions: MissionActions) {
             )
         }
         Channel.VIBRATION -> {
+            val notice = when {
+                !state.vibrationEnabled -> R.string.mission_channel_vibration_disabled
+                state.channelFallback -> R.string.mission_channel_vibration_fallback
+                else -> R.string.mission_channel_vibration
+            }
             Text(
-                stringResource(if (state.channelFallback) R.string.mission_channel_vibration_fallback else R.string.mission_channel_vibration),
+                stringResource(notice),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.secondary,
             )
             // Si el móvil vibra «en teoría» pero no se nota (ahorro de batería, vibración
             // desactivada…), el jugador puede pasar a sonido: la misión nunca se queda imposible.
-            if (!state.channelFallback) {
+            if (!state.channelFallback && state.vibrationEnabled) {
                 androidx.compose.material3.TextButton(onClick = actions::useSound) {
                     Text(stringResource(R.string.mission_vibration_use_sound))
                 }

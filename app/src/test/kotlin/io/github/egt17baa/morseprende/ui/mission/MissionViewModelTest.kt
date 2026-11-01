@@ -768,4 +768,17 @@ class MissionViewModelTest {
         val e = env(content = FakeContentSource(listOf(ch2)))
         assertEquals(2, e.s.chapterId)
     }
+
+    @Test fun vibration_disabled_plays_by_sound() = runTest {
+        val c = channelEnv(channel = Channel.VIBRATION, settings = AppSettings(charWpm = 12, effectiveWpm = 12, vibration = false))
+        c.e.vm.start()
+        c.e.vm.continueListen()
+        runCurrent()
+        assertEquals(OutputKind.SOUND, c.outputs.created.last().first)
+        assertTrue(c.outputs.created.none { it.first == OutputKind.VIBRATION })
+        assertFalse(c.e.s.vibrationEnabled)
+        c.e.vm.replay()
+        runCurrent()
+        assertTrue(c.outputs.created.none { it.first == OutputKind.VIBRATION })
+    }
 }

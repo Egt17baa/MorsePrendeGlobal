@@ -27,6 +27,7 @@ class SettingsViewModel(
     fun setVolume(v: Float) = update { it.copy(volume = v) }
     fun setLimitFlashes(v: Boolean) = update { it.copy(limitFlashes = v) }
     fun setKeyerMode(mode: KeyerMode) = update { it.copy(keyerMode = mode) }
+    fun setVibration(v: Boolean) = update { it.copy(vibration = v) }
 
     /** Reproduce "PARIS" con los ajustes actuales. */
     fun testSound() {

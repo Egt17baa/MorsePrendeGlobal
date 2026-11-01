@@ -219,6 +219,9 @@
     <string name="mission_channel_vibration_fallback">Sin vibración (o no se nota): esta misión se hace por sonido.</string>
     <string name="mission_resume">Continuar (ejercicio %1$d de %2$d)</string>
     <string name="mission_start_over">Empezar de nuevo</string>
+    <string name="mission_channel_vibration_disabled">Vibración desactivada en Ajustes: esta misión se hace por sonido.</string>
+    <string name="settings_vibration">Vibración</string>
+    <string name="settings_vibration_help">Al pulsar el manipulador y en las misiones «Solo pulso». Si la desactivas, esas misiones se hacen por sonido.</string>
     <string name="mission_vibration_use_sound">No noto la vibración: usar sonido</string>
     <string name="prosign_bt">BT · separación</string>
     <string name="prosign_ar">AR · fin de mensaje</string>

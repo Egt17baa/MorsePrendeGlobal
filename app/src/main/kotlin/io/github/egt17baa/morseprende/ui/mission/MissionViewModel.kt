@@ -76,7 +76,7 @@ class MissionViewModel(
     private val lamp = SteppedOutput(setOn = { on -> ui.update { it.copy(lampOn = on) } }, now = clock)
 
     val state: StateFlow<MissionUiState> = combine(ui, player.isPlaying, this.settings) { s, playing, prefs ->
-        s.copy(isPlaying = playing, keyerMode = prefs.keyerMode, keyerSkin = prefs.keyerSkin, lampColor = prefs.lampColor)
+        s.copy(isPlaying = playing, keyerMode = prefs.keyerMode, keyerSkin = prefs.keyerSkin, lampColor = prefs.lampColor, vibrationEnabled = prefs.vibration)
     }.stateIn(viewModelScope, SharingStarted.Eagerly, ui.value)
 
     private val mission: Mission?
@@ -191,7 +191,7 @@ class MissionViewModel(
         val signals = MorseTiming(charWpm, effectiveWpm).signalsFor(MorseCodec.encode(text).morse)
         val output = when {
             channel == Channel.LIGHT -> lamp
-            channel == Channel.VIBRATION && !ui.value.channelFallback ->
+            channel == Channel.VIBRATION && !ui.value.channelFallback && prefs.vibration ->
                 outputs.create(OutputKind.VIBRATION, prefs, onFailure = ::vibrationFailed)
             else -> outputs.create(OutputKind.SOUND, prefs, noise = noise)
         }
@@ -210,7 +210,7 @@ class MissionViewModel(
      * batería, vibración desactivada en los ajustes…). Se pasa a sonido y se repite.
      */
     fun useSound() {
-        if (mission?.channel != Channel.VIBRATION || ui.value.channelFallback) return
+        if (mission?.channel != Channel.VIBRATION || ui.value.channelFallback || !settings.value.vibration) return
         ui.update { it.copy(channelFallback = true) }
         replay()
     }

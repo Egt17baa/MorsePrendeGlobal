@@ -37,16 +37,23 @@ import io.github.egt17baa.morseprende.settings.KeyerMode
 
 /** Manipulador: un botón grande que se mantiene pulsado, o dos botones punto | raya. */
 @Composable
-fun KeyerPad(mode: KeyerMode, actions: MissionActions, ring: androidx.compose.ui.graphics.Color = io.github.egt17baa.morseprende.ui.theme.Coral) {
+fun KeyerPad(
+    mode: KeyerMode,
+    actions: MissionActions,
+    ring: androidx.compose.ui.graphics.Color = io.github.egt17baa.morseprende.ui.theme.Coral,
+    haptics: Boolean = true,
+) {
     when (mode) {
-        KeyerMode.ONE_BUTTON -> StraightKey(actions, ring)
+        KeyerMode.ONE_BUTTON -> StraightKey(actions, ring, haptics)
         KeyerMode.TWO_BUTTONS -> TwoButtonKeys(actions)
     }
 }
 
 @Composable
-private fun StraightKey(actions: MissionActions, ring: androidx.compose.ui.graphics.Color) {
+private fun StraightKey(actions: MissionActions, ring: androidx.compose.ui.graphics.Color, hapticsEnabled: Boolean) {
     val haptics = LocalHapticFeedback.current
+    // pointerInput(Unit) no se reinicia: se lee siempre el valor actual del ajuste.
+    val hapticsOn by androidx.compose.runtime.rememberUpdatedState(hapticsEnabled)
     var pressed by remember { mutableStateOf(false) }
     val description = stringResource(R.string.mission_key)
     Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
@@ -64,7 +71,7 @@ private fun StraightKey(actions: MissionActions, ring: androidx.compose.ui.graph
                         val down = awaitFirstDown(requireUnconsumed = false)
                         down.consume()
                         pressed = true
-                        haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                        if (hapticsOn) haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                         actions.keyDown(down.uptimeMillis)
                         var upTime = down.uptimeMillis
                         try {
