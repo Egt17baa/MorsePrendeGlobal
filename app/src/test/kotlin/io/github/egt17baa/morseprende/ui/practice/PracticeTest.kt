@@ -47,11 +47,13 @@ class PracticeTest {
 
     @Test fun locked_until_mission() = runTest {
         val games = vm("c1m1", "c1m2").state.value.games
-        assertEquals(listOf(GameId.STORM, GameId.FLASH, GameId.INTERCEPT), games.map { it.id })
+        assertEquals(listOf(GameId.STORM, GameId.FLASH, GameId.INTERCEPT, GameId.NIGHT_WATCH), games.map { it.id })
         assertTrue(games[0].unlocked)
         assertFalse(games[1].unlocked)
         assertEquals("El pesquero Gaviota", games[1].unlockMissionTitle)
         assertFalse(games[2].unlocked)
+        // La Guardia nocturna se abre al terminar la campaña.
+        assertFalse(games[3].unlocked)
     }
 
     @Test fun shows_records() = runTest {

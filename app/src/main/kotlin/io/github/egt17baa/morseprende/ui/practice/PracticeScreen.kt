@@ -100,6 +100,7 @@ val GameId.titleRes: Int
         GameId.STORM -> R.string.game_storm
         GameId.FLASH -> R.string.game_flash
         GameId.INTERCEPT -> R.string.game_intercept
+        GameId.NIGHT_WATCH -> R.string.game_night
     }
 
 private val GameId.descriptionRes: Int
@@ -107,6 +108,7 @@ private val GameId.descriptionRes: Int
         GameId.STORM -> R.string.game_storm_desc
         GameId.FLASH -> R.string.game_flash_desc
         GameId.INTERCEPT -> R.string.game_intercept_desc
+        GameId.NIGHT_WATCH -> R.string.game_night_desc
     }
 
 /** Iconos propios de cada minijuego. */
@@ -125,6 +127,13 @@ private fun GameIcon(id: GameId) {
             GameId.FLASH -> {
                 drawRect(BeamCream, Offset(w * 0.4f, h * 0.35f), Size(w * 0.2f, h * 0.55f), style = stroke)
                 drawCircle(Coral, radius = w * 0.14f, center = Offset(w * 0.5f, h * 0.22f))
+            }
+            GameId.NIGHT_WATCH -> {
+                // Luna creciente y estrellas.
+                drawCircle(BeamCream, radius = w * 0.28f, center = Offset(w * 0.45f, h * 0.5f))
+                drawCircle(androidx.compose.ui.graphics.Color(0xFF0E2A2F), radius = w * 0.24f, center = Offset(w * 0.58f, h * 0.42f))
+                drawCircle(Coral, radius = w * 0.05f, center = Offset(w * 0.82f, h * 0.2f))
+                drawCircle(BeamCream, radius = w * 0.035f, center = Offset(w * 0.8f, h * 0.75f))
             }
             GameId.INTERCEPT -> {
                 drawRect(BeamCream, Offset(w * 0.15f, h * 0.35f), Size(w * 0.7f, h * 0.5f), style = stroke)

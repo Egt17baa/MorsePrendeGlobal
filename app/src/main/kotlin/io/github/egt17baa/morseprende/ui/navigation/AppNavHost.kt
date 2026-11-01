@@ -119,6 +119,10 @@ fun AppNavHost(container: AppContainer) {
                 GameId.STORM -> StormScreen(viewModel(key = "storm", factory = viewModelFactory { initializer { StormViewModel(deps) } }), onBack)
                 GameId.FLASH -> FlashScreen(viewModel(key = "flash", factory = viewModelFactory { initializer { FlashViewModel(deps) } }), onBack)
                 GameId.INTERCEPT -> InterceptScreen(viewModel(key = "intercept", factory = viewModelFactory { initializer { InterceptViewModel(deps) } }), onBack)
+                GameId.NIGHT_WATCH -> io.github.egt17baa.morseprende.ui.games.NightWatchScreen(
+                    viewModel(key = "night", factory = viewModelFactory { initializer { io.github.egt17baa.morseprende.ui.games.NightWatchViewModel(deps) } }),
+                    onBack,
+                )
             }
         }
         composable(Routes.SHOP) {

@@ -287,4 +287,103 @@ class GameViewModelsTest {
         runCurrent()
         assertEquals(listOf(Triple(GameId.INTERCEPT, 0, 0)), d.records.games)
     }
+
+    // ---- Guardia nocturna ----
+
+    private fun TestScope.night(d: Deps, settings: AppSettings, outputs: FakeOutputFactory, finished: Boolean = true): NightWatchViewModel {
+        val ch3 = io.github.egt17baa.morseprende.game.content.Chapter(
+            id = 3, title = "Señal Estelar", intro = "", words = listOf("ECO"),
+            missions = listOf(
+                io.github.egt17baa.morseprende.game.content.Mission(
+                    "c3f", io.github.egt17baa.morseprende.game.content.MissionType.FINALE, "Final", "", emptyList(),
+                    io.github.egt17baa.morseprende.game.content.StoryMessage("Eco", "SOS"), "",
+                ),
+            ),
+        )
+        val progress = if (finished) FakeProgressRepository.completed(*completed, "c3f" to 3) else FakeProgressRepository.completed(*completed)
+        return NightWatchViewModel(
+            GameDeps(
+                FakeContentSource(listOf(FakeContentSource.realChapter1, ch3)), progress,
+                d.stats, d.records, FakeSettingsRepository(settings), outputs,
+                Random(1), backgroundScope, { testScheduler.currentTime },
+            ),
+        )
+    }
+
+    /** Copia bien todos los mensajes hasta pasar por [count] de ellos, guardando el canal de cada uno. */
+    private fun TestScope.playNight(vm: NightWatchViewModel, count: Int): List<io.github.egt17baa.morseprende.game.games.NightChannel> {
+        val seen = mutableListOf<io.github.egt17baa.morseprende.game.games.NightChannel>()
+        vm.start()
+        runCurrent()
+        repeat(count) {
+            seen += vm.state.value.channel
+            advanceTimeBy(60_000)
+            vm.answer(vm.state.value.text!!)
+            vm.next()
+            runCurrent()
+        }
+        return seen
+    }
+
+    @Test fun night_watch_channels_respect_settings() = runTest {
+        val d = deps()
+        // Vibración desactivada: nunca se crea una salida de vibración.
+        val noVib = FakeOutputFactory(this)
+        val seen = playNight(night(d, AppSettings(vibration = false), noVib), 13)
+        assertTrue(seen.none { it == io.github.egt17baa.morseprende.game.games.NightChannel.VIBRATION })
+        assertTrue(noVib.created.none { it.first == io.github.egt17baa.morseprende.playback.OutputKind.VIBRATION })
+        // Con vibración sí hay mensajes por vibración.
+        val withVib = FakeOutputFactory(this)
+        playNight(night(d, AppSettings(vibration = true), withVib), 7)
+        assertTrue(withVib.created.any { it.first == io.github.egt17baa.morseprende.playback.OutputKind.VIBRATION })
+    }
+
+    @Test fun night_light_capped_when_limiting_flashes() = runTest {
+        val d = deps()
+        val vm = night(d, AppSettings(charWpm = 25, effectiveWpm = 25, limitFlashes = true), FakeOutputFactory(this))
+        vm.start()
+        runCurrent()
+        // Hasta el 4.º mensaje (luz).
+        repeat(3) { advanceTimeBy(60_000); vm.answer(vm.state.value.text!!); vm.next(); runCurrent() }
+        assertEquals(io.github.egt17baa.morseprende.game.games.NightChannel.LIGHT, vm.state.value.channel)
+        val text = vm.state.value.text!!
+        val fast = io.github.egt17baa.morseprende.core.MorseTiming.totalMs(
+            io.github.egt17baa.morseprende.core.MorseTiming(25).signalsFor(io.github.egt17baa.morseprende.core.MorseCodec.encode(text).morse),
+        )
+        assertTrue(vm.state.value.lampOn)
+        val slow = io.github.egt17baa.morseprende.core.MorseTiming.totalMs(
+            io.github.egt17baa.morseprende.core.MorseTiming(7).signalsFor(io.github.egt17baa.morseprende.core.MorseCodec.encode(text).morse),
+        )
+        // Entre el final que tendría a 25 PPM y el de 7 PPM, la luz sigue encendiéndose.
+        advanceTimeBy(fast + 20)
+        var litLater = false
+        var t = fast + 20
+        while (t < slow - 20) {
+            if (vm.state.value.lampOn) litLater = true
+            advanceTimeBy(10); t += 10
+        }
+        assertTrue("la luz sigue a 7 PPM (fast=$fast slow=$slow)", litLater)
+    }
+
+    @Test fun night_locked_until_c3f() = runTest {
+        val d = deps()
+        val vm = night(d, AppSettings(), FakeOutputFactory(this), finished = false)
+        runCurrent()
+        assertEquals(GamePhase.LOCKED, vm.state.value.phase)
+        val open = night(d, AppSettings(), FakeOutputFactory(this), finished = true)
+        runCurrent()
+        assertEquals(GamePhase.READY, open.state.value.phase)
+    }
+
+    @Test fun night_saves_score_and_hour() = runTest {
+        val d = deps()
+        val vm = night(d, AppSettings(vibration = false), FakeOutputFactory(this))
+        playNight(vm, 6)
+        repeat(3) { vm.answer("???"); vm.next() }
+        runCurrent()
+        assertEquals(GamePhase.OVER, vm.state.value.phase)
+        val rec = d.records.records.value[GameId.NIGHT_WATCH]!!
+        assertEquals(6, rec.bestScore)
+        assertEquals(1, rec.bestExtra)
+    }
 }

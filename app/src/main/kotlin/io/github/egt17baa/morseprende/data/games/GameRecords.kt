@@ -10,7 +10,7 @@ import io.github.egt17baa.morseprende.data.progress.AppDatabase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-enum class GameId { STORM, FLASH, INTERCEPT }
+enum class GameId { STORM, FLASH, INTERCEPT, NIGHT_WATCH }
 
 /**
  * @property bestExtra Interceptación: máxima velocidad (PPM, mayor es mejor). Destello rápido:

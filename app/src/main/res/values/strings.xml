@@ -125,6 +125,9 @@
     <string name="game_repeat">Repetir (una vez)</string>
     <string name="game_intercept_max">Velocidad máxima: %1$d PPM</string>
     <string name="game_intercept_desc">Copia palabras cada vez más rápidas. Tres fallos y se acabó.</string>
+    <string name="game_night">Guardia nocturna</string>
+    <string name="game_night_desc">Vigila el faro toda la noche: llegan mensajes sin parar por sonido, luz o vibración. Cada hora van más rápido y con más ruido. ¿Llegarás al amanecer?</string>
+    <string name="game_night_reached">Guardia hasta las %1$s</string>
 
     <!-- Recompensas y logros -->
     <string name="achievements_title">Logros (%1$d/%2$d)</string>
