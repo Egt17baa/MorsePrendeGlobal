@@ -206,4 +206,7 @@
     <string name="settings_safety_section">Seguridad</string>
     <string name="settings_limit_flashes">Limitar destellos (recomendado)</string>
     <string name="settings_limit_flashes_help">Con la linterna o la pantalla, el Morse va como máximo a 7 PPM (unos 3 destellos por segundo) para reducir el riesgo para personas fotosensibles.</string>
+    <string name="mission_channel_light">Solo luz: mira el faro y descifra los destellos.</string>
+    <string name="mission_channel_vibration">Solo vibración: sujeta el móvil y siente el pulso.</string>
+    <string name="mission_channel_vibration_fallback">Tu móvil no puede vibrar: esta misión se hace por sonido.</string>
 </resources>

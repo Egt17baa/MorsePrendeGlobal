@@ -25,6 +25,9 @@ class MorseCodecTest {
 
     @Test fun encode_empty() = assertEquals("", MorseCodec.encode("   ").morse)
 
+    @Test fun normalize_text_mobile_punctuation() =
+        assertEquals("QUE? 'ECO'! L'ECO", MorseCodec.normalizeText("¿qué? \u2018eco\u2019! ¡L\u00B4eco"))
+
     @Test fun normalize_text() = assertEquals("ÑANDU CAFE", MorseCodec.normalizeText("  ñandú\t café "))
 
     @Test fun normalize_morse() = assertEquals(".- -... / -", MorseCodec.normalizeMorse(" ·−  −··· |  − "))

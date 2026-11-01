@@ -15,6 +15,9 @@ import io.github.egt17baa.morseprende.game.review.CharOutcome
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.Flow
 import io.github.egt17baa.morseprende.game.content.Chapter
+import io.github.egt17baa.morseprende.game.content.Channel
+import io.github.egt17baa.morseprende.playback.SteppedOutput
+import io.github.egt17baa.morseprende.translator.TranslatorViewModel
 import io.github.egt17baa.morseprende.game.content.Mission
 import io.github.egt17baa.morseprende.game.mission.Exercise
 import io.github.egt17baa.morseprende.game.mission.MissionPlanner
@@ -63,9 +66,11 @@ class MissionViewModel(
     private val player = SignalPlayer(scope)
     private var timerJob: Job? = null
     private val ui = MutableStateFlow(MissionUiState())
+    /** Faro pequeño de las misiones de luz: solo cambia el estado de la pantalla. */
+    private val lamp = SteppedOutput(setOn = { on -> ui.update { it.copy(lampOn = on) } }, now = clock)
 
     val state: StateFlow<MissionUiState> = combine(ui, player.isPlaying, this.settings) { s, playing, prefs ->
-        s.copy(isPlaying = playing, keyerMode = prefs.keyerMode, keyerSkin = prefs.keyerSkin)
+        s.copy(isPlaying = playing, keyerMode = prefs.keyerMode, keyerSkin = prefs.keyerSkin, lampColor = prefs.lampColor)
     }.stateIn(viewModelScope, SharingStarted.Eagerly, ui.value)
 
     private val mission: Mission?
@@ -100,6 +105,8 @@ class MissionViewModel(
 
     private fun briefingState(m: Mission, s: MissionSession) = MissionUiState(
         noisy = m.noise > 0f,
+        channel = m.channel,
+        channelFallback = ui.value.channelFallback,
         title = m.title,
         briefing = m.briefing,
         debriefing = m.debriefing,
@@ -130,15 +137,34 @@ class MissionViewModel(
             null -> return
         }
         val prefs = settings.value
-        val signals = MorseTiming(prefs.charWpm, prefs.effectiveWpm).signalsFor(MorseCodec.encode(text).morse)
-        // Las interferencias solo afectan a lo que hay que descifrar (no a las letras nuevas ni a los envíos).
         val current = session?.current
-        val noise = if (current is Exercise.ReceiveChoice || current is Exercise.ReceiveTyped || current is Exercise.FinalMessage) {
-            mission?.noise ?: 0f
-        } else {
-            0f
+        // Las interferencias y el canal solo afectan a lo que hay que descifrar (no a las letras
+        // nuevas ni a los envíos).
+        val decoding = current is Exercise.ReceiveChoice || current is Exercise.ReceiveTyped || current is Exercise.FinalMessage
+        val noise = if (decoding) mission?.noise ?: 0f else 0f
+        val channel = if (decoding) mission?.channel ?: Channel.SOUND else Channel.SOUND
+        // La velocidad de la misión manda solo en la misión: los ajustes guardados no cambian.
+        var charWpm = mission?.wpm ?: prefs.charWpm
+        var effectiveWpm = mission?.wpm ?: prefs.effectiveWpm
+        if (channel == Channel.LIGHT && prefs.limitFlashes) {
+            charWpm = minOf(charWpm, TranslatorViewModel.FLASH_SAFE_WPM)
+            effectiveWpm = minOf(effectiveWpm, charWpm)
         }
-        player.play(signals, listOf(outputs.create(OutputKind.SOUND, prefs, noise = noise)))
+        val signals = MorseTiming(charWpm, effectiveWpm).signalsFor(MorseCodec.encode(text).morse)
+        val output = when {
+            channel == Channel.LIGHT -> lamp
+            channel == Channel.VIBRATION && !ui.value.channelFallback ->
+                outputs.create(OutputKind.VIBRATION, prefs, onFailure = ::vibrationFailed)
+            else -> outputs.create(OutputKind.SOUND, prefs, noise = noise)
+        }
+        player.play(signals, listOf(output))
+    }
+
+    /** El móvil no puede vibrar: se avisa y se repite por sonido (nunca se queda atascada). */
+    private fun vibrationFailed() {
+        if (ui.value.channelFallback) return
+        ui.update { it.copy(channelFallback = true) }
+        scope.launch { replay() }
     }
 
     fun continueListen() {

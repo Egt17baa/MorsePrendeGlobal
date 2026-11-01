@@ -9,8 +9,11 @@ import io.github.egt17baa.morseprende.core.MorseTiming
 import io.github.egt17baa.morseprende.core.Signal
 import kotlinx.coroutines.delay
 
-/** Morse por vibración. El patrón completo se entrega al motor de vibración de una vez. */
-class VibrationOutput(context: Context) : SignalOutput {
+/**
+ * Morse por vibración. El patrón completo se entrega al motor de vibración de una vez. Si el
+ * móvil no tiene vibrador se avisa con [onFailure].
+ */
+class VibrationOutput(context: Context, private val onFailure: () -> Unit = {}) : SignalOutput {
 
     private val vibrator: Vibrator? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         context.getSystemService(VibratorManager::class.java)?.defaultVibrator
@@ -20,7 +23,11 @@ class VibrationOutput(context: Context) : SignalOutput {
     }
 
     override suspend fun play(signals: List<Signal>) {
-        val device = vibrator?.takeIf { it.hasVibrator() } ?: return
+        val device = vibrator?.takeIf { it.hasVibrator() }
+        if (device == null) {
+            onFailure()
+            return
+        }
         val pattern = vibrationPattern(signals)
         if (pattern.isEmpty()) return
         try {

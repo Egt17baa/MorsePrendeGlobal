@@ -3,7 +3,12 @@ package io.github.egt17baa.morseprende.ui.mission
 import io.github.egt17baa.morseprende.data.FakeCharStatsRepository
 import io.github.egt17baa.morseprende.data.FakeContentSource
 import io.github.egt17baa.morseprende.data.FakeProgressRepository
+import io.github.egt17baa.morseprende.game.content.Channel
+import io.github.egt17baa.morseprende.game.content.Mission
 import io.github.egt17baa.morseprende.game.mission.Exercise
+import io.github.egt17baa.morseprende.core.MorseCodec
+import io.github.egt17baa.morseprende.core.MorseTiming
+import io.github.egt17baa.morseprende.playback.OutputKind
 import io.github.egt17baa.morseprende.settings.AppSettings
 import io.github.egt17baa.morseprende.settings.FakeSettingsRepository
 import io.github.egt17baa.morseprende.settings.KeyerMode
@@ -473,5 +478,114 @@ class MissionViewModelTest {
         e.vm.continueListen()
         runCurrent()
         assertEquals(0.25f, outputs.noises.last(), 1e-6f)
+    }
+
+    private class ChannelEnv(val e: Env, val outputs: FakeOutputFactory, val settings: FakeSettingsRepository)
+
+    private fun TestScope.channelEnv(
+        channel: Channel = Channel.SOUND,
+        wpm: Int? = null,
+        settings: AppSettings = AppSettings(charWpm = 12, effectiveWpm = 12),
+        failing: Set<OutputKind> = emptySet(),
+        newChars: List<Char> = listOf('S', 'O'),
+        words: List<String> = MissionTestContent.chapter.words,
+    ): ChannelEnv {
+        Dispatchers.setMain(UnconfinedTestDispatcher(testScheduler))
+        val m: Mission = MissionTestContent.chapter.missions.single().copy(channel = channel, wpm = wpm, newChars = newChars)
+        val chapter = MissionTestContent.chapter.copy(missions = listOf(m), words = words)
+        val outputs = FakeOutputFactory(this, failing)
+        val repo = FakeSettingsRepository(settings)
+        val progress = FakeProgressRepository()
+        val vm = MissionViewModel(
+            "t1", FakeContentSource(listOf(chapter)), progress, repo, outputs, FakeSidetoneFactory(),
+            random = Random(1), playerScope = backgroundScope, clock = { testScheduler.currentTime },
+        )
+        return ChannelEnv(Env(vm, progress, FakeCharStatsRepository(), FakeSidetoneFactory(), longArrayOf(0)), outputs, repo)
+    }
+
+    private fun currentAnswer(e: Env): String = when (val x = e.s.exercise) {
+        is Exercise.ReceiveChoice -> x.answer
+        is Exercise.ReceiveTyped -> x.answer
+        else -> error("no es de recibir: $x")
+    }
+
+    @Test fun mission_wpm_overrides_settings_without_saving() = runTest {
+        val c = channelEnv(wpm = 20)
+        c.e.vm.start()
+        c.e.vm.continueListen()
+        runCurrent()
+        val played = c.outputs.created.last().second.played.last()
+        assertEquals(MorseTiming(20).signalsFor(MorseCodec.encode(currentAnswer(c.e)).morse), played)
+        assertEquals(12, c.settings.settings.value.charWpm)
+        assertEquals(12, c.settings.settings.value.effectiveWpm)
+    }
+
+    @Test fun light_channel_capped_when_limiting() = runTest {
+        val c = channelEnv(channel = Channel.LIGHT, wpm = 20, settings = AppSettings(charWpm = 12, effectiveWpm = 12, limitFlashes = true))
+        c.e.vm.start()
+        c.e.vm.continueListen()
+        runCurrent()
+        assertEquals(Channel.LIGHT, c.e.s.channel)
+        assertTrue("la luz no usa salidas de hardware", c.outputs.created.isEmpty())
+        assertTrue(c.e.s.lampOn)
+        val uncapped = MorseTiming.totalMs(MorseTiming(20).signalsFor(MorseCodec.encode(currentAnswer(c.e)).morse))
+        advanceTimeBy(uncapped + 50)
+        assertTrue("a 7 PPM sigue destellando", c.e.s.isPlaying)
+        advanceTimeBy(60_000)
+        assertFalse(c.e.s.lampOn)
+        assertFalse(c.e.s.isPlaying)
+    }
+
+    @Test fun light_channel_full_speed_without_limit() = runTest {
+        val c = channelEnv(channel = Channel.LIGHT, wpm = 20, settings = AppSettings(charWpm = 12, effectiveWpm = 12, limitFlashes = false))
+        c.e.vm.start()
+        c.e.vm.continueListen()
+        runCurrent()
+        val uncapped = MorseTiming.totalMs(MorseTiming(20).signalsFor(MorseCodec.encode(currentAnswer(c.e)).morse))
+        advanceTimeBy(uncapped + 50)
+        assertFalse(c.e.s.isPlaying)
+    }
+
+    @Test fun vibration_channel_uses_vibration_output() = runTest {
+        val c = channelEnv(channel = Channel.VIBRATION)
+        c.e.vm.start()
+        c.e.vm.continueListen()
+        runCurrent()
+        assertEquals(OutputKind.VIBRATION, c.outputs.created.last().first)
+        assertFalse(c.e.s.channelFallback)
+    }
+
+    @Test fun vibration_failure_falls_back_to_sound() = runTest {
+        val c = channelEnv(channel = Channel.VIBRATION, failing = setOf(OutputKind.VIBRATION))
+        c.e.vm.start()
+        c.e.vm.continueListen()
+        runCurrent()
+        assertTrue(c.e.s.channelFallback)
+        assertEquals(OutputKind.SOUND, c.outputs.created.last().first)
+        assertEquals(1, c.outputs.created.count { it.first == OutputKind.SOUND })
+        c.e.vm.replay()
+        runCurrent()
+        assertEquals(2, c.outputs.created.count { it.first == OutputKind.SOUND })
+        // Se puede responder igual: nunca se queda atascada.
+        c.e.vm.answer(currentAnswer(c.e))
+        assertEquals(true, c.e.s.feedback?.correct)
+    }
+
+    @Test fun punctuation_answers_match() = runTest {
+        val c = channelEnv(newChars = listOf('?', '\''), words = listOf("?'", "'?", "??"))
+        c.e.vm.start()
+        c.e.vm.continueListen()
+        runCurrent()
+        var checked = 0
+        while (c.e.s.exercise is Exercise.ReceiveChoice || c.e.s.exercise is Exercise.ReceiveTyped) {
+            // Teclado del móvil: ¿ inicial y apóstrofo tipográfico.
+            val typed = "¿ " + currentAnswer(c.e).replace('\'', '\u2019').lowercase() + " "
+            c.e.vm.answer(typed)
+            assertEquals("respuesta: $typed", true, c.e.s.feedback?.correct)
+            checked++
+            c.e.vm.next()
+            runCurrent()
+        }
+        assertTrue(checked > 0)
     }
 }

@@ -73,7 +73,7 @@ fun FlashContent(state: FlashUiState, onStart: () -> Unit, onAnswer: (Char) -> U
 
 /** Faro cuya linterna parpadea al ritmo del Morse (zona pequeña de la pantalla, no la linterna real). */
 @Composable
-private fun FlashingLighthouse(lampOn: Boolean, lampColor: Color, modifier: Modifier) {
+internal fun FlashingLighthouse(lampOn: Boolean, lampColor: Color, modifier: Modifier) {
     Canvas(modifier) {
         val h = minOf(size.height, size.width * 1.4f)
         val cx = size.width / 2

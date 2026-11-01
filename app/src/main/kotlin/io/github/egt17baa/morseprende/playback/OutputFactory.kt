@@ -11,7 +11,7 @@ interface OutputFactory {
 class AndroidOutputFactory(private val context: Context) : OutputFactory {
     override fun create(kind: OutputKind, settings: AppSettings, onFailure: () -> Unit, noise: Float): SignalOutput = when (kind) {
         OutputKind.SOUND -> AudioOutput(context, settings.toneHz, settings.volume, settings.timbre, noise)
-        OutputKind.VIBRATION -> VibrationOutput(context)
+        OutputKind.VIBRATION -> VibrationOutput(context, onFailure)
         OutputKind.TORCH -> TorchOutput(context, onFailure)
         OutputKind.SCREEN -> throw IllegalArgumentException("La salida SCREEN la crea el ViewModel")
     }

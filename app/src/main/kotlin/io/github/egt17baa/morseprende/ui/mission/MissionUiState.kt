@@ -1,5 +1,6 @@
 package io.github.egt17baa.morseprende.ui.mission
 
+import io.github.egt17baa.morseprende.game.content.Channel
 import io.github.egt17baa.morseprende.game.mission.Exercise
 import io.github.egt17baa.morseprende.game.mission.MissionSession
 import io.github.egt17baa.morseprende.rewards.RewardSummary
@@ -37,4 +38,12 @@ data class MissionUiState(
     val secondsLeft: Int? = null,
     /** La misión tiene ruido de radio en los ejercicios. */
     val noisy: Boolean = false,
+    /** Por dónde llegan los ejercicios de recibir y el mensaje final. */
+    val channel: Channel = Channel.SOUND,
+    /** El faro pequeño de la misión (canal de luz). */
+    val lampOn: Boolean = false,
+    /** El móvil no vibra: la misión de vibración se hace por sonido. */
+    val channelFallback: Boolean = false,
+    /** Color de la luz del faro equipado en la tienda. */
+    val lampColor: String = "lamp_cream",
 )

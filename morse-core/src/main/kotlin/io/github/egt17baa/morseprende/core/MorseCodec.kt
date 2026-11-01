@@ -25,7 +25,18 @@ object MorseCodec {
 
     /** Mayúsculas, sin tildes ni diéresis (excepto la Ñ) y con los espacios agrupados. */
     fun normalizeText(text: String): String {
-        val protected = text.replace('ñ', ENYE_MARKER).replace('Ñ', ENYE_MARKER)
+        // Teclados del móvil: apóstrofos tipográficos y los signos de apertura del español (¿ ¡),
+        // que no existen en Morse.
+        val typed = buildString(text.length) {
+            for (c in text) {
+                when (c) {
+                    '\u2018', '\u2019', '\u00B4', '`', '\u02BC' -> append('\'')
+                    '\u00BF', '\u00A1' -> Unit
+                    else -> append(c)
+                }
+            }
+        }
+        val protected = typed.replace('ñ', ENYE_MARKER).replace('Ñ', ENYE_MARKER)
         val withoutMarks = Normalizer.normalize(protected, Normalizer.Form.NFD)
             .filter { Character.getType(it) != Character.NON_SPACING_MARK.toInt() }
         return collapseSpaces(withoutMarks.replace(ENYE_MARKER, 'Ñ').uppercase(Locale.ROOT))

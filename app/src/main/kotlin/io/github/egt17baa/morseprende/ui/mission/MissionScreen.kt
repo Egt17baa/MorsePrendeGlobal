@@ -1,5 +1,8 @@
 package io.github.egt17baa.morseprende.ui.mission
 
+import androidx.compose.ui.platform.testTag
+import androidx.compose.foundation.layout.height
+import io.github.egt17baa.morseprende.game.content.Channel
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -124,6 +127,7 @@ fun MissionContent(state: MissionUiState, actions: MissionActions) {
                         Text(stringResource(R.string.mission_seconds_left, it), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
                     }
                 }
+                ChannelBanner(state)
             }
             when (state.phase) {
                 MissionPhase.BRIEFING -> LogbookPanel(state.briefing, stringResource(R.string.mission_start), actions::start)
@@ -132,5 +136,28 @@ fun MissionContent(state: MissionUiState, actions: MissionActions) {
                 MissionPhase.ERROR -> ErrorPanel(actions)
             }
         }
+    }
+}
+
+/** Canal de la misión: el faro pequeño para la luz y avisos para la vibración. */
+@Composable
+private fun ChannelBanner(state: MissionUiState) {
+    val receiving = state.exercise is Exercise.ReceiveChoice || state.exercise is Exercise.ReceiveTyped || state.exercise is Exercise.FinalMessage
+    if (!receiving) return
+    when (state.channel) {
+        Channel.LIGHT -> {
+            Text(stringResource(R.string.mission_channel_light), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.secondary)
+            io.github.egt17baa.morseprende.ui.games.FlashingLighthouse(
+                state.lampOn,
+                io.github.egt17baa.morseprende.ui.theme.Cosmetics.lampColor(state.lampColor),
+                Modifier.fillMaxWidth().height(150.dp).testTag("mission_lamp"),
+            )
+        }
+        Channel.VIBRATION -> Text(
+            stringResource(if (state.channelFallback) R.string.mission_channel_vibration_fallback else R.string.mission_channel_vibration),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.secondary,
+        )
+        Channel.SOUND -> Unit
     }
 }
