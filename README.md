@@ -4,7 +4,8 @@ Juego educativo para Android que enseña **código Morse jugando**. Eres el fare
 barcos, espías y señales del espacio te hablan en Morse, y para avanzar tienes que aprender a
 recibir y a enviar. Totalmente gratis, sin anuncios y sin conexión a internet.
 
-> Estado: **Etapa 5 (0.7.0)**: campaña completa en tres capítulos, «El Faro», «Operación Sombra»
+> Estado: **Etapa 6 (0.8.0)**, lista para publicar en Google Play cuando se quiera (ver
+> [`docs/publicacion/`](docs/publicacion/como-publicar.md)): campaña completa en tres capítulos, «El Faro», «Operación Sombra»
 > (todas las letras, números, la Ñ como extra, ruido de radio y contrarreloj) y «Señal Estelar»
 > (signos de puntuación, prosignos AR y BT, misiones de velocidad y señales solo de luz o solo de
 > vibración). También: repaso inteligente, tres minijuegos con récords, Destellos con tienda
@@ -20,7 +21,9 @@ recibir y a enviar. Totalmente gratis, sin anuncios y sin conexión a internet.
 - Plan de la etapa 4a: [`docs/superpowers/plans/2026-11-01-etapa-4a-operacion-sombra.md`](docs/superpowers/plans/2026-11-01-etapa-4a-operacion-sombra.md)
 - Plan de la etapa 4b: [`docs/superpowers/plans/2026-11-01-etapa-4b-senal-estelar.md`](docs/superpowers/plans/2026-11-01-etapa-4b-senal-estelar.md)
 - Plan de la etapa 5: [`docs/superpowers/plans/2026-11-01-etapa-5-pulido-accesibilidad.md`](docs/superpowers/plans/2026-11-01-etapa-5-pulido-accesibilidad.md)
-- Pruebas en el móvil: [`docs/pruebas/etapa-4.md`](docs/pruebas/etapa-4.md) y [`docs/pruebas/etapa-5.md`](docs/pruebas/etapa-5.md)
+- Plan de la etapa 6: [`docs/superpowers/plans/2026-11-01-etapa-6-preparar-publicacion.md`](docs/superpowers/plans/2026-11-01-etapa-6-preparar-publicacion.md)
+- Publicación: [`docs/publicacion/como-publicar.md`](docs/publicacion/como-publicar.md), ficha, política de privacidad y gráficos
+- Pruebas en el móvil: [`etapa-4`](docs/pruebas/etapa-4.md), [`etapa-5`](docs/pruebas/etapa-5.md) y [`etapa-6`](docs/pruebas/etapa-6.md)
 - Fuentes de la biblioteca: [`docs/biblioteca/fuentes.md`](docs/biblioteca/fuentes.md)
 
 ## Compilar
@@ -32,6 +35,7 @@ bash scripts/setup-android-sdk.sh   # instala el Android SDK en ~/android-sdk y 
 ./gradlew :morse-core:test :game:test :app:testDebugUnitTest   # pruebas
 ./gradlew :app:assembleDebug                                     # APK de desarrollo
 ./gradlew :app:assembleRelease                                   # APK de entrega (firmado)
+./gradlew :app:bundleRelease                                     # AAB para Google Play (firmado)
 ```
 
 El APK de entrega se firma con la clave permanente, que **no** está en el repositorio: se lee de
