@@ -1,10 +1,10 @@
 # Pruebas en el móvil: Etapa 4 (capítulos 2 y 3, versión 0.6.0)
 
-Instala `morseprende-0.6.0.apk` **encima** (sin desinstalar). En Ajustes → Acerca de debe poner 0.6.0.
+Instala `morseprende-0.6.0.apk` **encima** (sin desinstalar). En Ajustes de Android → Aplicaciones → MorsePrende debe poner versión 0.6.0.
 
 ## Lo que ya tenías
 - [ ] Se conservan tus misiones, estrellas, récords, Destellos, logros y racha.
-- [ ] Si ya terminaste «El regreso del Gaviota» (final del capítulo 1), el capítulo 2 aparece abierto;
+- [ ] Si ya terminaste «La señal bajo el faro» (final del capítulo 1), el capítulo 2 aparece abierto;
       si no, aparece bloqueado con «Se desbloquea al terminar el capítulo 1».
 
 ## Capítulo 2 «Operación Sombra»
