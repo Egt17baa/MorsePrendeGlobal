@@ -38,4 +38,11 @@ class ContentParserTest {
         assertNull(cards[0].unlockedBy)
         assertEquals("c1m2", cards[1].unlockedBy)
     }
+
+    @Test fun channel_parsed() {
+        val ch = ContentParser.chapter(chapterJson.replace("\"debriefing\":\"d\"", "\"debriefing\":\"d\",\"channel\":\"LIGHT\",\"wpm\":20"))
+        assertEquals(Channel.LIGHT, ch.missions.single().channel)
+        assertEquals(20, ch.missions.single().wpm)
+        assertEquals(Channel.SOUND, ContentParser.chapter(chapterJson).missions.single().channel)
+    }
 }

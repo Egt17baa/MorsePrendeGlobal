@@ -76,4 +76,10 @@ class ContentValidatorTest {
         errors(withMission(1) { it.copy(optional = true) }).hasErrorContaining("r1")
         assertEquals(emptyList<String>(), errors(withMission(0) { it.copy(noise = 0.5f, timeLimitSeconds = 5) }))
     }
+
+    @Test fun wpm_and_channel_validated() {
+        errors(withMission(0) { it.copy(wpm = 4) }).hasErrorContaining("m1")
+        errors(withMission(0) { it.copy(wpm = 31) }).hasErrorContaining("m1")
+        assertEquals(emptyList<String>(), errors(withMission(0) { it.copy(wpm = 20, channel = Channel.LIGHT) }))
+    }
 }

@@ -2,6 +2,7 @@ package io.github.egt17baa.morseprende.game.content
 
 import io.github.egt17baa.morseprende.core.MorseAlphabet
 import io.github.egt17baa.morseprende.core.MorseCodec
+import io.github.egt17baa.morseprende.core.MorseTiming
 
 /** Reglas de coherencia del contenido. Se ejecutan en las pruebas sobre los ficheros reales. */
 object ContentValidator {
@@ -45,6 +46,7 @@ object ContentValidator {
                 errors += "${mission.id}: solo una lección puede ser opcional"
             }
             if (mission.noise !in 0f..MAX_NOISE) errors += "${mission.id}: el ruido debe estar entre 0 y $MAX_NOISE"
+            mission.wpm?.let { if (it !in MorseTiming.MIN_WPM..MorseTiming.MAX_WPM) errors += "${mission.id}: la velocidad debe estar entre ${MorseTiming.MIN_WPM} y ${MorseTiming.MAX_WPM} PPM" }
             mission.timeLimitSeconds?.let { if (it < MIN_TIME_LIMIT) errors += "${mission.id}: el contrarreloj debe ser de al menos $MIN_TIME_LIMIT s" }
             val available = learned + mission.newChars
             if (!mission.optional) learned += mission.newChars

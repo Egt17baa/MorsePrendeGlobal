@@ -5,6 +5,10 @@ import kotlinx.serialization.Serializable
 @Serializable
 enum class MissionType { LESSON, REVIEW, FINALE }
 
+/** Por dónde llegan los mensajes que hay que descifrar en una misión. */
+@Serializable
+enum class Channel { SOUND, LIGHT, VIBRATION }
+
 /** Un mensaje de la historia: quién lo envía y qué dice (solo caracteres ya aprendidos). */
 @Serializable
 data class StoryMessage(val from: String, val text: String)
@@ -24,6 +28,10 @@ data class Mission(
     val noise: Float = 0f,
     /** Segundos para responder cada ejercicio de recibir (contrarreloj); null = sin límite. */
     val timeLimitSeconds: Int? = null,
+    /** Velocidad fija de la misión (carácter y efectiva); null = la de los ajustes. */
+    val wpm: Int? = null,
+    /** Canal de los ejercicios de recibir y del mensaje final. */
+    val channel: Channel = Channel.SOUND,
 )
 
 @Serializable
