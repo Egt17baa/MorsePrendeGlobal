@@ -1,0 +1,15 @@
+MorsePrende: El Faro usa estas bibliotecas de código abierto. Todas tienen la licencia Apache 2.0
+(texto completo más abajo).
+
+- Kotlin, biblioteca estándar (JetBrains)
+- kotlinx.coroutines (JetBrains)
+- kotlinx.serialization (JetBrains)
+- AndroidX Activity, Lifecycle y Navigation (Google, Android Open Source Project)
+- Jetpack Compose: UI, Foundation, Material 3 e iconos de Material (Google, Android Open Source Project)
+- AndroidX Room (Google, Android Open Source Project)
+- AndroidX DataStore (Google, Android Open Source Project)
+
+La tipografía Atkinson Hyperlegible (Braille Institute of America) tiene la licencia SIL Open Font
+License 1.1 (texto completo más abajo).
+
+El código de la propia app tiene la licencia Apache 2.0.

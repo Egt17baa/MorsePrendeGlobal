@@ -226,6 +226,11 @@
     <string name="settings_reset_done">Progreso borrado: la campaña empieza de nuevo.</string>
     <string name="settings_reset_cancel">Cancelar</string>
     <string name="settings_about_section">Acerca de</string>
+    <string name="settings_licenses">Licencias de código abierto</string>
+    <string name="licenses_title">Licencias</string>
+    <string name="licenses_libraries">Bibliotecas</string>
+    <string name="licenses_font">Tipografía Atkinson Hyperlegible (SIL OFL 1.1)</string>
+    <string name="licenses_apache">Licencia Apache 2.0</string>
     <string name="settings_about_version">MorsePrende: El Faro, versión %1$s.</string>
     <string name="settings_about_font">Tipografía Atkinson Hyperlegible, del Braille Institute, con licencia SIL Open Font License 1.1.</string>
     <string name="settings_about_privacy">Sin internet, sin anuncios, sin cuentas y sin analíticas: todo se guarda solo en tu móvil.</string>

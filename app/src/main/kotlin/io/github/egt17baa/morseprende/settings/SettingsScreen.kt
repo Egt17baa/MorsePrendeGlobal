@@ -39,7 +39,7 @@ import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(viewModel: SettingsViewModel, onBack: () -> Unit) {
+fun SettingsScreen(viewModel: SettingsViewModel, onBack: () -> Unit, onLicenses: () -> Unit = {}) {
     val s by viewModel.state.collectAsStateWithLifecycle()
     Scaffold(
         topBar = {
@@ -156,6 +156,7 @@ fun SettingsScreen(viewModel: SettingsViewModel, onBack: () -> Unit) {
             Help(stringResource(R.string.settings_about_version, version))
             Help(stringResource(R.string.settings_about_font))
             Help(stringResource(R.string.settings_about_privacy))
+            androidx.compose.material3.TextButton(onClick = onLicenses) { Text(stringResource(R.string.settings_licenses)) }
         }
     }
 }

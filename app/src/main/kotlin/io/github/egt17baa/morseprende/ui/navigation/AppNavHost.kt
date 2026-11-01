@@ -43,6 +43,7 @@ object Routes {
     fun game(id: GameId) = "game/${id.name}"
     const val TRANSLATOR = "translator"
     const val SETTINGS = "settings"
+    const val LICENSES = "licenses"
     const val MISSION = "mission/{id}"
 
     fun mission(id: String) = "mission/$id"
@@ -135,7 +136,10 @@ fun AppNavHost(container: AppContainer) {
             val vm: SettingsViewModel = viewModel(
                 factory = viewModelFactory { initializer { SettingsViewModel(container.settings, container.outputs, container.progressReset) } },
             )
-            SettingsScreen(vm, onBack = dropUnlessResumed { nav.popBackStack() })
+            SettingsScreen(vm, onBack = dropUnlessResumed { nav.popBackStack() }, onLicenses = dropUnlessResumed { nav.navigate(Routes.LICENSES) })
+        }
+        composable(Routes.LICENSES) {
+            io.github.egt17baa.morseprende.settings.LicensesScreen(onBack = dropUnlessResumed { nav.popBackStack() })
         }
     }
 }
