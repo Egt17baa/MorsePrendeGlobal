@@ -36,6 +36,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -68,6 +70,10 @@ fun StatsContent(state: StatsUiState, onPractice: (List<Char>) -> Unit, onBack: 
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             if (!state.loaded) return@Column
+            if (state.error) {
+                Text(stringResource(R.string.hub_error), style = MaterialTheme.typography.bodyLarge)
+                return@Column
+            }
             Section(stringResource(R.string.stats_summary)) {
                 Text(stringResource(R.string.stats_missions, state.missionsDone, state.missionsTotal))
                 Text(stringResource(R.string.stats_stars, state.stars, state.starsMax))
@@ -94,7 +100,7 @@ fun StatsContent(state: StatsUiState, onPractice: (List<Char>) -> Unit, onBack: 
                     Text(stringResource(R.string.stats_no_records))
                 } else {
                     state.records.forEach { r ->
-                        Text(stringResource(r.game.titleRes) + " · " + stringResource(R.string.practice_record, r.bestScore, r.plays))
+                        Text(stringResource(R.string.stats_record_line, stringResource(r.game.titleRes), stringResource(R.string.practice_record, r.bestScore, r.plays)))
                     }
                 }
             }
@@ -106,7 +112,7 @@ fun StatsContent(state: StatsUiState, onPractice: (List<Char>) -> Unit, onBack: 
 private fun Section(title: String, content: @Composable () -> Unit) {
     Card(Modifier.fillMaxWidth()) {
         Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text(title, style = MaterialTheme.typography.titleLarge)
+            Text(title, style = MaterialTheme.typography.titleLarge, modifier = Modifier.semantics { heading() })
             content()
         }
     }
@@ -133,7 +139,7 @@ private fun Mastery.Level.colors(): Pair<Color, Color> = with(MaterialTheme.colo
 }
 
 /** Solo «sin practicar» lleva borde (no tiene relleno); del color del texto, para verse en cualquier tema. */
-private fun Mastery.Level.border(fg: Color): Color = if (this == Mastery.Level.NO_DATA) fg.copy(alpha = 0.6f) else Color.Transparent
+private fun Mastery.Level.border(fg: Color): Color = if (this == Mastery.Level.NO_DATA) fg.copy(alpha = 0.85f) else Color.Transparent
 
 /** Una letra con su nivel: color y, además, de 0 a 3 marcas (el nivel no depende solo del color). */
 @Composable

@@ -61,13 +61,24 @@ class StatsViewModelTest {
     }
 
     @Test fun stats_letters_levels() = runTest {
-        val s = vm(boxes = mapOf('S' to 5, 'O' to 1, 'E' to 3)).also { runCurrent() }.state.value
+        val s = vm(boxes = mapOf('S' to 5, 'O' to 1, 'E' to 3, 'T' to 2)).also { runCurrent() }.state.value
         assertEquals(listOf('S', 'O', 'E', 'T', 'A', 'N'), s.letters.map { it.char })
         assertEquals(
-            listOf(Mastery.Level.MASTERED, Mastery.Level.LEARNING, Mastery.Level.GOOD, Mastery.Level.NO_DATA, Mastery.Level.NO_DATA, Mastery.Level.NO_DATA),
+            listOf(Mastery.Level.MASTERED, Mastery.Level.LEARNING, Mastery.Level.GOOD, Mastery.Level.LEARNING, Mastery.Level.NO_DATA, Mastery.Level.NO_DATA),
             s.letters.map { it.level },
         )
-        assertEquals(listOf('O', 'E'), s.weakest)
+        // Solo las que siguen «aprendiendo»; E ya va bien.
+        assertEquals(listOf('O', 'T'), s.weakest)
+    }
+
+    @Test fun stats_content_error() = runTest {
+        Dispatchers.setMain(UnconfinedTestDispatcher(testScheduler))
+        val v = StatsViewModel(
+            FakeContentSource(emptyList(), fail = true), FakeProgressRepository(), FakeCharStatsRepository(),
+            FakeGameRecordsRepository(), null, FakeActivityRepository(), { today },
+        )
+        runCurrent()
+        assertTrue(v.state.value.error)
     }
 
     @Test fun stats_new_player() = runTest {

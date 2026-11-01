@@ -25,8 +25,9 @@ caja de Leitner por letra.
 - **El nivel no depende solo del color:** cada letra lleva de 0 a 3 marcas y una descripción para
   TalkBack.
 - **Letras flojas:**
-  - solo entre las aprendidas que ya tienen datos, ordenadas por caja (la más baja primero) y, si
-    empatan, por las más recientes;
+  - solo entre las aprendidas que siguen en «aprendiendo» (cajas 1 y 2; tras la revisión, las que ya
+    van «bien» no se señalan), ordenadas por caja (la más baja primero) y, si empatan, por las más
+    recientes;
   - como máximo 4;
   - no se muestran si hay menos de 2.
 - **Solo información:** nada de esta pantalla resta ni castiga.

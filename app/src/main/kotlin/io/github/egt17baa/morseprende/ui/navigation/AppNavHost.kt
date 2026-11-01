@@ -54,7 +54,7 @@ object Routes {
     const val STATS = "stats"
 
     /** Letras a la carta con [letters] ya elegidas. */
-    fun workshopLetters(letters: List<Char>) = "workshop_letters?letras=${letters.joinToString("")}"
+    fun workshopLetters(letters: List<Char>) = "workshop_letters?letras=" + android.net.Uri.encode(letters.joinToString(""))
     const val MISSION = "mission/{id}"
 
     fun mission(id: String) = "mission/$id"

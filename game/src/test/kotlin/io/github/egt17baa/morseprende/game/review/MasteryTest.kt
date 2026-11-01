@@ -26,7 +26,8 @@ class MasteryTest {
     @Test fun weakest_needs_two() {
         assertEquals(emptyList<Char>(), Mastery.weakest(listOf('S', 'O'), mapOf('S' to 1)))
         assertEquals(emptyList<Char>(), Mastery.weakest(listOf('S', 'O'), emptyMap()))
-        // Todas dominadas: nada que repasar.
+        // Todas dominadas o «bien»: nada que señalar como difícil.
         assertEquals(emptyList<Char>(), Mastery.weakest(listOf('S', 'O'), mapOf('S' to 5, 'O' to 5)))
+        assertEquals(emptyList<Char>(), Mastery.weakest(listOf('S', 'O', 'E'), mapOf('S' to 4, 'O' to 3, 'E' to 1)))
     }
 }

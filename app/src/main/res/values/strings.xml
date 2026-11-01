@@ -323,5 +323,6 @@
     <string name="stats_weakest">Te cuestan un poco: %1$s</string>
     <string name="stats_practice">Practicar estas letras</string>
     <string name="stats_records">Récords</string>
+    <string name="stats_record_line">%1$s · %2$s</string>
     <string name="stats_no_records">Aún no has jugado a los minijuegos.</string>
 </resources>

@@ -16,13 +16,14 @@ object Mastery {
     }
 
     /**
-     * Las letras más flojas para practicar: entre las aprendidas con datos y aún no dominadas, las de
-     * caja más baja y, si empatan, las aprendidas más tarde. Como mucho 4; vacío si hay menos de 2.
+     * Las letras más flojas para practicar: entre las aprendidas que siguen en «aprendiendo» (cajas 1 y
+     * 2), las de caja más baja y, si empatan, las aprendidas más tarde. Como mucho 4; vacío si hay menos
+     * de 2. Las que ya van «bien» no se señalan como difíciles.
      */
     fun weakest(learnedInOrder: List<Char>, boxes: Map<Char, Int>): List<Char> {
         val order = learnedInOrder.withIndex().associate { (i, c) -> c to i }
         val candidates = learnedInOrder
-            .filter { c -> boxes[c]?.let { it < Leitner.MAX_BOX } == true }
+            .filter { c -> boxes[c]?.let { level(it) == Level.LEARNING } == true }
             .sortedWith(compareBy<Char> { boxes.getValue(it) }.thenByDescending { order.getValue(it) })
             .take(MAX_WEAKEST)
         return if (candidates.size >= 2) candidates else emptyList()

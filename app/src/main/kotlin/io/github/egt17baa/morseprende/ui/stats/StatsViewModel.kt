@@ -25,6 +25,8 @@ data class LetterStat(val char: Char, val level: Mastery.Level)
 
 data class StatsUiState(
     val loaded: Boolean = false,
+    /** No se pudo cargar la campaña: no se enseñan totales engañosos (0 de 0). */
+    val error: Boolean = false,
     val missionsDone: Int = 0,
     val missionsTotal: Int = 0,
     val stars: Int = 0,
@@ -51,11 +53,12 @@ class StatsViewModel(
     today: () -> LocalDate = { LocalDate.now() },
 ) : ViewModel() {
 
-    private val chapters: List<Chapter> = runCatching { content.chapters() }.getOrDefault(emptyList())
+    private val chapters: List<Chapter>? = runCatching { content.chapters() }.getOrNull()
 
     private val days = combine(daily?.completed ?: flowOf(emptySet()), activity.playedDays) { done, played -> done to played }
 
     val state: StateFlow<StatsUiState> = combine(progress.progress, charStats.boxes, records.records, days) { progressMap, boxes, recs, (done, played) ->
+        val chapters = chapters ?: return@combine StatsUiState(loaded = true, error = true)
         val missions = chapters.flatMap { it.missions }
         // Las misiones extra también cuentan, como en el logro «Farero legendario».
         val learned = ProgressRules.learnedChars(chapters, progressMap.keys).toList()

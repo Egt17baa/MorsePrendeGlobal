@@ -17,6 +17,9 @@ private val DarkColors = darkColorScheme(
     onPrimary = SeaNight,
     secondary = Coral,
     onSecondary = SeaNight,
+    // Tercer color de la paleta (en «Mi progreso», el nivel «bien»): aguamarina, distinto del crema y el coral.
+    tertiary = Color(0xFF8FD3C8),
+    onTertiary = SeaNight,
     background = SeaNight,
     onBackground = Sand,
     surface = SeaDeep,
@@ -41,6 +44,8 @@ private val LightColors = lightColorScheme(
     onPrimary = White,
     secondary = CoralDark,
     onSecondary = White,
+    tertiary = Color(0xFF7A5600),
+    onTertiary = White,
     background = Sand,
     onBackground = SeaNight,
     surface = White,
@@ -65,6 +70,7 @@ private val LightColors = lightColorScheme(
 private val HighContrastDark = darkColorScheme(
     primary = Color(0xFFFFE14D), onPrimary = Color.Black,
     secondary = Color(0xFFFFFFFF), onSecondary = Color.Black,
+    tertiary = Color(0xFF7FE0FF), onTertiary = Color.Black,
     background = Color.Black, onBackground = Color.White,
     surface = Color.Black, onSurface = Color.White,
     surfaceVariant = Color(0xFF1A1A1A), onSurfaceVariant = Color.White,
@@ -79,6 +85,7 @@ private val HighContrastDark = darkColorScheme(
 private val HighContrastLight = lightColorScheme(
     primary = Color(0xFF00363D), onPrimary = Color.White,
     secondary = Color.Black, onSecondary = Color.White,
+    tertiary = Color(0xFF6A3D00), onTertiary = Color.White,
     background = Color.White, onBackground = Color.Black,
     surface = Color.White, onSurface = Color.Black,
     surfaceVariant = Color(0xFFF0F0F0), onSurfaceVariant = Color.Black,
