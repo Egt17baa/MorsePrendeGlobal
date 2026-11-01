@@ -27,6 +27,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -40,7 +42,6 @@ import io.github.egt17baa.morseprende.game.economy.BuyResult
 import io.github.egt17baa.morseprende.game.economy.ItemCategory
 import io.github.egt17baa.morseprende.ui.rewards.achievementTitle
 import io.github.egt17baa.morseprende.ui.theme.BeamCream
-import io.github.egt17baa.morseprende.ui.theme.Coral
 import io.github.egt17baa.morseprende.ui.theme.Cosmetics
 
 @Composable
@@ -108,8 +109,17 @@ private fun Message(state: ShopUiState, dismiss: () -> Unit) {
 private fun ItemRow(entry: ShopEntry, actions: ShopActions) {
     val id = entry.item.id
     Card(Modifier.fillMaxWidth()) {
+        if (entry.item.category == ItemCategory.DECOR) {
+            // La isla con la decoración puesta: se ve qué se compra antes de comprarlo.
+            io.github.egt17baa.morseprende.ui.hub.DecorPreview(
+                id,
+                // Misma proporción que el faro del inicio, para que nada salga aplastado.
+                Modifier.align(Alignment.CenterHorizontally).padding(top = 12.dp).size(176.dp, 96.dp)
+                    .clip(MaterialTheme.shapes.small).clearAndSetSemantics {},
+            )
+        }
         Row(Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-            ItemPreview(id, entry.item.category)
+            if (entry.item.category != ItemCategory.DECOR) ItemPreview(id, entry.item.category)
             Text(stringResource(itemName(id)), style = MaterialTheme.typography.titleSmall, modifier = Modifier.weight(1f).padding(horizontal = 12.dp))
             if (entry.item.category == ItemCategory.TONE) {
                 TextButton(onClick = { actions.preview(id) }) { Text(stringResource(R.string.shop_listen)) }
@@ -147,10 +157,7 @@ private fun ItemPreview(id: String, category: ItemCategory) {
                 }
             }
             ItemCategory.KEYER -> drawCircle(Cosmetics.keyerRing(id), radius = size.minDimension / 2.6f, center = c, style = Stroke(width = size.minDimension / 8))
-            ItemCategory.DECOR -> {
-                drawCircle(Coral, radius = size.minDimension / 8, center = Offset(size.width * 0.3f, c.y))
-                drawCircle(BeamCream, radius = size.minDimension / 8, center = Offset(size.width * 0.7f, c.y))
-            }
+            ItemCategory.DECOR -> Unit // Ver DecorPreview.
         }
     }
 }

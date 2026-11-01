@@ -1,4 +1,4 @@
-# Pruebas en el móvil: Etapa 7 (más enganche, versión 0.9.1)
+# Pruebas en el móvil: Etapa 7 (más enganche, versión 0.9.2)
 
 Instala el APK encima del anterior: no se pierde el progreso.
 
@@ -43,3 +43,8 @@ Instala el APK encima del anterior: no se pierde el progreso.
 - [ ] Repite varias veces seguidas (también Parar y otra vez Reproducir): siempre suena.
 - [ ] Si alguna vez no suena, mira si aparece el aviso «No se pudo usar: Sonido» y anota qué salidas tenías
       activadas.
+
+## Tienda e isla (0.9.2)
+- [ ] En la tienda, cada decoración enseña la isla con esa decoración puesta (gaviotas, barca, banderines,
+      farolillos, estrellas fugaces, casa, ballena y aurora).
+- [ ] En el Faro, el haz sigue barriendo suave con todas las decoraciones puestas.

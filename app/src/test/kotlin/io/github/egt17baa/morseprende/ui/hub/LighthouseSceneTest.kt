@@ -44,4 +44,21 @@ class LighthouseSceneTest {
         val decorated = render(all)
         assertTrue(!plain.sameAs(decorated))
     }
+
+    private var previewId by androidx.compose.runtime.mutableStateOf("")
+
+    @Test fun each_decoration_has_its_own_preview() {
+        val ids = Shop.items.filter { it.category == ItemCategory.DECOR }.map { it.id }
+        // En la tienda se ve la isla con esa decoración: así se sabe qué se compra.
+        compose.setContent { DecorPreview(previewId, Modifier.fillMaxWidth().height(96.dp)) }
+        val shots = ids.map { id ->
+            previewId = id
+            compose.waitForIdle()
+            val view = compose.activity.window.decorView
+            Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888).also { view.draw(Canvas(it)) }
+        }
+        for (a in shots.indices) for (b in a + 1 until shots.size) {
+            assertTrue("${ids[a]} y ${ids[b]} se ven iguales", !shots[a].sameAs(shots[b]))
+        }
+    }
 }

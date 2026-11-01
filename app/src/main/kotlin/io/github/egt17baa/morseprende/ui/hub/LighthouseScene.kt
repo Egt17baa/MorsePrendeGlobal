@@ -7,15 +7,18 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.graphics.layer.drawLayer
 import io.github.egt17baa.morseprende.ui.theme.BeamCream
 import io.github.egt17baa.morseprende.ui.theme.Coral
 import io.github.egt17baa.morseprende.ui.theme.Sand
@@ -42,18 +45,59 @@ fun LighthouseScene(
         animationSpec = infiniteRepeatable(tween(4_000, easing = FastOutSlowInEasing), RepeatMode.Reverse),
         label = "beamAngle",
     )
-    Canvas(modifier) {
-        drawRect(Brush.verticalGradient(listOf(SeaNight, SeaDeep)))
-        drawSky(decorations)
-        drawSea()
-        val towerBottom = size.height * 0.82f
-        val towerTop = size.height * 0.36f
-        val cx = size.width / 2
-        val lantern = Offset(cx, towerTop - size.height * 0.05f)
-        rotate(angle, pivot = lantern) { drawBeam(lantern, strength, lampColor) }
-        drawDecorations(decorations, cx, towerTop, lantern)
-        drawTower(cx, towerTop, towerBottom, lampColor)
-    }
+    // El haz se mueve en cada fotograma (hasta 120 por segundo); el resto de la escena es fija. Lo fijo
+    // se graba una vez en dos capas (detrás y delante del haz) y el haz reutiliza sus trazos: así no se
+    // recalculan curvas ni degradados en cada fotograma, que gasta batería.
+    Spacer(
+        modifier.drawWithCache {
+            val frame = SceneFrame(size.width, size.height)
+            val back = obtainGraphicsLayer().apply { record { drawBack(decorations) } }
+            val front = obtainGraphicsLayer().apply { record { drawFront(frame, decorations, lampColor) } }
+            val beam = BeamShape(frame.lantern, size, strength, lampColor)
+            onDrawBehind {
+                drawLayer(back)
+                rotate(angle, pivot = frame.lantern) { beam.draw(this) }
+                drawLayer(front)
+            }
+        },
+    )
+}
+
+/**
+ * Vista previa de una decoración en la tienda: la isla quieta con solo esa decoración puesta.
+ */
+@Composable
+fun DecorPreview(id: String, modifier: Modifier = Modifier) {
+    Canvas(modifier) { drawStill(setOf(id)) }
+}
+
+/** La escena entera sin animar (haz en el centro). */
+private fun DrawScope.drawStill(decorations: Set<String>, lampColor: Color = BeamCream, strength: Float = 1f) {
+    val frame = SceneFrame(size.width, size.height)
+    drawBack(decorations)
+    BeamShape(frame.lantern, size, strength, lampColor).draw(this)
+    drawFront(frame, decorations, lampColor)
+}
+
+/** Posiciones del faro para un tamaño dado. */
+private class SceneFrame(width: Float, height: Float) {
+    val cx = width / 2
+    val towerTop = height * 0.36f
+    val towerBottom = height * 0.82f
+    val lantern = Offset(cx, towerTop - height * 0.05f)
+}
+
+/** Detrás del haz: cielo, decoraciones del cielo y mar. */
+private fun DrawScope.drawBack(decorations: Set<String>) {
+    drawRect(Brush.verticalGradient(listOf(SeaNight, SeaDeep)))
+    drawSky(decorations)
+    drawSea()
+}
+
+/** Delante del haz: decoraciones de la isla y el faro. */
+private fun DrawScope.drawFront(frame: SceneFrame, decorations: Set<String>, lampColor: Color) {
+    drawDecorations(decorations, frame.cx, frame.towerTop, frame.lantern)
+    drawTower(frame.cx, frame.towerTop, frame.towerBottom, lampColor)
 }
 
 private fun DrawScope.drawSea() {
@@ -74,32 +118,40 @@ private fun DrawScope.drawSea() {
     drawPath(wave, SeaMist)
 }
 
-private fun DrawScope.drawBeam(lantern: Offset, strength: Float, lampColor: Color) {
-    val length = size.width * (0.25f + 0.25f * strength)
-    val spread = size.height * 0.16f
-    fun beam(direction: Float) = Path().apply {
+/** El haz (dos conos y un punto y raya viajando por él), con sus trazos creados una sola vez. */
+private class BeamShape(private val lantern: Offset, size: androidx.compose.ui.geometry.Size, private val strength: Float, private val lampColor: Color) {
+    private val length = size.width * (0.25f + 0.25f * strength)
+    private val spread = size.height * 0.16f
+
+    private fun cone(direction: Float) = Path().apply {
         moveTo(lantern.x, lantern.y - 4f)
         lineTo(lantern.x + direction * length, lantern.y - spread)
         lineTo(lantern.x + direction * length, lantern.y + spread)
         lineTo(lantern.x, lantern.y + 4f)
         close()
     }
-    val brush = { direction: Float ->
-        Brush.horizontalGradient(
-            listOf(lampColor.copy(alpha = 0.6f * strength), Color.Transparent),
-            startX = lantern.x,
-            endX = lantern.x + direction * length,
-        )
-    }
-    drawPath(beam(1f), brush(1f))
-    drawPath(beam(-1f), brush(-1f))
-    // Un punto y una raya viajando por el haz: la seña de identidad del juego.
-    drawCircle(lampColor, radius = 5f, center = Offset(lantern.x + length * 0.35f, lantern.y))
-    drawRect(
-        lampColor,
-        topLeft = Offset(lantern.x + length * 0.45f, lantern.y - 3.5f),
-        size = androidx.compose.ui.geometry.Size(length * 0.18f, 7f),
+
+    private fun light(direction: Float) = Brush.horizontalGradient(
+        listOf(lampColor.copy(alpha = 0.6f * strength), Color.Transparent),
+        startX = lantern.x,
+        endX = lantern.x + direction * length,
     )
+
+    private val right = cone(1f)
+    private val left = cone(-1f)
+    private val rightLight = light(1f)
+    private val leftLight = light(-1f)
+    private val dot = Offset(lantern.x + length * 0.35f, lantern.y)
+    private val dashTopLeft = Offset(lantern.x + length * 0.45f, lantern.y - 3.5f)
+    private val dashSize = androidx.compose.ui.geometry.Size(length * 0.18f, 7f)
+
+    fun draw(scope: DrawScope) = with(scope) {
+        drawPath(right, rightLight)
+        drawPath(left, leftLight)
+        // Un punto y una raya viajando por el haz: la seña de identidad del juego.
+        drawCircle(lampColor, radius = 5f, center = dot)
+        drawRect(lampColor, topLeft = dashTopLeft, size = dashSize)
+    }
 }
 
 private fun DrawScope.drawTower(cx: Float, top: Float, bottom: Float, lampColor: Color) {
