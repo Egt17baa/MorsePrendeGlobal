@@ -43,6 +43,9 @@
 
     <!-- Misión -->
     <string name="mission_start">Empezar</string>
+    <string name="mission_seconds_left">⏱ %1$d s</string>
+    <string name="mission_noise">Interferencias</string>
+    <string name="mission_enye_notice">La Ñ no es Morse internacional: es una extensión española. En el mar, mejor escribe N.</string>
     <string name="mission_logbook">Cuaderno de bitácora</string>
     <string name="mission_progress">%1$d de %2$d</string>
     <string name="mission_listen_title">Letras nuevas</string>

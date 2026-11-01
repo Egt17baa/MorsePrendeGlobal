@@ -2,6 +2,7 @@ package io.github.egt17baa.morseprende.ui.mission
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -109,10 +110,20 @@ fun MissionContent(state: MissionUiState, actions: MissionActions) {
                     modifier = Modifier.fillMaxWidth(),
                     strokeCap = StrokeCap.Round,
                 )
-                Text(
-                    stringResource(R.string.mission_progress, state.exerciseIndex + 1, state.exerciseCount),
-                    style = MaterialTheme.typography.labelMedium,
-                )
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Text(
+                        stringResource(R.string.mission_progress, state.exerciseIndex + 1, state.exerciseCount),
+                        style = MaterialTheme.typography.labelMedium,
+                        modifier = Modifier.weight(1f),
+                    )
+                    val receiving = state.exercise is Exercise.ReceiveChoice || state.exercise is Exercise.ReceiveTyped || state.exercise is Exercise.FinalMessage
+                    if (state.noisy && receiving) {
+                        Text(stringResource(R.string.mission_noise), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.secondary)
+                    }
+                    state.secondsLeft?.let {
+                        Text(stringResource(R.string.mission_seconds_left, it), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
+                    }
+                }
             }
             when (state.phase) {
                 MissionPhase.BRIEFING -> LogbookPanel(state.briefing, stringResource(R.string.mission_start), actions::start)

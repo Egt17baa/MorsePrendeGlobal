@@ -33,4 +33,8 @@ data class MissionUiState(
     val reward: RewardSummary? = null,
     /** Aro del manipulador equipado en la tienda. */
     val keyerSkin: String = "key_coral",
+    /** Contrarreloj del ejercicio de recibir (null = sin límite o aún sonando). */
+    val secondsLeft: Int? = null,
+    /** La misión tiene ruido de radio en los ejercicios. */
+    val noisy: Boolean = false,
 )

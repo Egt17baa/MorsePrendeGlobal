@@ -35,6 +35,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.Job
 import kotlin.random.Random
 
 /**
@@ -57,7 +59,9 @@ class MissionViewModel(
 
     private val settings: StateFlow<AppSettings> = settings.settings.stateIn(viewModelScope, SharingStarted.Eagerly, AppSettings())
     private val boxes: StateFlow<Map<Char, Int>> = charStats.boxes.stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
-    private val player = SignalPlayer(playerScope ?: viewModelScope)
+    private val scope: CoroutineScope = playerScope ?: viewModelScope
+    private val player = SignalPlayer(scope)
+    private var timerJob: Job? = null
     private val ui = MutableStateFlow(MissionUiState())
 
     val state: StateFlow<MissionUiState> = combine(ui, player.isPlaying, this.settings) { s, playing, prefs ->
@@ -95,6 +99,7 @@ class MissionViewModel(
     }
 
     private fun briefingState(m: Mission, s: MissionSession) = MissionUiState(
+        noisy = m.noise > 0f,
         title = m.title,
         briefing = m.briefing,
         debriefing = m.debriefing,
@@ -126,7 +131,14 @@ class MissionViewModel(
         }
         val prefs = settings.value
         val signals = MorseTiming(prefs.charWpm, prefs.effectiveWpm).signalsFor(MorseCodec.encode(text).morse)
-        player.play(signals, listOf(outputs.create(OutputKind.SOUND, prefs)))
+        // Las interferencias solo afectan a lo que hay que descifrar (no a las letras nuevas ni a los envíos).
+        val current = session?.current
+        val noise = if (current is Exercise.ReceiveChoice || current is Exercise.ReceiveTyped || current is Exercise.FinalMessage) {
+            mission?.noise ?: 0f
+        } else {
+            0f
+        }
+        player.play(signals, listOf(outputs.create(OutputKind.SOUND, prefs, noise = noise)))
     }
 
     fun continueListen() {
@@ -143,6 +155,7 @@ class MissionViewModel(
             is Exercise.ReceiveChoice, is Exercise.ReceiveTyped, is Exercise.FinalMessage -> Unit
             else -> return
         }
+        cancelTimer()
         val result = s.answer(text)
         pendingAdvance = result.advanced
         ui.update { it.copy(feedback = Feedback(result.correct, result.expected), hintLevel = s.hintLevel) }
@@ -212,6 +225,7 @@ class MissionViewModel(
     /** Quita el feedback y pasa al siguiente ejercicio (o repite el actual si toca). */
     fun next() {
         if (ui.value.phase != MissionPhase.EXERCISE || ui.value.feedback == null) return
+        cancelTimer()
         releaseKey()
         ui.update { it.copy(feedback = null, sentText = "", keyerPending = "") }
         if (pendingAdvance) {
@@ -226,6 +240,7 @@ class MissionViewModel(
      * conserva tal cual.
      */
     fun abandon() {
+        cancelTimer()
         releaseAudio()
         val m = mission ?: return
         val ch = chapter ?: return
@@ -237,7 +252,35 @@ class MissionViewModel(
         }
     }
 
-    override fun onCleared() = releaseAudio()
+    override fun onCleared() {
+        cancelTimer()
+        releaseAudio()
+    }
+
+    /**
+     * Contrarreloj: empieza cuando termina de sonar el ejercicio y, si se agota, cuenta como fallo
+     * (una sola vez y solo si el ejercicio sigue siendo el mismo).
+     */
+    private fun startTimer(limit: Int, exerciseIndex: Int) {
+        cancelTimer()
+        timerJob = scope.launch {
+            player.isPlaying.first { !it }
+            for (left in limit downTo 1) {
+                ui.update { it.copy(secondsLeft = left) }
+                delay(1_000)
+            }
+            ui.update { it.copy(secondsLeft = null) }
+            if (session?.index == exerciseIndex && ui.value.feedback == null && ui.value.phase == MissionPhase.EXERCISE) {
+                answer("")
+            }
+        }
+    }
+
+    private fun cancelTimer() {
+        timerJob?.cancel()
+        timerJob = null
+        if (ui.value.secondsLeft != null) ui.update { it.copy(secondsLeft = null) }
+    }
 
     private var keyIsDown = false
 
@@ -259,6 +302,7 @@ class MissionViewModel(
 
     private fun enterExercise() {
         val s = session ?: return
+        cancelTimer()
         player.stop()
         releaseKey()
         keyer.reset()
@@ -276,6 +320,8 @@ class MissionViewModel(
         if (exercise is Exercise.ReceiveChoice || exercise is Exercise.ReceiveTyped || exercise is Exercise.FinalMessage) {
             replay()
         }
+        val limit = mission?.timeLimitSeconds
+        if (limit != null && (exercise is Exercise.ReceiveChoice || exercise is Exercise.ReceiveTyped)) startTimer(limit, s.index)
     }
 
     private fun finish() {

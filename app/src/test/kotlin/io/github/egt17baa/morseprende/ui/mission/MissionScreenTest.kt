@@ -160,4 +160,19 @@ class MissionScreenTest {
         compose.onNodeWithText(context.getString(R.string.reward_daily)).performScrollTo().assertIsDisplayed()
         compose.onNodeWithText(context.getString(R.string.reward_achievement, context.getString(R.string.ach_first_sos))).performScrollTo().assertIsDisplayed()
     }
+
+    @Test fun enye_notice_in_listen() {
+        val state = MissionUiState(phase = MissionPhase.EXERCISE, exercise = Exercise.Listen(listOf('Ñ')), exerciseCount = 5)
+        compose.setContent { MissionContent(state, Recorder()) }
+        compose.onNodeWithText(str(R.string.mission_enye_notice)).performScrollTo().assertIsDisplayed()
+    }
+
+    @Test fun timer_and_noise_shown() {
+        val state = MissionUiState(
+            phase = MissionPhase.EXERCISE, exercise = Exercise.ReceiveTyped("SOS"), exerciseCount = 5, secondsLeft = 9, noisy = true,
+        )
+        compose.setContent { MissionContent(state, Recorder()) }
+        compose.onNodeWithText(context.getString(R.string.mission_seconds_left, 9)).assertIsDisplayed()
+        compose.onNodeWithText(str(R.string.mission_noise)).assertIsDisplayed()
+    }
 }

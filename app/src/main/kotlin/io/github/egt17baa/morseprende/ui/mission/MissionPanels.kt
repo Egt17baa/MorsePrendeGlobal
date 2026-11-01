@@ -81,6 +81,9 @@ private fun ListenPanel(e: Exercise.Listen, actions: MissionActions) {
             }
         }
     }
+    if ('Ñ' in e.chars) {
+        Text(stringResource(R.string.mission_enye_notice), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.secondary)
+    }
     OutlinedButton(onClick = actions::replay, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.mission_listen_again)) }
     Button(onClick = actions::continueListen, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.mission_continue)) }
 }

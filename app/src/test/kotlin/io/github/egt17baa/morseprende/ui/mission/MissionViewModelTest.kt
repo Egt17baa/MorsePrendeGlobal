@@ -13,6 +13,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -391,5 +392,86 @@ class MissionViewModelTest {
         e.vm.abandon()
         runCurrent()
         assertEquals(null, e.s.reward)
+    }
+
+    private fun TestScope.timedEnv(noise: Float = 0.25f, limit: Int? = 5): Pair<Env, FakeOutputFactory> {
+        Dispatchers.setMain(UnconfinedTestDispatcher(testScheduler))
+        val m = MissionTestContent.chapter.missions.single().copy(noise = noise, timeLimitSeconds = limit)
+        val chapter = MissionTestContent.chapter.copy(missions = listOf(m))
+        val outputs = FakeOutputFactory(this)
+        val progress = FakeProgressRepository()
+        val vm = MissionViewModel(
+            "t1", FakeContentSource(listOf(chapter)), progress, FakeSettingsRepository(AppSettings(charWpm = 12, effectiveWpm = 12)),
+            outputs, FakeSidetoneFactory(), random = Random(1), playerScope = backgroundScope,
+        )
+        return Env(vm, progress, FakeCharStatsRepository(), FakeSidetoneFactory(), longArrayOf(0)) to outputs
+    }
+
+    @Test fun timer_counts_down_and_times_out_once() = runTest {
+        val (e, _) = timedEnv()
+        e.vm.start()
+        e.vm.continueListen()
+        runCurrent()
+        assertTrue(e.s.isPlaying)
+        advanceTimeBy(3_000)
+        runCurrent()
+        assertFalse(e.s.isPlaying)
+        val left = e.s.secondsLeft!!
+        assertTrue("left=$left", left in 1..5)
+        advanceTimeBy(6_000)
+        runCurrent()
+        assertEquals(false, e.s.feedback?.correct)
+        assertEquals(null, e.s.secondsLeft)
+        val index = e.s.exerciseIndex
+        advanceTimeBy(10_000)
+        runCurrent()
+        assertEquals(index, e.s.exerciseIndex)
+    }
+
+    @Test fun answering_stops_timer() = runTest {
+        val (e, _) = timedEnv()
+        e.vm.start()
+        e.vm.continueListen()
+        advanceTimeBy(3_000)
+        runCurrent()
+        val x = e.s.exercise as Exercise.ReceiveChoice
+        e.vm.answer(x.answer)
+        advanceTimeBy(20_000)
+        runCurrent()
+        assertEquals(true, e.s.feedback?.correct)
+        assertEquals(null, e.s.secondsLeft)
+    }
+
+    @Test fun abandon_cancels_timer() = runTest {
+        val (e, _) = timedEnv()
+        e.vm.start()
+        e.vm.continueListen()
+        advanceTimeBy(3_000)
+        runCurrent()
+        e.vm.abandon()
+        advanceTimeBy(20_000)
+        runCurrent()
+        assertEquals(MissionPhase.BRIEFING, e.s.phase)
+        assertEquals(null, e.s.feedback)
+        assertEquals(null, e.s.secondsLeft)
+    }
+
+    @Test fun no_timer_without_limit() = runTest {
+        val (e, _) = timedEnv(limit = null)
+        e.vm.start()
+        e.vm.continueListen()
+        advanceTimeBy(30_000)
+        runCurrent()
+        assertEquals(null, e.s.secondsLeft)
+        assertEquals(null, e.s.feedback)
+    }
+
+    @Test fun noise_passed_to_audio() = runTest {
+        val (e, outputs) = timedEnv(noise = 0.25f)
+        assertTrue(e.s.noisy)
+        e.vm.start()
+        e.vm.continueListen()
+        runCurrent()
+        assertEquals(0.25f, outputs.noises.last(), 1e-6f)
     }
 }
