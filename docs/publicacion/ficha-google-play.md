@@ -120,4 +120,6 @@ pueden usar destellos de linterna o pantalla; la app avisa antes y por defecto l
 En `docs/publicacion/graficos/`:
 - `icono-512.png`: icono de la ficha (512 × 512).
 - `destacado-1024x500.png`: gráfico destacado (1024 × 500).
-- `captura-1-faro.png` … `captura-6-traductor.png`: capturas de teléfono (1080 × 1920).
+- `captura-1-faro.png` … `captura-7-traductor.png`: 7 capturas de teléfono (1080 × 1920): Faro,
+  recibir con ruido y contrarreloj, enviar con el manipulador, señal de luz, biblioteca, Tormenta y traductor.
+- Para regenerarlos: `./gradlew :app:testDebugUnitTest --tests '*StoreGraphicsTest*' -PgraficosDir=$PWD/docs/publicacion/graficos`.

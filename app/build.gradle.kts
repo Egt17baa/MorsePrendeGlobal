@@ -19,8 +19,8 @@ android {
         applicationId = "io.github.egt17baa.morseprende"
         minSdk = 26
         targetSdk = 36
-        versionCode = 10
-        versionName = "0.7.0"
+        versionCode = 11
+        versionName = "0.8.0"
     }
 
     // Clave permanente para los APK de entrega. Vive en variables de entorno (nunca en el repo):
@@ -67,6 +67,8 @@ android {
                 "robolectric.dependency.repo.url",
                 "https://maven-central.storage-download.googleapis.com/maven2/",
             )
+            // Gráficos de la tienda: solo se generan con -PgraficosDir=<carpeta> (ver StoreGraphicsTest).
+            it.systemProperty("graficos.dir", project.findProperty("graficosDir")?.toString().orEmpty())
         }
     }
 }
