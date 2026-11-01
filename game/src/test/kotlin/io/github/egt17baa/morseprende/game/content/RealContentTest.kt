@@ -1,6 +1,7 @@
 package io.github.egt17baa.morseprende.game.content
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.File
@@ -9,6 +10,7 @@ import java.io.File
 object RealContent {
     val dir = File("../app/src/main/assets/content/es")
     val chapter1: Chapter by lazy { ContentParser.chapter(File(dir, "chapter1.json").readText()) }
+    val chapter2: Chapter by lazy { ContentParser.chapter(File(dir, "chapter2.json").readText()) }
     val library: List<LibraryCard> by lazy { ContentParser.libraryCards(File(dir, "library.json").readText()) }
 }
 
@@ -46,5 +48,63 @@ class RealContentTest {
         )
         val icons = setOf("lighthouse", "telegraph", "ship", "radio", "book", "wave")
         cards.forEach { assertTrue("${it.id}: icono ${it.icon}", it.icon in icons) }
+    }
+
+    @Test fun real_chapter2_is_valid() {
+        val ch2 = RealContent.chapter2
+        assertEquals(emptyList<String>(), ContentValidator.validate(listOf(chapter1, ch2), emptyList()))
+        assertEquals(
+            listOf("c2m1", "c2m2", "c2m3", "c2r1", "c2m4", "c2m5", "c2m6", "c2r2", "c2m7", "c2m8", "c2r3",
+                "c2n1", "c2n2", "c2n3", "c2n4", "c2n5", "c2r4", "c2x", "c2f"),
+            ch2.missions.map { it.id },
+        )
+        assertEquals(
+            listOf("UK", "WG", "HL", "FP", "CB", "JV", "XY", "ZQ", "12", "34", "56", "78", "90", "Ñ"),
+            ch2.missions.filter { it.type == MissionType.LESSON }.map { it.newChars.joinToString("") },
+        )
+        val x = ch2.missions.single { it.id == "c2x" }
+        assertTrue(x.optional)
+        assertEquals(1, ch2.missions.count { it.optional })
+        val noise = ch2.missions.associate { it.id to it.noise }
+        listOf("c2m1", "c2m2").forEach { assertEquals(0f, noise.getValue(it), 1e-6f) }
+        listOf("c2m3", "c2r1").forEach { assertEquals(0.15f, noise.getValue(it), 1e-6f) }
+        listOf("c2m4", "c2m5", "c2m6", "c2r2").forEach { assertEquals(0.25f, noise.getValue(it), 1e-6f) }
+        ch2.missions.dropWhile { it.id != "c2m7" }.forEach { assertEquals(0.35f, it.noise, 1e-6f) }
+        val time = ch2.missions.associate { it.id to it.timeLimitSeconds }
+        ch2.missions.takeWhile { it.id != "c2r2" }.forEach { assertEquals(null, it.timeLimitSeconds) }
+        listOf("c2r2", "c2m7", "c2m8").forEach { assertEquals(15, time.getValue(it)) }
+        ch2.missions.dropWhile { it.id != "c2r3" }.forEach { assertEquals(12, it.timeLimitSeconds) }
+        ch2.missions.filter { it.id != "c2x" }.forEach { assertTrue("${it.id}", 'Ñ' !in it.finalMessage.text) }
+        assertTrue("words=${ch2.words.size}", ch2.words.size >= 60)
+        assertEquals(MissionType.FINALE, ch2.missions.last().type)
+    }
+
+    @Test fun chapter2_unlocks_after_chapter1_finale() {
+        val chapters = listOf(chapter1, RealContent.chapter2)
+        val ch1 = chapter1.missions.map { it.id }.toSet()
+        assertFalse(io.github.egt17baa.morseprende.game.progress.ProgressRules.isUnlocked("c2m1", chapters, ch1 - "c1f"))
+        assertTrue(io.github.egt17baa.morseprende.game.progress.ProgressRules.isUnlocked("c2m1", chapters, ch1))
+        // La final del capítulo 2 no exige la Ñ opcional.
+        val ch2required = RealContent.chapter2.missions.filter { !it.optional && it.id != "c2f" }.map { it.id }
+        assertTrue(io.github.egt17baa.morseprende.game.progress.ProgressRules.isUnlocked("c2f", chapters, ch1 + ch2required))
+    }
+
+    @Test fun planner_works_for_every_chapter2_mission() {
+        val chapters = listOf(chapter1, RealContent.chapter2)
+        for (m in RealContent.chapter2.missions) {
+            val learned = ContentValidator.learnedCharsUpTo(chapters, m.id)
+            repeat(10) { seed ->
+                val ex = io.github.egt17baa.morseprende.game.mission.MissionPlanner.plan(m, RealContent.chapter2, kotlin.random.Random(seed), chapters = chapters)
+                ex.forEach { e ->
+                    val texts = when (e) {
+                        is io.github.egt17baa.morseprende.game.mission.Exercise.ReceiveChoice -> e.options + e.answer
+                        is io.github.egt17baa.morseprende.game.mission.Exercise.ReceiveTyped -> listOf(e.answer)
+                        is io.github.egt17baa.morseprende.game.mission.Exercise.Send -> listOf(e.target)
+                        else -> emptyList()
+                    }
+                    texts.forEach { t -> assertTrue("${m.id}: $t", t.all { it in learned }) }
+                }
+            }
+        }
     }
 }

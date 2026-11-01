@@ -1,0 +1,145 @@
+{
+  "id": 2,
+  "title": "Operación Sombra",
+  "intro": "Bajo el faro de Punta Silencio hay una estación de escucha que llevaba treinta años dormida. Remedios fue su operadora. Ahora alguien ha vuelto a encenderla, y entre las transmisiones de la red se esconde un topo.",
+  "words": [
+    "KIOSKO", "KILO", "KIWI", "WEB", "WIKI", "AGUA", "GATO", "GRIS", "RUTA", "TUNEL",
+    "HUELLA", "HOTEL", "HILO", "LUNA", "MUELLE", "LLAVE", "FARO", "PISTA", "PUERTO", "FOTO",
+    "PLAN", "CABLE", "CLAVE", "BAHIA", "BARCO", "CODIGO", "JEFE", "VIAJE", "VIEJO", "JUEGO",
+    "VOZ", "EXTRA", "TAXI", "YATE", "YA", "ZONA", "CRUZ", "QUESO", "QUIEN", "RELOJ",
+    "TOPO", "ESPIA", "SECRETO", "AGENTE", "RADIO", "SOMBRA", "NIEBLA", "HUMO", "LUZ", "PASO",
+    "MAPA", "SELLO", "FUGA", "ALERTA", "CITA", "BUZON", "NOCHE", "AVISO", "LIBRO", "PLAYA",
+    "KAYAK", "WATT", "SEÑAL", "ESPAÑA", "AÑO", "NIÑO",
+    "12", "21", "112", "1234", "34", "43", "56", "65", "78", "87", "90", "09", "007", "2026", "1945"
+  ],
+  "missions": [
+    {
+      "id": "c2m1", "type": "LESSON", "title": "La sala bajo el faro",
+      "briefing": "Bajo las losas del sótano encontráis la vieja estación de escucha. Remedios sopla el polvo de los auriculares: «Aquí aprendí el oficio de verdad. La U son dos puntos y una raya; la K, raya, punto, raya. Ponte los cascos».",
+      "newChars": ["U", "K"],
+      "finalMessage": { "from": "Remedios", "text": "TU MISION ES OIR TODO" },
+      "debriefing": "La radio cruje y, entre el ruido, una voz metálica repite una palabra en clave. Remedios apunta la hora en el cuaderno sin decir nada."
+    },
+    {
+      "id": "c2m2", "type": "LESSON", "title": "Gaviota Gris",
+      "briefing": "Llega una transmisión firmada por «Gaviota Gris», una agente de la red que Remedios creía retirada. «La W es punto, raya, raya; la G, raya, raya, punto. Gaviota siempre empezaba así».",
+      "newChars": ["W", "G"],
+      "finalMessage": { "from": "Gaviota Gris", "text": "AGENTE GRIS EN RUTA" },
+      "debriefing": "Gaviota Gris viene hacia la isla. Remedios sonríe por primera vez en días: «Si ella vuelve, es que algo grave pasa»."
+    },
+    {
+      "id": "c2m3", "type": "LESSON", "title": "Huellas en el muelle", "noise": 0.15,
+      "briefing": "Esta noche la radio suena con interferencias. Alguien ha estado en el muelle de madrugada. «La H son cuatro puntos; la L, punto, raya, punto, punto. Escucha entre el ruido».",
+      "newChars": ["H", "L"],
+      "finalMessage": { "from": "Gaviota Gris", "text": "HUELLA EN EL MUELLE" },
+      "debriefing": "Bajáis al muelle con una linterna. Hay huellas de botas que se pierden en el agua. Quien fuera, llegó en barca."
+    },
+    {
+      "id": "c2r1", "type": "REVIEW", "title": "Escucha nocturna", "noise": 0.15,
+      "briefing": "Turno de escucha hasta el amanecer. Remedios duerme en una silla. Repasa todo lo aprendido: los mensajes llegan rápidos y sucios.",
+      "finalMessage": { "from": "Gaviota Gris", "text": "LA AGENTE GRIS SIGUE ALERTA" },
+      "debriefing": "Al amanecer has llenado dos páginas del cuaderno. Gaviota Gris confirma cada mensaje con una sola letra: K."
+    },
+    {
+      "id": "c2m4", "type": "LESSON", "title": "El faro en peligro", "noise": 0.25,
+      "briefing": "Una transmisión cortada advierte de un sabotaje. «La F es punto, punto, raya, punto; la P, punto, raya, raya, punto. ¡Rápido, que se pierde la señal!».",
+      "newChars": ["F", "P"],
+      "finalMessage": { "from": "Transmisor anónimo", "text": "FARO EN PELIGRO" },
+      "debriefing": "Revisáis la lámpara del faro y encontráis un tornillo aflojado a propósito. Alguien de dentro conoce el faro tan bien como vosotros."
+    },
+    {
+      "id": "c2m5", "type": "LESSON", "title": "El cable cortado", "noise": 0.25,
+      "briefing": "El cable del telégrafo con el continente aparece cortado. Solo os queda la radio. «La C es raya, punto, raya, punto; la B, raya y tres puntos».",
+      "newChars": ["C", "B"],
+      "finalMessage": { "from": "Gaviota Gris", "text": "CABLE CORTADO EN LA BAHIA" },
+      "debriefing": "Gaviota Gris lo confirma desde su barco: el corte es limpio, hecho con herramienta. La isla está más sola que nunca."
+    },
+    {
+      "id": "c2m6", "type": "LESSON", "title": "El viejo muelle", "noise": 0.25,
+      "briefing": "Os citan en el muelle abandonado del norte. «La J es punto y tres rayas; la V, tres puntos y una raya, como el principio de una sinfonía famosa».",
+      "newChars": ["J", "V"],
+      "finalMessage": { "from": "Gaviota Gris", "text": "VIAJE AL VIEJO MUELLE" },
+      "debriefing": "En el muelle solo hay un buzón oxidado con un papel dentro: una lista de frecuencias y un dibujo de un reloj."
+    },
+    {
+      "id": "c2r2", "type": "REVIEW", "title": "La nueva clave", "noise": 0.25, "timeLimitSeconds": 15,
+      "briefing": "La red cambia de clave. A partir de ahora hay que descifrar contra reloj: si tardas, el mensaje se pierde. Repasa todas las letras.",
+      "finalMessage": { "from": "Gaviota Gris", "text": "NUEVA CLAVE DE PASO" },
+      "debriefing": "Tienes la nueva clave. Remedios la guarda dentro de un libro de recetas: «Nadie busca secretos entre lentejas»."
+    },
+    {
+      "id": "c2m7", "type": "LESSON", "title": "Existe un topo", "noise": 0.35, "timeLimitSeconds": 15,
+      "briefing": "Gaviota Gris trae malas noticias. «La X es raya, punto, punto, raya; la Y, raya, punto, raya, raya. Y lo que te voy a decir no puede salir de esta sala».",
+      "newChars": ["X", "Y"],
+      "finalMessage": { "from": "Gaviota Gris", "text": "YA EXISTE UN TOPO" },
+      "debriefing": "Alguien de la red pasa información al otro lado. Remedios mira hacia el pueblo, donde se encienden las primeras luces."
+    },
+    {
+      "id": "c2m8", "type": "LESSON", "title": "Zona prohibida", "noise": 0.35, "timeLimitSeconds": 15,
+      "briefing": "Hay que cerrar el acceso a la cala. «La Z es raya, raya, punto, punto; la Q, raya, raya, punto, raya. Con estas ya conoces todas las letras».",
+      "newChars": ["Z", "Q"],
+      "finalMessage": { "from": "Remedios", "text": "QUE NADIE CRUCE LA ZONA" },
+      "debriefing": "Has aprendido todo el alfabeto. Remedios te da una palmada en la espalda: «Ya eres operador. Ahora, a por los números»."
+    },
+    {
+      "id": "c2r3", "type": "REVIEW", "title": "El círculo se cierra", "noise": 0.35, "timeLimitSeconds": 12,
+      "briefing": "Las transmisiones del topo son cada vez más frecuentes. Repasa todo el alfabeto, rápido y con interferencias.",
+      "finalMessage": { "from": "Gaviota Gris", "text": "EL TOPO ESTA MUY CERCA" },
+      "debriefing": "Triangulando las señales, Gaviota Gris marca en el mapa un punto: el puerto del pueblo."
+    },
+    {
+      "id": "c2n1", "type": "LESSON", "title": "Agente doce", "noise": 0.35, "timeLimitSeconds": 12,
+      "briefing": "Los espías hablan con números. «El 1 es un punto y cuatro rayas; el 2, dos puntos y tres rayas. Fíjate: los números siempre tienen cinco elementos».",
+      "newChars": ["1", "2"],
+      "finalMessage": { "from": "Gaviota Gris", "text": "AGENTE 12 EN POSICION" },
+      "debriefing": "El agente 12 vigila el puerto. Gaviota Gris os pide paciencia: «Los topos caen solos cuando se ponen nerviosos»."
+    },
+    {
+      "id": "c2n2", "type": "LESSON", "title": "La cita", "noise": 0.35, "timeLimitSeconds": 12,
+      "briefing": "Interceptas una cita entre el topo y su contacto. «El 3 son tres puntos y dos rayas; el 4, cuatro puntos y una raya».",
+      "newChars": ["3", "4"],
+      "finalMessage": { "from": "Transmisor desconocido", "text": "CITA A LAS 4 EN EL MUELLE 3" },
+      "debriefing": "A las cuatro, en el muelle 3, solo aparece un gato. Alguien les avisó. El topo sabe que lo buscáis."
+    },
+    {
+      "id": "c2n3", "type": "LESSON", "title": "El tren de las cinco", "noise": 0.35, "timeLimitSeconds": 12,
+      "briefing": "El contacto del topo intenta huir en el tren del continente. «El 5 son cinco puntos; el 6, una raya y cuatro puntos».",
+      "newChars": ["5", "6"],
+      "finalMessage": { "from": "Agente 12", "text": "TREN 56 SALE A LAS 5" },
+      "debriefing": "El contacto baja del tren antes de tiempo y se esfuma entre la niebla. Pero se le ha caído una llave pequeña."
+    },
+    {
+      "id": "c2n4", "type": "LESSON", "title": "El casillero", "noise": 0.35, "timeLimitSeconds": 12,
+      "briefing": "La llave abre un casillero de la estación del puerto. «El 7 son dos rayas y tres puntos; el 8, tres rayas y dos puntos».",
+      "newChars": ["7", "8"],
+      "finalMessage": { "from": "Agente 12", "text": "CASILLERO 78" },
+      "debriefing": "En el casillero 78 hay una radio de bolsillo y un recibo de reparación de relojes."
+    },
+    {
+      "id": "c2n5", "type": "LESSON", "title": "La frecuencia", "noise": 0.35, "timeLimitSeconds": 12,
+      "briefing": "La radio del casillero está sintonizada en una frecuencia concreta. «El 9 son cuatro rayas y un punto; el 0, cinco rayas».",
+      "newChars": ["9", "0"],
+      "finalMessage": { "from": "Remedios", "text": "FRECUENCIA 9010" },
+      "debriefing": "En la frecuencia 9010 solo se oye una voz que lee números sin parar. Remedios palidece: «Una estación de números… como en los viejos tiempos»."
+    },
+    {
+      "id": "c2r4", "type": "REVIEW", "title": "Letras y números", "noise": 0.35, "timeLimitSeconds": 12,
+      "briefing": "Hay que enviar el informe a la base con letras y números. Repásalo todo contra reloj.",
+      "finalMessage": { "from": "Remedios", "text": "INFORME 2026 ENVIADO A LA BASE" },
+      "debriefing": "La base responde con una sola palabra: «Esperad». Gaviota Gris ya está en el pueblo."
+    },
+    {
+      "id": "c2x", "type": "LESSON", "title": "La letra de casa (extra)", "optional": true, "noise": 0.35, "timeLimitSeconds": 12,
+      "briefing": "Misión extra. Remedios te enseña una letra que no está en el Morse internacional: «La Ñ es raya, raya, punto, raya, raya. La usamos los de aquí, pero un barco extranjero no la entendería».",
+      "newChars": ["Ñ"],
+      "finalMessage": { "from": "Remedios", "text": "SEÑAL DE ESPAÑA" },
+      "debriefing": "Ahora conoces también la Ñ. Úsala con los tuyos, pero recuerda: en el mar, mejor escribir N."
+    },
+    {
+      "id": "c2f", "type": "FINALE", "title": "El topo", "noise": 0.35, "timeLimitSeconds": 12,
+      "briefing": "Gaviota Gris ha cerrado el puerto. Un último mensaje del topo sale hacia el mar, y esta vez lo interceptas entero.",
+      "finalMessage": { "from": "Gaviota Gris", "text": "EL TOPO ES EL RELOJERO DEL PUERTO" },
+      "debriefing": "El relojero del puerto, el que arreglaba el reloj del faro, enviaba los mensajes escondidos en el tictac de sus relojes. Gaviota Gris se lo lleva en su barco. Esa noche, mirando el cielo desde la torre, ves una luz que parpadea en Morse… y no es una estrella. Continuará en Señal Estelar."
+    }
+  ]
+}

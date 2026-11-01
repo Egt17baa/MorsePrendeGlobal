@@ -22,8 +22,18 @@ object MissionPlanner {
     private const val MAX_DISTRACTOR_TRIES = 50
 
     /** @param boxes cajas de Leitner por carácter: en los repasos se insiste en las letras débiles. */
-    fun plan(mission: Mission, chapter: Chapter, random: Random, boxes: Map<Char, Int> = emptyMap()): List<Exercise> {
-        val pool = Pool(mission, chapter, random, if (mission.type == MissionType.REVIEW) boxes else emptyMap())
+    /**
+     * @param chapters todos los capítulos de la campaña: las letras aprendidas se acumulan entre
+     * capítulos (en el capítulo 2 se siguen usando las del 1).
+     */
+    fun plan(
+        mission: Mission,
+        chapter: Chapter,
+        random: Random,
+        boxes: Map<Char, Int> = emptyMap(),
+        chapters: List<Chapter> = listOf(chapter),
+    ): List<Exercise> {
+        val pool = Pool(mission, chapter, chapters, random, if (mission.type == MissionType.REVIEW) boxes else emptyMap())
         return when (mission.type) {
             MissionType.LESSON -> lesson(mission, pool)
             MissionType.REVIEW -> review(pool)
@@ -55,8 +65,8 @@ object MissionPlanner {
             pool.words(2, short = true).map { Exercise.Send(it) }
 
     /** Letras y palabras disponibles para una misión concreta. */
-    private class Pool(mission: Mission, chapter: Chapter, val random: Random, private val boxes: Map<Char, Int>) {
-        private val learned: List<Char> = ContentValidator.learnedCharsUpTo(listOf(chapter), mission.id).toList()
+    private class Pool(mission: Mission, chapter: Chapter, chapters: List<Chapter>, val random: Random, private val boxes: Map<Char, Int>) {
+        private val learned: List<Char> = ContentValidator.learnedCharsUpTo(chapters, mission.id).toList()
         private val newChars = mission.newChars.toSet()
         private val validWords = chapter.words.filter { w -> w.length > 1 && w.all { it in learned } }.distinct()
 

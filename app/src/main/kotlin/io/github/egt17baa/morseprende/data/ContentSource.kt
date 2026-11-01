@@ -37,7 +37,7 @@ class AssetContentSource internal constructor(private val read: (String) -> Stri
 
     private companion object {
         const val DIR = "content/es"
-        val CHAPTER_FILES = listOf("chapter1.json")
+        val CHAPTER_FILES = listOf("chapter1.json", "chapter2.json")
         const val LIBRARY_FILE = "library.json"
     }
 }

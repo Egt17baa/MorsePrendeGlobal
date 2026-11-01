@@ -66,6 +66,7 @@ class MissionViewModel(
 
     private val mission: Mission?
     private val chapter: Chapter?
+    private val allChapters: List<Chapter>
     private var session: MissionSession?
     private var keyer = KeyerDecoder(DEFAULT_UNIT_MS)
     private var sidetone: Sidetone? = null
@@ -77,8 +78,9 @@ class MissionViewModel(
             val chapters = content.chapters()
             val chapter = chapters.first { ch -> ch.missions.any { it.id == missionId } }
             val m = chapter.missions.first { it.id == missionId }
-            Triple(m, chapter, MissionSession(MissionPlanner.plan(m, chapter, random)))
+            Triple(m, chapter, MissionSession(MissionPlanner.plan(m, chapter, random, chapters = chapters)))
         }
+        allChapters = runCatching { content.chapters() }.getOrDefault(emptyList())
         mission = loaded.getOrNull()?.first
         chapter = loaded.getOrNull()?.second
         val initialSession = loaded.getOrNull()?.third
@@ -105,7 +107,7 @@ class MissionViewModel(
         val m = mission
         val ch = chapter
         // Se planifica al empezar con las cajas de Leitner actuales (los repasos insisten en lo fallado).
-        if (m != null && ch != null) session = MissionSession(MissionPlanner.plan(m, ch, random, boxes.value))
+        if (m != null && ch != null) session = MissionSession(MissionPlanner.plan(m, ch, random, boxes.value, allChapters))
         val prefs = settings.value
         keyer = KeyerDecoder(1200L / prefs.effectiveWpm)
         sidetone = sidetoneFactory.create(prefs)
@@ -228,7 +230,7 @@ class MissionViewModel(
         val m = mission ?: return
         val ch = chapter ?: return
         if (ui.value.phase == MissionPhase.EXERCISE) {
-            val fresh = MissionSession(MissionPlanner.plan(m, ch, random))
+            val fresh = MissionSession(MissionPlanner.plan(m, ch, random, chapters = allChapters))
             session = fresh
             pendingAdvance = false
             ui.value = briefingState(m, fresh)
