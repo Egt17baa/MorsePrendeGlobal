@@ -9,6 +9,9 @@ interface MissionSaveStore {
     suspend fun load(missionId: String): String?
     suspend fun save(missionId: String, json: String)
     suspend fun clear(missionId: String)
+
+    /** Borra todas las partidas a medias (al borrar el progreso). */
+    suspend fun clearAll()
 }
 
 /** Sin guardado (pruebas que no lo necesitan). */
@@ -16,6 +19,7 @@ object NoMissionSaves : MissionSaveStore {
     override suspend fun load(missionId: String): String? = null
     override suspend fun save(missionId: String, json: String) = Unit
     override suspend fun clear(missionId: String) = Unit
+    override suspend fun clearAll() = Unit
 }
 
 /**
@@ -50,6 +54,11 @@ class FileMissionSaveStore(private val dir: File) : MissionSaveStore {
 
     override suspend fun clear(missionId: String) = withContext(Dispatchers.IO) {
         runCatching { fileFor(missionId).delete() }
+        Unit
+    }
+
+    override suspend fun clearAll() = withContext(Dispatchers.IO) {
+        runCatching { dir.listFiles()?.forEach { it.delete() } }
         Unit
     }
 }

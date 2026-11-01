@@ -39,6 +39,9 @@ class AppContainer(context: Context) {
     val economy: io.github.egt17baa.morseprende.data.economy.EconomyRepository by lazy { io.github.egt17baa.morseprende.data.economy.RoomEconomyRepository(database) }
     val activity: io.github.egt17baa.morseprende.data.activity.ActivityRepository by lazy { io.github.egt17baa.morseprende.data.activity.RoomActivityRepository(database) }
     val achievements: io.github.egt17baa.morseprende.data.achievements.AchievementsRepository by lazy { io.github.egt17baa.morseprende.data.achievements.RoomAchievementsRepository(database) }
+    val progressReset: io.github.egt17baa.morseprende.data.ProgressReset by lazy {
+        io.github.egt17baa.morseprende.data.AppProgressReset(database, seenCards, missionSaves, settings)
+    }
     val rewards: io.github.egt17baa.morseprende.rewards.RewardsService by lazy {
         io.github.egt17baa.morseprende.rewards.RewardsService(content, progress, gameRecords, seenCards, economy, activity, achievements)
     }

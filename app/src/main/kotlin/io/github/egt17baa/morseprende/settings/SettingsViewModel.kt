@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 class SettingsViewModel(
     private val repo: SettingsRepository,
     private val outputs: OutputFactory? = null,
+    private val reset: io.github.egt17baa.morseprende.data.ProgressReset? = null,
 ) : ViewModel() {
 
     val state: StateFlow<AppSettings> = repo.settings.stateIn(viewModelScope, SharingStarted.Eagerly, AppSettings())
@@ -28,6 +29,14 @@ class SettingsViewModel(
     fun setLimitFlashes(v: Boolean) = update { it.copy(limitFlashes = v) }
     fun setKeyerMode(mode: KeyerMode) = update { it.copy(keyerMode = mode) }
     fun setVibration(v: Boolean) = update { it.copy(vibration = v) }
+    fun setTextScale(v: Float) = update { it.copy(textScale = v) }
+    fun setHighContrast(v: Boolean) = update { it.copy(highContrast = v) }
+
+    /** Borra todo lo jugado (ver [io.github.egt17baa.morseprende.data.AppProgressReset]). */
+    fun resetProgress() {
+        val r = reset ?: return
+        viewModelScope.launch { r.resetAll() }
+    }
 
     /** Reproduce "PARIS" con los ajustes actuales. */
     fun testSound() {

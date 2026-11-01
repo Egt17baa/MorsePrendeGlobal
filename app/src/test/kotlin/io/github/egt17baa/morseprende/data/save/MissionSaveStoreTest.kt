@@ -19,6 +19,9 @@ class MissionSaveStoreTest {
         assertNull(store.load("c1m3"))
         store.clear("c1m2")
         assertNull(store.load("c1m2"))
+        store.save("a", "1"); store.save("b", "2")
+        store.clearAll()
+        assertNull(store.load("a")); assertNull(store.load("b"))
     }
 
     @Test fun survives_a_new_instance() = runTest {
@@ -34,4 +37,5 @@ class InMemoryMissionSaveStore : MissionSaveStore {
     override suspend fun load(missionId: String): String? = saved[missionId]
     override suspend fun save(missionId: String, json: String) { saved[missionId] = json }
     override suspend fun clear(missionId: String) { saved.remove(missionId) }
+    override suspend fun clearAll() { saved.clear() }
 }

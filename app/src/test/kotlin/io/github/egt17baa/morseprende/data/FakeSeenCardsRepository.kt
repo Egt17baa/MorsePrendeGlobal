@@ -7,4 +7,5 @@ class FakeSeenCardsRepository(initial: Set<String> = emptySet()) : SeenCardsRepo
     private val state = MutableStateFlow(initial)
     override val seen: StateFlow<Set<String>> = state
     override suspend fun markSeen(cardId: String) { state.value = state.value + cardId }
+    override suspend fun clear() { state.value = emptySet() }
 }

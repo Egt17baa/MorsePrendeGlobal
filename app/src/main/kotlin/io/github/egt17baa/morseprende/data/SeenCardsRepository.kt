@@ -19,6 +19,9 @@ import java.io.File
 interface SeenCardsRepository {
     val seen: Flow<Set<String>>
     suspend fun markSeen(cardId: String)
+
+    /** Olvida todas las fichas vistas (al borrar el progreso). */
+    suspend fun clear()
 }
 
 private val Context.libraryDataStore: DataStore<Preferences> by preferencesDataStore(name = "library")
@@ -34,6 +37,10 @@ class DataStoreSeenCardsRepository private constructor(
 
     override suspend fun markSeen(cardId: String) {
         dataStore.edit { it[SEEN_CARDS] = (it[SEEN_CARDS] ?: emptySet()) + cardId }
+    }
+
+    override suspend fun clear() {
+        dataStore.edit { it.remove(SEEN_CARDS) }
     }
 
     fun close() {

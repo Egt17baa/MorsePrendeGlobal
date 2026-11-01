@@ -133,7 +133,7 @@ fun AppNavHost(container: AppContainer) {
         }
         composable(Routes.SETTINGS) {
             val vm: SettingsViewModel = viewModel(
-                factory = viewModelFactory { initializer { SettingsViewModel(container.settings, container.outputs) } },
+                factory = viewModelFactory { initializer { SettingsViewModel(container.settings, container.outputs, container.progressReset) } },
             )
             SettingsScreen(vm, onBack = dropUnlessResumed { nav.popBackStack() })
         }

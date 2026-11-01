@@ -23,6 +23,10 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.testTag
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -111,13 +115,69 @@ fun SettingsScreen(viewModel: SettingsViewModel, onBack: () -> Unit) {
             }
             Help(stringResource(R.string.settings_keyer_help))
 
-            SectionTitle(stringResource(R.string.settings_safety_section))
+            SectionTitle(stringResource(R.string.settings_accessibility_section))
+            Text(stringResource(R.string.settings_text_size))
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                val labels = listOf(R.string.settings_text_normal, R.string.settings_text_large, R.string.settings_text_huge)
+                AppSettings.TEXT_SCALES.zip(labels).forEach { (scale, label) ->
+                    FilterChip(
+                        selected = kotlin.math.abs(s.textScale - scale) < 0.01f,
+                        onClick = { viewModel.setTextScale(scale) },
+                        label = { Text(stringResource(label)) },
+                    )
+                }
+            }
+            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(R.string.settings_high_contrast), modifier = Modifier.weight(1f))
+                Switch(
+                    checked = s.highContrast,
+                    onCheckedChange = viewModel::setHighContrast,
+                    modifier = Modifier.testTag("settings_high_contrast"),
+                )
+            }
             Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Text(stringResource(R.string.settings_limit_flashes), modifier = Modifier.weight(1f))
                 Switch(checked = s.limitFlashes, onCheckedChange = viewModel::setLimitFlashes)
             }
             Help(stringResource(R.string.settings_limit_flashes_help))
+
+            SectionTitle(stringResource(R.string.settings_progress_section))
+            ResetProgressButton(viewModel::resetProgress)
+
+            SectionTitle(stringResource(R.string.settings_about_section))
+            val context = androidx.compose.ui.platform.LocalContext.current
+            val version = remember {
+                runCatching { context.packageManager.getPackageInfo(context.packageName, 0).versionName }.getOrNull().orEmpty()
+            }
+            Help(stringResource(R.string.settings_about_version, version))
+            Help(stringResource(R.string.settings_about_font))
+            Help(stringResource(R.string.settings_about_privacy))
         }
+    }
+}
+
+/** «Borrar progreso» siempre pide confirmación. */
+@Composable
+private fun ResetProgressButton(onConfirm: () -> Unit) {
+    var asking by remember { mutableStateOf(false) }
+    androidx.compose.material3.OutlinedButton(onClick = { asking = true }, modifier = Modifier.fillMaxWidth()) {
+        Text(stringResource(R.string.settings_reset), color = MaterialTheme.colorScheme.error)
+    }
+    Help(stringResource(R.string.settings_reset_help))
+    if (asking) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { asking = false },
+            title = { Text(stringResource(R.string.settings_reset_title)) },
+            text = { Text(stringResource(R.string.settings_reset_body)) },
+            confirmButton = {
+                androidx.compose.material3.TextButton(onClick = { asking = false; onConfirm() }) {
+                    Text(stringResource(R.string.settings_reset_confirm), color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                androidx.compose.material3.TextButton(onClick = { asking = false }) { Text(stringResource(R.string.settings_reset_cancel)) }
+            },
+        )
     }
 }
 
