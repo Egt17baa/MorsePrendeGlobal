@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.egt17baa.morseprende.R
@@ -21,7 +22,7 @@ fun RewardPanel(reward: RewardSummary?) {
     if (reward == null) return
     Card(Modifier.fillMaxWidth()) {
         Column(Modifier.fillMaxWidth().padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text(stringResource(R.string.reward_destellos, reward.destellos), style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.primary)
+            Text(pluralStringResource(R.plurals.reward_destellos, reward.destellos, reward.destellos), style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.primary)
             if (reward.dailyBonus) Text(stringResource(R.string.reward_daily), style = MaterialTheme.typography.bodyMedium)
             reward.newAchievements.forEach { id ->
                 Text(stringResource(R.string.reward_achievement, stringResource(achievementTitle(id))), style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.secondary)

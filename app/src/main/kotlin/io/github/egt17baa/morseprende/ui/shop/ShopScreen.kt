@@ -31,6 +31,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -75,7 +76,7 @@ fun ShopContent(state: ShopUiState, actions: ShopActions, onBack: () -> Unit) {
             Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Text(stringResource(R.string.shop_balance, state.balance), style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.primary)
+            Text(pluralStringResource(R.plurals.shop_balance, state.balance, state.balance), style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.primary)
             Text(stringResource(R.string.shop_intro), style = MaterialTheme.typography.bodyMedium)
             Message(state, actions.dismiss)
             ItemCategory.entries.forEach { category ->
@@ -91,7 +92,7 @@ private fun Message(state: ShopUiState, dismiss: () -> Unit) {
     val result = state.lastResult
     val text = when {
         state.newAchievements.isNotEmpty() -> stringResource(R.string.reward_achievement, stringResource(achievementTitle(state.newAchievements.first())))
-        result is BuyResult.NotEnough -> stringResource(R.string.shop_not_enough, result.missing)
+        result is BuyResult.NotEnough -> pluralStringResource(R.plurals.shop_not_enough, result.missing, result.missing)
         result == BuyResult.Bought -> stringResource(R.string.shop_bought)
         else -> return
     }

@@ -4,16 +4,17 @@ Juego educativo para Android que enseña **código Morse jugando**. Eres el fare
 barcos, espías y señales del espacio te hablan en Morse, y para avanzar tienes que aprender a
 recibir y a enviar. Totalmente gratis, sin anuncios y sin conexión a internet.
 
-> Estado: **Etapa 3a**: capítulo 1 «El Faro» jugable, repaso inteligente (cajas de Leitner),
-> práctica libre con tres minijuegos (Tormenta de señales, Destello rápido, Interceptación) y
-> récords, biblioteca, traductor y ajustes. Próximo: Destellos, tienda, logros y racha (3b) y
-> capítulos «Operación Sombra» y «Señal Estelar» (4).
+> Estado: **Etapa 3b**: capítulo 1 «El Faro» jugable, repaso inteligente, tres minijuegos con
+> récords, Destellos con tienda estética (luz, timbre, manipulador, decoración de la isla), logros,
+> racha suave, biblioteca, traductor y ajustes. Próximo: capítulos «Operación Sombra» y «Señal
+> Estelar» (Etapa 4).
 
 - Diseño: [`docs/superpowers/specs/2026-10-31-juego-morse-faro-design.md`](docs/superpowers/specs/2026-10-31-juego-morse-faro-design.md)
 - Plan de la etapa 1: [`docs/superpowers/plans/2026-10-31-etapa-1-nucleo-y-traductor.md`](docs/superpowers/plans/2026-10-31-etapa-1-nucleo-y-traductor.md)
 - Plan de la etapa 2: [`docs/superpowers/plans/2026-10-31-etapa-2-faro-capitulo-1.md`](docs/superpowers/plans/2026-10-31-etapa-2-faro-capitulo-1.md)
 - Plan de la etapa 3a: [`docs/superpowers/plans/2026-10-31-etapa-3a-repaso-y-minijuegos.md`](docs/superpowers/plans/2026-10-31-etapa-3a-repaso-y-minijuegos.md)
-- Pruebas en el móvil: [`docs/pruebas/etapa-3a.md`](docs/pruebas/etapa-3a.md)
+- Plan de la etapa 3b: [`docs/superpowers/plans/2026-11-01-etapa-3b-destellos-tienda-logros-racha.md`](docs/superpowers/plans/2026-11-01-etapa-3b-destellos-tienda-logros-racha.md)
+- Pruebas en el móvil: [`docs/pruebas/etapa-3b.md`](docs/pruebas/etapa-3b.md)
 - Fuentes de la biblioteca: [`docs/biblioteca/fuentes.md`](docs/biblioteca/fuentes.md)
 
 ## Compilar

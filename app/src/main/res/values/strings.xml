@@ -110,7 +110,10 @@
     <string name="hub_balance">✦ %1$d</string>
     <string name="hub_streak">☀ Racha: %1$d</string>
     <string name="hub_achievements">Logros</string>
-    <string name="reward_destellos">+%1$d Destellos</string>
+    <plurals name="reward_destellos">
+        <item quantity="one">+%1$d Destello</item>
+        <item quantity="other">+%1$d Destellos</item>
+    </plurals>
     <string name="reward_daily">Incluye el bono del día (+5)</string>
     <string name="reward_achievement">Logro conseguido: %1$s</string>
     <string name="ach_first_sos">Primer SOS</string>
@@ -138,7 +141,10 @@
 
     <!-- Tienda -->
     <string name="shop_title">Tienda del faro</string>
-    <string name="shop_balance">✦ %1$d Destellos</string>
+    <plurals name="shop_balance">
+        <item quantity="one">✦ %1$d Destello</item>
+        <item quantity="other">✦ %1$d Destellos</item>
+    </plurals>
     <string name="shop_intro">Los Destellos se ganan jugando y solo sirven para decorar: no dan ventajas ni se compran con dinero.</string>
     <string name="shop_cat_lamp">Luz del faro</string>
     <string name="shop_cat_tone">Sonido del pitido</string>
@@ -151,7 +157,10 @@
     <string name="shop_remove">Quitar</string>
     <string name="shop_listen">Escuchar</string>
     <string name="shop_bought">¡Comprado!</string>
-    <string name="shop_not_enough">Te faltan %1$d Destellos.</string>
+    <plurals name="shop_not_enough">
+        <item quantity="one">Te falta %1$d Destello.</item>
+        <item quantity="other">Te faltan %1$d Destellos.</item>
+    </plurals>
     <string name="shop_ok">Vale</string>
     <string name="item_lamp_cream">Crema de faro</string>
     <string name="item_lamp_emerald">Verde esmeralda</string>

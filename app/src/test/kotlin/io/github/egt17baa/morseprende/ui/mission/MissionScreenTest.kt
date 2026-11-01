@@ -156,7 +156,7 @@ class MissionScreenTest {
             reward = io.github.egt17baa.morseprende.rewards.RewardSummary(40, dailyBonus = true, newAchievements = listOf("first_sos")),
         )
         compose.setContent { MissionContent(state, Recorder()) }
-        compose.onNodeWithText(context.getString(R.string.reward_destellos, 40)).performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText(context.resources.getQuantityString(R.plurals.reward_destellos, 40, 40)).performScrollTo().assertIsDisplayed()
         compose.onNodeWithText(context.getString(R.string.reward_daily)).performScrollTo().assertIsDisplayed()
         compose.onNodeWithText(context.getString(R.string.reward_achievement, context.getString(R.string.ach_first_sos))).performScrollTo().assertIsDisplayed()
     }
