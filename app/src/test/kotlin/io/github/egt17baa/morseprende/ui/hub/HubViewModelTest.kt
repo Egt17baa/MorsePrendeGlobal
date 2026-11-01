@@ -71,4 +71,23 @@ class HubViewModelTest {
     @Test fun content_error_sets_error() = runTest {
         assertTrue(vm(fail = true).state.value.error)
     }
+
+    @Test fun hub_shows_balance_streak_and_cosmetics() = runTest {
+        Dispatchers.setMain(UnconfinedTestDispatcher(testScheduler))
+        val today = java.time.LocalDate.of(2026, 11, 5)
+        val vm = HubViewModel(
+            FakeContentSource(listOf(FakeContentSource.realChapter1), cards), FakeProgressRepository(), FakeSeenCardsRepository(),
+            economy = io.github.egt17baa.morseprende.data.FakeEconomyRepository(balance = 85),
+            activity = io.github.egt17baa.morseprende.data.FakeActivityRepository(setOf(today, today.minusDays(1))),
+            settings = io.github.egt17baa.morseprende.settings.FakeSettingsRepository(
+                io.github.egt17baa.morseprende.settings.AppSettings(lampColor = "lamp_polar", decorations = setOf("decor_gulls")),
+            ),
+            today = { today },
+        )
+        val s = vm.state.value
+        assertEquals(85, s.balance)
+        assertEquals(2, s.streak)
+        assertEquals("lamp_polar", s.lampColor)
+        assertEquals(setOf("decor_gulls"), s.decorations)
+    }
 }

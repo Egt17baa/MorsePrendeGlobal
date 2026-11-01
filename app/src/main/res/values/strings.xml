@@ -105,6 +105,11 @@
     <string name="game_intercept_desc">Copia palabras cada vez más rápidas. Tres fallos y se acabó.</string>
 
     <!-- Recompensas y logros -->
+    <string name="achievements_title">Logros (%1$d/%2$d)</string>
+    <string name="achievements_unlocked_on">Conseguido el %1$s</string>
+    <string name="hub_balance">✦ %1$d</string>
+    <string name="hub_streak">☀ Racha: %1$d</string>
+    <string name="hub_achievements">Logros</string>
     <string name="reward_destellos">+%1$d Destellos</string>
     <string name="reward_daily">Incluye el bono del día (+5)</string>
     <string name="reward_achievement">Logro conseguido: %1$s</string>

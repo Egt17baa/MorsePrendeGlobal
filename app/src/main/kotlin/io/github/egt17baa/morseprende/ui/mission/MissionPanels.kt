@@ -157,7 +157,7 @@ private fun SendPanel(e: Exercise.Send, state: MissionUiState, actions: MissionA
     )
     Text(stringResource(R.string.mission_attempts, state.attemptsLeft), style = MaterialTheme.typography.labelLarge)
     if (state.feedback == null) {
-        KeyerPad(state.keyerMode, actions)
+        KeyerPad(state.keyerMode, actions, io.github.egt17baa.morseprende.ui.theme.Cosmetics.keyerRing(state.keyerSkin))
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             OutlinedButton(onClick = actions::deleteLast, modifier = Modifier.weight(1f)) { Text(stringResource(R.string.mission_delete)) }
             TextButton(onClick = actions::replay, modifier = Modifier.weight(1f)) { Text(stringResource(R.string.mission_listen_again)) }

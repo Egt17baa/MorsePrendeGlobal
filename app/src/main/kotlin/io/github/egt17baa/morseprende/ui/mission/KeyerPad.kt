@@ -37,15 +37,15 @@ import io.github.egt17baa.morseprende.settings.KeyerMode
 
 /** Manipulador: un botón grande que se mantiene pulsado, o dos botones punto | raya. */
 @Composable
-fun KeyerPad(mode: KeyerMode, actions: MissionActions) {
+fun KeyerPad(mode: KeyerMode, actions: MissionActions, ring: androidx.compose.ui.graphics.Color = io.github.egt17baa.morseprende.ui.theme.Coral) {
     when (mode) {
-        KeyerMode.ONE_BUTTON -> StraightKey(actions)
+        KeyerMode.ONE_BUTTON -> StraightKey(actions, ring)
         KeyerMode.TWO_BUTTONS -> TwoButtonKeys(actions)
     }
 }
 
 @Composable
-private fun StraightKey(actions: MissionActions) {
+private fun StraightKey(actions: MissionActions, ring: androidx.compose.ui.graphics.Color) {
     val haptics = LocalHapticFeedback.current
     var pressed by remember { mutableStateOf(false) }
     val description = stringResource(R.string.mission_key)
@@ -54,7 +54,7 @@ private fun StraightKey(actions: MissionActions) {
             modifier = Modifier
                 .size(160.dp)
                 .background(if (pressed) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface, CircleShape)
-                .border(6.dp, MaterialTheme.colorScheme.secondary, CircleShape)
+                .border(6.dp, ring, CircleShape)
                 .semantics { contentDescription = description }
                 .pointerInput(Unit) {
                     // Se sigue el dedo hasta que se levanta, aunque se mueva o salga del círculo, y se

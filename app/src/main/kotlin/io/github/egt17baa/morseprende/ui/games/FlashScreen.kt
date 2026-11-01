@@ -23,7 +23,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.egt17baa.morseprende.R
-import io.github.egt17baa.morseprende.ui.theme.BeamCream
 import io.github.egt17baa.morseprende.ui.theme.Coral
 import io.github.egt17baa.morseprende.ui.theme.Sand
 import io.github.egt17baa.morseprende.ui.theme.SeaMist
@@ -52,7 +51,7 @@ fun FlashContent(state: FlashUiState, onStart: () -> Unit, onAnswer: (Char) -> U
                     Text(stringResource(R.string.game_round, state.round, 10), style = MaterialTheme.typography.titleMedium)
                     Text(stringResource(R.string.game_score, state.score), style = MaterialTheme.typography.titleMedium)
                 }
-                FlashingLighthouse(state.lampOn, Modifier.fillMaxWidth().weight(1f).heightIn(min = 140.dp))
+                FlashingLighthouse(state.lampOn, io.github.egt17baa.morseprende.ui.theme.Cosmetics.lampColor(state.lampColor), Modifier.fillMaxWidth().weight(1f).heightIn(min = 140.dp))
                 Text(stringResource(R.string.game_flash_speed, state.flashWpm), style = MaterialTheme.typography.labelMedium)
                 if (state.options.isEmpty()) {
                     Text(stringResource(R.string.game_flash_watch), style = MaterialTheme.typography.titleMedium)
@@ -74,7 +73,7 @@ fun FlashContent(state: FlashUiState, onStart: () -> Unit, onAnswer: (Char) -> U
 
 /** Faro cuya linterna parpadea al ritmo del Morse (zona pequeña de la pantalla, no la linterna real). */
 @Composable
-private fun FlashingLighthouse(lampOn: Boolean, modifier: Modifier) {
+private fun FlashingLighthouse(lampOn: Boolean, lampColor: Color, modifier: Modifier) {
     Canvas(modifier) {
         val h = minOf(size.height, size.width * 1.4f)
         val cx = size.width / 2
@@ -102,9 +101,9 @@ private fun FlashingLighthouse(lampOn: Boolean, modifier: Modifier) {
         if (lampOn) {
             // Halo contenido: el destello ocupa una zona pequeña de la pantalla (fotosensibilidad).
             val glow = h * 0.2f
-            drawCircle(Brush.radialGradient(listOf(BeamCream, Color.Transparent), center = lampCenter, radius = glow), radius = glow, center = lampCenter)
+            drawCircle(Brush.radialGradient(listOf(lampColor, Color.Transparent), center = lampCenter, radius = glow), radius = glow, center = lampCenter)
         }
-        drawRect(if (lampOn) BeamCream else SeaMist, Offset(cx - halfTop * 0.9f, lanternTop), Size(halfTop * 1.8f, lanternHeight))
+        drawRect(if (lampOn) lampColor else SeaMist, Offset(cx - halfTop * 0.9f, lanternTop), Size(halfTop * 1.8f, lanternHeight))
         drawPath(
             Path().apply { moveTo(cx - halfTop * 1.3f, lanternTop); lineTo(cx, lanternTop - h * 0.09f); lineTo(cx + halfTop * 1.3f, lanternTop); close() },
             Coral,

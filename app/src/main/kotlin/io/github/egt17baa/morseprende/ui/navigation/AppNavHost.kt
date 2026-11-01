@@ -36,6 +36,8 @@ object Routes {
     const val HUB = "hub"
     const val LIBRARY = "library"
     const val PRACTICE = "practice"
+    const val SHOP = "shop"
+    const val ACHIEVEMENTS = "achievements"
     const val GAME = "game/{id}"
 
     fun game(id: GameId) = "game/${id.name}"
@@ -52,7 +54,7 @@ fun AppNavHost(container: AppContainer) {
     NavHost(navController = nav, startDestination = Routes.HUB) {
         composable(Routes.HUB) {
             val vm: HubViewModel = viewModel(
-                factory = viewModelFactory { initializer { HubViewModel(container.content, container.progress, container.seenCards) } },
+                factory = viewModelFactory { initializer { HubViewModel(container.content, container.progress, container.seenCards, container.economy, container.activity, container.settings) } },
             )
             HubScreen(
                 vm,
@@ -60,6 +62,8 @@ fun AppNavHost(container: AppContainer) {
                     onMission = { id -> nav.navigate(Routes.mission(id)) { launchSingleTop = true } },
                     onLibrary = dropUnlessResumed { nav.navigate(Routes.LIBRARY) },
                     onPractice = dropUnlessResumed { nav.navigate(Routes.PRACTICE) },
+                    onShop = dropUnlessResumed { nav.navigate(Routes.SHOP) },
+                    onAchievements = dropUnlessResumed { nav.navigate(Routes.ACHIEVEMENTS) },
                     onTranslator = dropUnlessResumed { nav.navigate(Routes.TRANSLATOR) },
                     onSettings = dropUnlessResumed { nav.navigate(Routes.SETTINGS) },
                 ),
@@ -87,7 +91,7 @@ fun AppNavHost(container: AppContainer) {
         }
         composable(Routes.LIBRARY) {
             val vm: LibraryViewModel = viewModel(
-                factory = viewModelFactory { initializer { LibraryViewModel(container.content, container.progress, container.seenCards) } },
+                factory = viewModelFactory { initializer { LibraryViewModel(container.content, container.progress, container.seenCards, container.rewards) } },
             )
             LibraryScreen(vm, onBack = dropUnlessResumed { nav.popBackStack() })
         }
@@ -106,6 +110,20 @@ fun AppNavHost(container: AppContainer) {
                 GameId.FLASH -> FlashScreen(viewModel(key = "flash", factory = viewModelFactory { initializer { FlashViewModel(deps) } }), onBack)
                 GameId.INTERCEPT -> InterceptScreen(viewModel(key = "intercept", factory = viewModelFactory { initializer { InterceptViewModel(deps) } }), onBack)
             }
+        }
+        composable(Routes.SHOP) {
+            val vm: io.github.egt17baa.morseprende.ui.shop.ShopViewModel = viewModel(
+                factory = viewModelFactory {
+                    initializer { io.github.egt17baa.morseprende.ui.shop.ShopViewModel(container.economy, container.settings, container.rewards, container.outputs) }
+                },
+            )
+            io.github.egt17baa.morseprende.ui.shop.ShopScreen(vm, onBack = dropUnlessResumed { nav.popBackStack() })
+        }
+        composable(Routes.ACHIEVEMENTS) {
+            val vm: io.github.egt17baa.morseprende.ui.achievements.AchievementsViewModel = viewModel(
+                factory = viewModelFactory { initializer { io.github.egt17baa.morseprende.ui.achievements.AchievementsViewModel(container.achievements) } },
+            )
+            io.github.egt17baa.morseprende.ui.achievements.AchievementsScreen(vm, onBack = dropUnlessResumed { nav.popBackStack() })
         }
         composable(Routes.SETTINGS) {
             val vm: SettingsViewModel = viewModel(

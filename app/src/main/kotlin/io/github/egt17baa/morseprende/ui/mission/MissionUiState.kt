@@ -31,4 +31,6 @@ data class MissionUiState(
     val newChars: Set<Char> = emptySet(),
     /** Destellos, bono diario y logros ganados al terminar (null hasta entonces). */
     val reward: RewardSummary? = null,
+    /** Aro del manipulador equipado en la tienda. */
+    val keyerSkin: String = "key_coral",
 )

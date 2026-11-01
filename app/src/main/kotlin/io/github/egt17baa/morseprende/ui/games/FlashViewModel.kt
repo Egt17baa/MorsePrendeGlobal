@@ -32,13 +32,14 @@ data class FlashUiState(
     val lastCorrect: Boolean? = null,
     val averageReactionMs: Int = 0,
     val isNewRecord: Boolean = false,
+    val lampColor: String = "lamp_cream",
     val reward: io.github.egt17baa.morseprende.rewards.RewardSummary? = null,
 )
 
 class FlashViewModel(deps: GameDeps) : GameViewModelBase(deps, GameId.FLASH) {
 
     private val ui = MutableStateFlow(FlashUiState(phase = idlePhase()))
-    val state: StateFlow<FlashUiState> = combine(ui, settings) { s, prefs -> s.copy(flashWpm = flashWpm(prefs)) }
+    val state: StateFlow<FlashUiState> = combine(ui, settings) { s, prefs -> s.copy(flashWpm = flashWpm(prefs), lampColor = prefs.lampColor) }
         .stateIn(viewModelScope, SharingStarted.Eagerly, ui.value.copy(flashWpm = flashWpm(settings.value)))
 
     private var game: FlashGame? = null

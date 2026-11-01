@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
@@ -57,6 +58,8 @@ data class HubCallbacks(
     val onPractice: () -> Unit = {},
     val onTranslator: () -> Unit = {},
     val onSettings: () -> Unit = {},
+    val onShop: () -> Unit = {},
+    val onAchievements: () -> Unit = {},
 )
 
 @Composable
@@ -78,7 +81,17 @@ fun HubContent(state: HubUiState, callbacks: HubCallbacks) {
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Text(stringResource(R.string.app_name), style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.primary)
-            LighthouseScene(state.glow, Modifier.fillMaxWidth().height(220.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                AssistChip(onClick = callbacks.onShop, label = { Text(stringResource(R.string.hub_balance, state.balance)) })
+                AssistChip(onClick = {}, label = { Text(stringResource(R.string.hub_streak, state.streak)) })
+                AssistChip(onClick = callbacks.onAchievements, label = { Text(stringResource(R.string.hub_achievements)) })
+            }
+            LighthouseScene(
+                state.glow,
+                Modifier.fillMaxWidth().height(220.dp),
+                lampColor = io.github.egt17baa.morseprende.ui.theme.Cosmetics.lampColor(state.lampColor),
+                decorations = state.decorations,
+            )
             if (state.error) {
                 Text(stringResource(R.string.hub_error), style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
                 return@Column

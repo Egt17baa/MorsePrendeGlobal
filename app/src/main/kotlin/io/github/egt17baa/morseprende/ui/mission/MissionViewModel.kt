@@ -61,7 +61,7 @@ class MissionViewModel(
     private val ui = MutableStateFlow(MissionUiState())
 
     val state: StateFlow<MissionUiState> = combine(ui, player.isPlaying, this.settings) { s, playing, prefs ->
-        s.copy(isPlaying = playing, keyerMode = prefs.keyerMode)
+        s.copy(isPlaying = playing, keyerMode = prefs.keyerMode, keyerSkin = prefs.keyerSkin)
     }.stateIn(viewModelScope, SharingStarted.Eagerly, ui.value)
 
     private val mission: Mission?

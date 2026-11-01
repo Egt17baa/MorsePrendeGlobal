@@ -33,6 +33,7 @@ class LibraryViewModel(
     content: ContentSource,
     progress: ProgressRepository,
     private val seenCards: SeenCardsRepository,
+    private val rewards: io.github.egt17baa.morseprende.rewards.RewardsService? = null,
 ) : ViewModel() {
 
     private val cards: List<LibraryCard>? = runCatching { content.libraryCards() }.getOrNull()
@@ -63,7 +64,10 @@ class LibraryViewModel(
     fun open(cardId: String) {
         if (cardId !in unlockedIds) return
         opened.value = cards?.firstOrNull { it.id == cardId } ?: return
-        viewModelScope.launch { seenCards.markSeen(cardId) }
+        viewModelScope.launch {
+            seenCards.markSeen(cardId)
+            rewards?.refreshAchievements()
+        }
     }
 
     fun close() {

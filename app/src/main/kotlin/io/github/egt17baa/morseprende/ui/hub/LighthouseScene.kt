@@ -28,7 +28,12 @@ import io.github.egt17baa.morseprende.ui.theme.SeaNight
  * @param glow progreso del capítulo (0..1): el haz gana brillo y alcance al avanzar.
  */
 @Composable
-fun LighthouseScene(glow: Float, modifier: Modifier = Modifier) {
+fun LighthouseScene(
+    glow: Float,
+    modifier: Modifier = Modifier,
+    lampColor: Color = BeamCream,
+    decorations: Set<String> = emptySet(),
+) {
     val strength = 0.3f + 0.7f * glow.coerceIn(0f, 1f)
     val transition = rememberInfiniteTransition(label = "beam")
     val angle by transition.animateFloat(
@@ -44,8 +49,9 @@ fun LighthouseScene(glow: Float, modifier: Modifier = Modifier) {
         val towerTop = size.height * 0.36f
         val cx = size.width / 2
         val lantern = Offset(cx, towerTop - size.height * 0.05f)
-        rotate(angle, pivot = lantern) { drawBeam(lantern, strength) }
-        drawTower(cx, towerTop, towerBottom)
+        rotate(angle, pivot = lantern) { drawBeam(lantern, strength, lampColor) }
+        drawDecorations(decorations, cx, towerTop, lantern)
+        drawTower(cx, towerTop, towerBottom, lampColor)
     }
 }
 
@@ -67,7 +73,7 @@ private fun DrawScope.drawSea() {
     drawPath(wave, SeaMist)
 }
 
-private fun DrawScope.drawBeam(lantern: Offset, strength: Float) {
+private fun DrawScope.drawBeam(lantern: Offset, strength: Float, lampColor: Color) {
     val length = size.width * (0.25f + 0.25f * strength)
     val spread = size.height * 0.16f
     fun beam(direction: Float) = Path().apply {
@@ -79,7 +85,7 @@ private fun DrawScope.drawBeam(lantern: Offset, strength: Float) {
     }
     val brush = { direction: Float ->
         Brush.horizontalGradient(
-            listOf(BeamCream.copy(alpha = 0.6f * strength), Color.Transparent),
+            listOf(lampColor.copy(alpha = 0.6f * strength), Color.Transparent),
             startX = lantern.x,
             endX = lantern.x + direction * length,
         )
@@ -87,15 +93,15 @@ private fun DrawScope.drawBeam(lantern: Offset, strength: Float) {
     drawPath(beam(1f), brush(1f))
     drawPath(beam(-1f), brush(-1f))
     // Un punto y una raya viajando por el haz: la seña de identidad del juego.
-    drawCircle(BeamCream, radius = 5f, center = Offset(lantern.x + length * 0.35f, lantern.y))
+    drawCircle(lampColor, radius = 5f, center = Offset(lantern.x + length * 0.35f, lantern.y))
     drawRect(
-        BeamCream,
+        lampColor,
         topLeft = Offset(lantern.x + length * 0.45f, lantern.y - 3.5f),
         size = androidx.compose.ui.geometry.Size(length * 0.18f, 7f),
     )
 }
 
-private fun DrawScope.drawTower(cx: Float, top: Float, bottom: Float) {
+private fun DrawScope.drawTower(cx: Float, top: Float, bottom: Float, lampColor: Color) {
     val halfBottom = size.width * 0.07f
     val halfTop = size.width * 0.045f
     val tower = Path().apply {
@@ -124,7 +130,7 @@ private fun DrawScope.drawTower(cx: Float, top: Float, bottom: Float) {
     // Linterna y tejado.
     val lanternHeight = size.height * 0.08f
     drawRect(
-        BeamCream,
+        lampColor,
         topLeft = Offset(cx - halfTop * 0.9f, top - lanternHeight),
         size = androidx.compose.ui.geometry.Size(halfTop * 1.8f, lanternHeight),
     )
@@ -135,4 +141,58 @@ private fun DrawScope.drawTower(cx: Float, top: Float, bottom: Float) {
         close()
     }
     drawPath(roof, Coral)
+}
+
+/** Decoraciones compradas en la tienda: gaviotas, barca, banderines y farolillos. */
+private fun DrawScope.drawDecorations(decorations: Set<String>, cx: Float, towerTop: Float, lantern: Offset) {
+    val seaTop = size.height * 0.78f
+    val stroke = size.width * 0.006f
+    if ("decor_gulls" in decorations) {
+        listOf(0.18f to 0.22f, 0.27f to 0.15f, 0.78f to 0.2f).forEach { (fx, fy) ->
+            val x = size.width * fx
+            val y = size.height * fy
+            val w = size.width * 0.03f
+            drawLine(Sand, Offset(x - w, y - w * 0.4f), Offset(x, y), strokeWidth = stroke)
+            drawLine(Sand, Offset(x, y), Offset(x + w, y - w * 0.4f), strokeWidth = stroke)
+        }
+    }
+    if ("decor_boat" in decorations) {
+        val bx = size.width * 0.2f
+        val hull = Path().apply {
+            moveTo(bx - size.width * 0.06f, seaTop - size.height * 0.01f)
+            lineTo(bx + size.width * 0.06f, seaTop - size.height * 0.01f)
+            lineTo(bx + size.width * 0.04f, seaTop + size.height * 0.04f)
+            lineTo(bx - size.width * 0.04f, seaTop + size.height * 0.04f)
+            close()
+        }
+        drawPath(hull, Coral)
+        drawLine(Sand, Offset(bx, seaTop - size.height * 0.01f), Offset(bx, seaTop - size.height * 0.12f), strokeWidth = stroke)
+        drawPath(
+            Path().apply {
+                moveTo(bx, seaTop - size.height * 0.12f); lineTo(bx + size.width * 0.04f, seaTop - size.height * 0.03f); lineTo(bx, seaTop - size.height * 0.03f); close()
+            },
+            Sand,
+        )
+    }
+    if ("decor_flags" in decorations) {
+        val end = Offset(size.width * 0.92f, seaTop - size.height * 0.02f)
+        drawLine(Sand.copy(alpha = 0.6f), lantern, end, strokeWidth = stroke * 0.6f)
+        for (i in 1..6) {
+            val t = i / 7f
+            val p = Offset(lantern.x + (end.x - lantern.x) * t, lantern.y + (end.y - lantern.y) * t)
+            val flag = Path().apply {
+                moveTo(p.x - size.width * 0.012f, p.y); lineTo(p.x + size.width * 0.012f, p.y); lineTo(p.x, p.y + size.height * 0.04f); close()
+            }
+            drawPath(flag, if (i % 2 == 0) Coral else BeamCream)
+        }
+    }
+    if ("decor_lanterns" in decorations) {
+        for (i in 0 until 7) {
+            val x = size.width * (0.08f + i * 0.14f)
+            if (kotlin.math.abs(x - cx) < size.width * 0.08f) continue
+            val c = Offset(x, seaTop - size.height * 0.015f)
+            drawCircle(Brush.radialGradient(listOf(BeamCream.copy(alpha = 0.7f), Color.Transparent), center = c, radius = size.width * 0.03f), radius = size.width * 0.03f, center = c)
+            drawCircle(BeamCream, radius = size.width * 0.008f, center = c)
+        }
+    }
 }
