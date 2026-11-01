@@ -64,6 +64,17 @@
     <string name="mission_type_title_vibration">Escribe lo que sientes</string>
     <string name="mission_type_hint">Tu respuesta</string>
     <string name="mission_check">Comprobar</string>
+    <string name="daily_title">Mensaje del día</string>
+    <string name="daily_intro">Esta noche llega un mensaje nuevo al faro. Escúchalo y escribe lo que dice.</string>
+    <string name="daily_listen">Escuchar el mensaje</string>
+    <string name="daily_wrong">Todavía no. Escúchalo otra vez con calma.</string>
+    <string name="daily_hint">Pista</string>
+    <string name="daily_done">¡Mensaje descifrado!</string>
+    <string name="daily_come_back">Mañana llegará un mensaje nuevo.</string>
+    <string name="daily_locked">Completa tu primera misión en el Faro para empezar a recibir el mensaje del día.</string>
+    <string name="hub_daily">Mensaje del día</string>
+    <string name="hub_daily_pending">Ha llegado un mensaje nuevo: ¡descífralo!</string>
+    <string name="hub_daily_done">Descifrado ✓ · mañana habrá otro</string>
     <string name="mission_correct">¡Correcto!</string>
     <string name="mission_wrong">No era eso. Era: %1$s</string>
     <string name="mission_send_title">Transmite con el manipulador</string>
@@ -124,6 +135,10 @@
     </plurals>
     <string name="hub_streak">☀ Racha: %1$d</string>
     <string name="hub_achievements">Logros</string>
+    <plurals name="daily_total">
+        <item quantity="one">Has descifrado %1$d mensaje del día.</item>
+        <item quantity="other">Has descifrado %1$d mensajes del día.</item>
+    </plurals>
     <plurals name="reward_destellos">
         <item quantity="one">+%1$d Destello</item>
         <item quantity="other">+%1$d Destellos</item>

@@ -63,7 +63,10 @@ class ProgressResetTest {
         seen.markSeen("lib-sos")
         saves.save("c1m2", "{}")
 
-        AppProgressReset(db, seen, saves, settings).resetAll()
+        val daily = io.github.egt17baa.morseprende.data.daily.FakeDailyRepository(setOf(LocalDate.of(2026, 11, 1)))
+        AppProgressReset(db, seen, saves, settings, daily).resetAll()
+        // reset_clears_daily: los retos hechos también se olvidan.
+        assertTrue(daily.completed.value.isEmpty())
 
         withTimeout(5_000) {
             assertTrue(progress.progress.first().isEmpty())

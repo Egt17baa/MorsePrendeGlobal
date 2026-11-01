@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.stateIn
 import io.github.egt17baa.morseprende.data.activity.ActivityRepository
@@ -48,7 +49,12 @@ data class HubUiState(
     val streak: Int = 0,
     val lampColor: String = "lamp_cream",
     val decorations: Set<String> = emptySet(),
+    /** Tarjeta del «Mensaje del día» (null si no se muestra). */
+    val daily: DailyCard? = null,
 )
+
+/** Estado del reto diario en el Faro. */
+data class DailyCard(val doneToday: Boolean)
 
 class HubViewModel(
     content: ContentSource,
@@ -59,6 +65,7 @@ class HubViewModel(
     settings: SettingsRepository? = null,
     private val today: () -> LocalDate = { LocalDate.now() },
     rewards: io.github.egt17baa.morseprende.rewards.RewardsService? = null,
+    daily: io.github.egt17baa.morseprende.data.daily.DailyRepository? = null,
 ) : ViewModel() {
 
     init {
@@ -76,7 +83,10 @@ class HubViewModel(
         settings?.settings ?: flowOf(AppSettings()),
     ) { balance, days, prefs -> Triple(balance, Streak.current(days, today()), prefs) }
 
-    val state: StateFlow<HubUiState> = combine(progress.progress, seenCards.seen, extras) { progressMap, seen, (balance, streak, prefs) ->
+    /** null = sin reto diario (pruebas); si no, si ya se hizo hoy. */
+    private val dailyDone = daily?.completed?.map<Set<LocalDate>, Boolean?> { today() in it } ?: flowOf(null)
+
+    val state: StateFlow<HubUiState> = combine(progress.progress, seenCards.seen, extras, dailyDone) { progressMap, seen, (balance, streak, prefs), doneToday ->
         val chs = chapters ?: return@combine HubUiState(error = true, balance = balance, streak = streak)
         val completed = progressMap.keys
         val next = ProgressRules.nextMission(chs, completed)
@@ -106,6 +116,8 @@ class HubViewModel(
             streak = streak,
             lampColor = prefs.lampColor,
             decorations = prefs.decorations,
+            // El reto aparece en cuanto hay alguna misión hecha (letras con las que formar el mensaje).
+            daily = doneToday?.takeIf { completed.isNotEmpty() }?.let { DailyCard(it) },
         )
     }.stateIn(viewModelScope, SharingStarted.Eagerly, if (chapters == null) HubUiState(error = true) else HubUiState())
 }

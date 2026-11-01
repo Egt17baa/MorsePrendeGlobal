@@ -42,6 +42,9 @@ class RewardsService(
     suspend fun onGameFinished(score: Int, isRecord: Boolean): RewardSummary =
         reward(Rewards.forGame(score, isRecord))
 
+    /** «Mensaje del día» descifrado por primera vez hoy. */
+    suspend fun onDailyChallenge(): RewardSummary = reward(Rewards.DAILY_CHALLENGE)
+
     /**
      * Puesta al día única para quien ya jugaba antes de los Destellos: si aún no hay monedero, da
      * los Destellos de las estrellas ya conseguidas (como si cada misión se completara ahora sin el

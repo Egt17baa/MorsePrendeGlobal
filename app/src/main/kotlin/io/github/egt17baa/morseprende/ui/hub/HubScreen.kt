@@ -63,6 +63,7 @@ data class HubCallbacks(
     val onSettings: () -> Unit = {},
     val onShop: () -> Unit = {},
     val onAchievements: () -> Unit = {},
+    val onDaily: () -> Unit = {},
 )
 
 @Composable
@@ -110,6 +111,7 @@ fun HubContent(state: HubUiState, callbacks: HubCallbacks) {
                 Text(stringResource(R.string.hub_error), style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
                 return@Column
             }
+            state.daily?.let { DailyChallengeCard(it, callbacks.onDaily) }
             val sections = state.chapters.ifEmpty { listOf(ChapterSection(1, state.chapterTitle, state.nodes, true, state.glow)) }
             sections.forEach { section ->
                 if (section.unlocked) {
@@ -213,6 +215,29 @@ private fun NodeBadge(node: MissionNode, size: androidx.compose.ui.unit.Dp) {
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = if (node.type == MissionType.REVIEW) Modifier.rotate(-45f) else Modifier,
             )
+        }
+    }
+}
+
+@Composable
+private fun DailyChallengeCard(card: DailyCard, onOpen: () -> Unit) {
+    Card(
+        onClick = onOpen,
+        modifier = Modifier.fillMaxWidth(),
+        colors = androidx.compose.material3.CardDefaults.cardColors(
+            containerColor = if (card.doneToday) MaterialTheme.colorScheme.surfaceContainerHigh else MaterialTheme.colorScheme.primaryContainer,
+        ),
+    ) {
+        Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+            Text(if (card.doneToday) "✓" else "✉", style = MaterialTheme.typography.headlineMedium)
+            Spacer(Modifier.width(16.dp))
+            Column {
+                Text(stringResource(R.string.hub_daily), style = MaterialTheme.typography.titleMedium)
+                Text(
+                    stringResource(if (card.doneToday) R.string.hub_daily_done else R.string.hub_daily_pending),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
         }
     }
 }

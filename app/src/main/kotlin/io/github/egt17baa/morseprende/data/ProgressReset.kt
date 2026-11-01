@@ -23,12 +23,14 @@ class AppProgressReset(
     private val seen: SeenCardsRepository,
     private val saves: MissionSaveStore,
     private val settings: SettingsRepository,
+    private val daily: io.github.egt17baa.morseprende.data.daily.DailyRepository? = null,
 ) : ProgressReset {
     override suspend fun resetAll() = withContext(NonCancellable) {
         // Entero aunque el jugador salga de Ajustes a mitad. Primero lo pequeño y la base de datos
         // al final: si algo fallara, nunca quedan partidas a medias de un progreso ya borrado.
         seen.clear()
         saves.clearAll()
+        daily?.clear()
         val d = AppSettings()
         settings.update { it.copy(lampColor = d.lampColor, toneTimbre = d.toneTimbre, keyerSkin = d.keyerSkin, decorations = d.decorations) }
         withContext(Dispatchers.IO) { db.clearAllTables() }

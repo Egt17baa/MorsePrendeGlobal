@@ -9,7 +9,9 @@ class FakeContentSource(
     private val chapters: List<Chapter>,
     private val cards: List<LibraryCard> = emptyList(),
     private val fail: Boolean = false,
+    private val daily: List<String> = emptyList(),
 ) : ContentSource {
+    override fun dailyPhrases(): List<String> = daily
     override fun chapters(): List<Chapter> = if (fail) throw ContentLoadException("roto", null) else chapters
     override fun libraryCards(): List<LibraryCard> = if (fail) throw ContentLoadException("roto", null) else cards
 

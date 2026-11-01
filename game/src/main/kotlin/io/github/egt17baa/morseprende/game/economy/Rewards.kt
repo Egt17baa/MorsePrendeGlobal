@@ -10,6 +10,8 @@ object Rewards {
     const val RECORD_BONUS = 15
     const val DAILY_BONUS = 5
     const val GAME_MAX = 10
+    /** «Mensaje del día» descifrado (una vez al día). */
+    const val DAILY_CHALLENGE = 15
     private const val POINTS_PER_DESTELLO = 5
 
     /** Base + 10 por cada estrella por encima de la mejor marca anterior (+5 en repasos y final). */

@@ -2,6 +2,8 @@ package io.github.egt17baa.morseprende.ui.hub
 
 import android.content.Context
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.assertCountEquals
@@ -82,5 +84,15 @@ class HubScreenTest {
         compose.setContent { HubContent(state.copy(chapters = listOf(section(1), section(2), section(3))), HubCallbacks()) }
         compose.onAllNodesWithText(context.getString(R.string.hub_chapter, 2, "Título 2")).assertCountEquals(1)
         compose.onAllNodesWithText(context.getString(R.string.hub_chapter, 1, "Título 1")).assertCountEquals(1)
+    }
+
+    @Test fun hub_shows_daily_card() {
+        var opened = 0
+        var current by androidx.compose.runtime.mutableStateOf(state.copy(daily = DailyCard(doneToday = false)))
+        compose.setContent { HubContent(current, HubCallbacks(onDaily = { opened++ })) }
+        compose.onNodeWithText(context.getString(R.string.hub_daily_pending)).performScrollTo().performClick()
+        assertEquals(1, opened)
+        current = state.copy(daily = DailyCard(doneToday = true))
+        compose.onNodeWithText(context.getString(R.string.hub_daily_done)).performScrollTo()
     }
 }

@@ -45,6 +45,7 @@ object Routes {
     const val SETTINGS = "settings"
     const val LICENSES = "licenses"
     const val PRIVACY = "privacy"
+    const val DAILY = "daily"
     const val MISSION = "mission/{id}"
 
     fun mission(id: String) = "mission/$id"
@@ -58,7 +59,7 @@ fun AppNavHost(container: AppContainer) {
             val vm: HubViewModel = viewModel(
                 factory = viewModelFactory { initializer { HubViewModel(
                             container.content, container.progress, container.seenCards, container.economy, container.activity,
-                            container.settings, rewards = container.rewards,
+                            container.settings, rewards = container.rewards, daily = container.daily,
                         ) } },
             )
             HubScreen(
@@ -71,6 +72,7 @@ fun AppNavHost(container: AppContainer) {
                     onAchievements = dropUnlessResumed { nav.navigate(Routes.ACHIEVEMENTS) },
                     onTranslator = dropUnlessResumed { nav.navigate(Routes.TRANSLATOR) },
                     onSettings = dropUnlessResumed { nav.navigate(Routes.SETTINGS) },
+                    onDaily = dropUnlessResumed { nav.navigate(Routes.DAILY) },
                 ),
             )
         }
@@ -140,6 +142,18 @@ fun AppNavHost(container: AppContainer) {
             SettingsScreen(vm, onBack = dropUnlessResumed { nav.popBackStack() }, onLicenses = dropUnlessResumed { nav.navigate(Routes.LICENSES) },
                 onPrivacy = dropUnlessResumed { nav.navigate(Routes.PRIVACY) },
             )
+        }
+        composable(Routes.DAILY) {
+            val vm: io.github.egt17baa.morseprende.ui.daily.DailyViewModel = viewModel(
+                factory = viewModelFactory {
+                    initializer {
+                        io.github.egt17baa.morseprende.ui.daily.DailyViewModel(
+                            container.content, container.progress, container.daily, container.settings, container.outputs, container.rewards,
+                        )
+                    }
+                },
+            )
+            io.github.egt17baa.morseprende.ui.daily.DailyScreen(vm, onBack = dropUnlessResumed { nav.popBackStack() })
         }
         composable(Routes.PRIVACY) {
             io.github.egt17baa.morseprende.settings.PrivacyScreen(onBack = dropUnlessResumed { nav.popBackStack() })

@@ -12,6 +12,9 @@ interface ContentSource {
 
     /** @throws ContentLoadException si el contenido falta o está roto. */
     fun libraryCards(): List<LibraryCard>
+
+    /** Frases del «Mensaje del día». Si faltan, lista vacía (el reto usa palabras de los capítulos). */
+    fun dailyPhrases(): List<String> = emptyList()
 }
 
 class ContentLoadException(message: String, cause: Throwable?) : Exception(message, cause)
@@ -30,6 +33,10 @@ class AssetContentSource internal constructor(private val read: (String) -> Stri
 
     override fun libraryCards(): List<LibraryCard> = cards.getOrThrow()
 
+    private val daily by lazy { runCatching { ContentParser.dailyPhrases(read(DAILY_FILE)) }.getOrDefault(emptyList()) }
+
+    override fun dailyPhrases(): List<String> = daily
+
     private fun <T> load(files: List<String>, parse: (List<String>) -> T): Result<T> =
         runCatching { parse(files) }.recoverCatching { e ->
             throw ContentLoadException("No se pudo cargar el contenido ${files.joinToString()}: ${e.message}", e)
@@ -39,5 +46,6 @@ class AssetContentSource internal constructor(private val read: (String) -> Stri
         const val DIR = "content/es"
         val CHAPTER_FILES = listOf("chapter1.json", "chapter2.json", "chapter3.json")
         const val LIBRARY_FILE = "library.json"
+        const val DAILY_FILE = "daily.json"
     }
 }
