@@ -90,8 +90,8 @@ private fun ListenPanel(e: Exercise.Listen, actions: MissionActions) {
 
 @Composable
 private fun ChoicePanel(e: Exercise.ReceiveChoice, state: MissionUiState, actions: MissionActions) {
-    Text(stringResource(R.string.mission_choose), style = MaterialTheme.typography.titleLarge)
-    OutlinedButton(onClick = actions::replay, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.mission_replay)) }
+    Text(stringResource(state.byChannel(R.string.mission_choose, R.string.mission_choose_light, R.string.mission_choose_vibration)), style = MaterialTheme.typography.titleLarge)
+    ReplayButton(state, actions)
     e.options.chunked(2).forEach { row ->
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             row.forEach { option ->
@@ -108,8 +108,8 @@ private fun ChoicePanel(e: Exercise.ReceiveChoice, state: MissionUiState, action
 @Composable
 private fun TypedPanel(state: MissionUiState, actions: MissionActions) {
     var text by rememberSaveable(state.exerciseIndex) { mutableStateOf("") }
-    Text(stringResource(R.string.mission_type_title), style = MaterialTheme.typography.titleLarge)
-    OutlinedButton(onClick = actions::replay, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.mission_replay)) }
+    Text(stringResource(state.byChannel(R.string.mission_type_title, R.string.mission_type_title_light, R.string.mission_type_title_vibration)), style = MaterialTheme.typography.titleLarge)
+    ReplayButton(state, actions)
     AnswerField(text, { text = it }, enabled = state.feedback == null) { actions.answer(text) }
 }
 
@@ -191,7 +191,7 @@ private fun FinalMessagePanel(e: Exercise.FinalMessage, state: MissionUiState, a
             }
         }
     }
-    OutlinedButton(onClick = actions::replay, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.mission_replay)) }
+    ReplayButton(state, actions)
     AnswerField(text, { text = it }, enabled = state.feedback == null) { actions.answer(text) }
 }
 
@@ -241,4 +241,18 @@ private fun LighthouseFlash(lit: Boolean) {
 fun ErrorPanel(actions: MissionActions) {
     Text(stringResource(R.string.mission_error), style = MaterialTheme.typography.titleMedium)
     Button(onClick = actions::exit, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.mission_back_to_lighthouse)) }
+}
+
+/** Texto según el canal por el que llega la señal (si el móvil no vibra, se oye). */
+private fun MissionUiState.byChannel(sound: Int, light: Int, vibration: Int): Int = when (channel) {
+    io.github.egt17baa.morseprende.game.content.Channel.LIGHT -> light
+    io.github.egt17baa.morseprende.game.content.Channel.VIBRATION -> if (channelFallback) sound else vibration
+    io.github.egt17baa.morseprende.game.content.Channel.SOUND -> sound
+}
+
+@Composable
+private fun ReplayButton(state: MissionUiState, actions: MissionActions) {
+    OutlinedButton(onClick = actions::replay, modifier = Modifier.fillMaxWidth()) {
+        Text(stringResource(state.byChannel(R.string.mission_replay, R.string.mission_replay_light, R.string.mission_replay_vibration)))
+    }
 }

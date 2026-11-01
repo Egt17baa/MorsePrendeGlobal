@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.test.core.app.ApplicationProvider
@@ -174,5 +175,28 @@ class MissionScreenTest {
         compose.setContent { MissionContent(state, Recorder()) }
         compose.onNodeWithText(context.getString(R.string.mission_seconds_left, 9)).assertIsDisplayed()
         compose.onNodeWithText(str(R.string.mission_noise)).assertIsDisplayed()
+    }
+
+    @Test fun light_channel_shows_lamp_and_says_see() {
+        val state = MissionUiState(
+            phase = MissionPhase.EXERCISE, exercise = Exercise.ReceiveChoice("S", listOf("O", "S")), exerciseCount = 5,
+            channel = io.github.egt17baa.morseprende.game.content.Channel.LIGHT,
+        )
+        compose.setContent { MissionContent(state, Recorder()) }
+        compose.onNodeWithTag("mission_lamp").assertExists()
+        compose.onNodeWithText(str(R.string.mission_choose_light)).assertExists()
+        compose.onNodeWithText(str(R.string.mission_replay_light)).performScrollTo().assertIsDisplayed()
+    }
+
+    @Test fun vibration_channel_says_feel_and_fallback_says_hear() {
+        val vib = io.github.egt17baa.morseprende.game.content.Channel.VIBRATION
+        val state = MissionUiState(phase = MissionPhase.EXERCISE, exercise = Exercise.ReceiveTyped("SOS"), exerciseCount = 5, channel = vib)
+        var current by androidx.compose.runtime.mutableStateOf(state)
+        compose.setContent { MissionContent(current, Recorder()) }
+        compose.onNodeWithText(str(R.string.mission_type_title_vibration)).assertExists()
+        compose.onNodeWithText(str(R.string.mission_channel_vibration)).assertExists()
+        current = state.copy(channelFallback = true)
+        compose.onNodeWithText(str(R.string.mission_type_title)).assertExists()
+        compose.onNodeWithText(str(R.string.mission_channel_vibration_fallback)).assertExists()
     }
 }

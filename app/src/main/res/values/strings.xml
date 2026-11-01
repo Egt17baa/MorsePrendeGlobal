@@ -56,6 +56,12 @@
     <string name="mission_continue">Continuar</string>
     <string name="mission_choose">¿Qué has oído?</string>
     <string name="mission_type_title">Escribe lo que oyes</string>
+    <string name="mission_replay_light">Ver otra vez</string>
+    <string name="mission_replay_vibration">Sentir otra vez</string>
+    <string name="mission_choose_light">¿Qué has visto?</string>
+    <string name="mission_choose_vibration">¿Qué has sentido?</string>
+    <string name="mission_type_title_light">Escribe lo que ves</string>
+    <string name="mission_type_title_vibration">Escribe lo que sientes</string>
     <string name="mission_type_hint">Tu respuesta</string>
     <string name="mission_check">Comprobar</string>
     <string name="mission_correct">¡Correcto!</string>
