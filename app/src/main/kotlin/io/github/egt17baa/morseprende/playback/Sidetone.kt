@@ -7,7 +7,7 @@ import android.media.AudioManager
 import android.media.AudioTrack
 import io.github.egt17baa.morseprende.settings.AppSettings
 import kotlin.math.PI
-import kotlin.math.sin
+import io.github.egt17baa.morseprende.core.Timbre
 
 /** Tono que suena mientras se mantiene pulsado el manipulador. */
 interface Sidetone {
@@ -27,7 +27,12 @@ fun interface SidetoneFactory {
  * 2 ms) de tono o silencio en un AudioTrack con el búfer mínimo. Al pulsar o soltar, el volumen
  * sube o baja en 3 ms para que no haya clics. Si el audio no está disponible, no hace nada.
  */
-class AudioSidetone(context: Context, private val freqHz: Int, private val volume: Float) : Sidetone {
+class AudioSidetone(
+    context: Context,
+    private val freqHz: Int,
+    private val volume: Float,
+    private val timbre: Timbre = Timbre.SINE,
+) : Sidetone {
 
     private val sampleRate: Int = context.getSystemService(AudioManager::class.java)
         ?.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE)?.toIntOrNull() ?: 48_000
@@ -87,7 +92,7 @@ class AudioSidetone(context: Context, private val freqHz: Int, private val volum
                 val target = if (isKeyDown) 1.0 else 0.0
                 for (i in block.indices) {
                     gain = if (gain < target) minOf(target, gain + rampStep) else maxOf(target, gain - rampStep)
-                    block[i] = (amplitude * gain * sin(phase)).toInt().toShort()
+                    block[i] = (amplitude * gain * timbre.sample(phase)).toInt().toShort()
                     phase += phaseStep
                     if (phase > 2 * PI) phase -= 2 * PI
                 }
@@ -135,5 +140,5 @@ class AudioSidetone(context: Context, private val freqHz: Int, private val volum
 }
 
 class AndroidSidetoneFactory(private val context: Context) : SidetoneFactory {
-    override fun create(settings: AppSettings): Sidetone = AudioSidetone(context, settings.toneHz, settings.volume)
+    override fun create(settings: AppSettings): Sidetone = AudioSidetone(context, settings.toneHz, settings.volume, settings.timbre)
 }

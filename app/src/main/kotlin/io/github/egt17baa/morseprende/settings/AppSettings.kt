@@ -1,6 +1,7 @@
 package io.github.egt17baa.morseprende.settings
 
 import io.github.egt17baa.morseprende.core.MorseTiming
+import io.github.egt17baa.morseprende.core.Timbre
 
 /** Cómo se transmite en las misiones: un manipulador (duración) o dos botones (punto | raya). */
 enum class KeyerMode { ONE_BUTTON, TWO_BUTTONS }
@@ -14,7 +15,20 @@ data class AppSettings(
     val limitFlashes: Boolean = true,
     val flashWarningAccepted: Boolean = false,
     val keyerMode: KeyerMode = KeyerMode.ONE_BUTTON,
+    /** Cosméticos equipados (ids del catálogo de la tienda). */
+    val lampColor: String = "lamp_cream",
+    val toneTimbre: String = "tone_sine",
+    val keyerSkin: String = "key_coral",
+    val decorations: Set<String> = emptySet(),
 ) {
+    /** Timbre de sonido correspondiente al objeto equipado. */
+    val timbre: Timbre
+        get() = when (toneTimbre) {
+            "tone_soft" -> Timbre.SOFT
+            "tone_classic" -> Timbre.CLASSIC
+            else -> Timbre.SINE
+        }
+
     /** Devuelve una copia con todos los valores dentro de sus rangos válidos. */
     fun clamped(): AppSettings {
         val char = charWpm.coerceIn(MorseTiming.MIN_WPM, MorseTiming.MAX_WPM)

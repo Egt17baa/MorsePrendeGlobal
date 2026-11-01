@@ -9,6 +9,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -46,6 +47,10 @@ class DataStoreSettingsRepository private constructor(
             prefs[LIMIT_FLASHES] = next.limitFlashes
             prefs[FLASH_WARNING_ACCEPTED] = next.flashWarningAccepted
             prefs[KEYER_MODE] = next.keyerMode.name
+            prefs[LAMP_COLOR] = next.lampColor
+            prefs[TONE_TIMBRE] = next.toneTimbre
+            prefs[KEYER_SKIN] = next.keyerSkin
+            prefs[DECORATIONS] = next.decorations
         }
     }
 
@@ -64,6 +69,10 @@ class DataStoreSettingsRepository private constructor(
             limitFlashes = this[LIMIT_FLASHES] ?: defaults.limitFlashes,
             flashWarningAccepted = this[FLASH_WARNING_ACCEPTED] ?: defaults.flashWarningAccepted,
             keyerMode = this[KEYER_MODE]?.let { name -> KeyerMode.entries.firstOrNull { it.name == name } } ?: defaults.keyerMode,
+            lampColor = this[LAMP_COLOR] ?: defaults.lampColor,
+            toneTimbre = this[TONE_TIMBRE] ?: defaults.toneTimbre,
+            keyerSkin = this[KEYER_SKIN] ?: defaults.keyerSkin,
+            decorations = this[DECORATIONS] ?: defaults.decorations,
         ).clamped()
     }
 
@@ -75,6 +84,10 @@ class DataStoreSettingsRepository private constructor(
         private val LIMIT_FLASHES = booleanPreferencesKey("limit_flashes")
         private val FLASH_WARNING_ACCEPTED = booleanPreferencesKey("flash_warning_accepted")
         private val KEYER_MODE = stringPreferencesKey("keyer_mode")
+        private val LAMP_COLOR = stringPreferencesKey("lamp_color")
+        private val TONE_TIMBRE = stringPreferencesKey("tone_timbre")
+        private val KEYER_SKIN = stringPreferencesKey("keyer_skin")
+        private val DECORATIONS = stringSetPreferencesKey("decorations")
 
         /** Repositorio sobre un fichero concreto (pruebas). */
         fun create(file: File, parentScope: CoroutineScope): DataStoreSettingsRepository {

@@ -6,6 +6,7 @@ import android.media.AudioFormat
 import android.media.AudioManager
 import android.media.AudioTrack
 import io.github.egt17baa.morseprende.core.Signal
+import io.github.egt17baa.morseprende.core.Timbre
 import io.github.egt17baa.morseprende.core.ToneSynth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ensureActive
@@ -20,6 +21,7 @@ class AudioOutput(
     context: Context,
     private val freqHz: Int,
     private val volume: Float,
+    private val timbre: Timbre = Timbre.SINE,
 ) : SignalOutput {
 
     private val sampleRate: Int = context.getSystemService(AudioManager::class.java)
@@ -39,7 +41,7 @@ class AudioOutput(
             audioTrack.play()
             for (signal in withTail(signals)) {
                 // Los silencios reutilizan un bloque de ceros: no se reserva memoria por pausa.
-                val pcm = if (signal.on) ToneSynth.render(signal, sampleRate, freqHz, volume) else null
+                val pcm = if (signal.on) ToneSynth.render(signal, sampleRate, freqHz, volume, timbre = timbre) else null
                 val total = ToneSynth.samplesFor(signal.durationMs, sampleRate)
                 var offset = 0
                 while (offset < total) {

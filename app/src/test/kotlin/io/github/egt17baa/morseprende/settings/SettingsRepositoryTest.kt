@@ -51,4 +51,24 @@ class SettingsRepositoryTest {
         val second = DataStoreSettingsRepository.create(f, backgroundScope)
         assertEquals(KeyerMode.TWO_BUTTONS, second.settings.first().keyerMode)
     }
+
+    @Test fun settings_persist_cosmetics() = runTest {
+        val f = File(context.filesDir, "settings-cosmetics.preferences_pb")
+        val first = DataStoreSettingsRepository.create(f, backgroundScope)
+        first.update { it.copy(lampColor = "lamp_polar", toneTimbre = "tone_soft", keyerSkin = "key_brass", decorations = setOf("decor_gulls", "decor_boat")) }
+        first.close()
+        val s = DataStoreSettingsRepository.create(f, backgroundScope).settings.first()
+        assertEquals("lamp_polar", s.lampColor)
+        assertEquals("tone_soft", s.toneTimbre)
+        assertEquals("key_brass", s.keyerSkin)
+        assertEquals(setOf("decor_gulls", "decor_boat"), s.decorations)
+    }
+
+    @Test fun defaults_are_house_items() {
+        val s = AppSettings()
+        assertEquals("lamp_cream", s.lampColor)
+        assertEquals("tone_sine", s.toneTimbre)
+        assertEquals("key_coral", s.keyerSkin)
+        assertEquals(emptySet<String>(), s.decorations)
+    }
 }

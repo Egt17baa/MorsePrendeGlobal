@@ -3,7 +3,6 @@ package io.github.egt17baa.morseprende.core
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.min
-import kotlin.math.sin
 
 /**
  * Genera PCM de 16 bits, mono, para un [Signal].
@@ -18,7 +17,14 @@ object ToneSynth {
 
     fun samplesFor(durationMs: Long, sampleRate: Int): Int = (durationMs * sampleRate / 1000).toInt()
 
-    fun render(signal: Signal, sampleRate: Int, freqHz: Int, volume: Float, rampMs: Int = 5): ShortArray {
+    fun render(
+        signal: Signal,
+        sampleRate: Int,
+        freqHz: Int,
+        volume: Float,
+        rampMs: Int = 5,
+        timbre: Timbre = Timbre.SINE,
+    ): ShortArray {
         val count = samplesFor(signal.durationMs, sampleRate)
         val pcm = ShortArray(count)
         if (!signal.on || volume <= 0f) return pcm
@@ -33,7 +39,7 @@ object ToneSynth {
             } else {
                 1.0
             }
-            pcm[i] = (amplitude * envelope * sin(step * i)).toInt().toShort()
+            pcm[i] = (amplitude * envelope * timbre.sample(step * i)).toInt().toShort()
         }
         return pcm
     }

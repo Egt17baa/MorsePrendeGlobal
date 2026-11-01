@@ -42,4 +42,29 @@ class ToneSynthTest {
 
     @Test fun zero_volume_is_silent() =
         assertTrue(ToneSynth.render(Signal(true, 20), 48000, 600, 0f).all { it.toInt() == 0 })
+
+    @Test fun soft_and_classic_differ_from_sine_but_keep_peak_and_ramps() {
+        val sine = ToneSynth.render(Signal(true, 200), 48000, 600, 1f)
+        for (timbre in listOf(Timbre.SOFT, Timbre.CLASSIC)) {
+            val pcm = ToneSynth.render(Signal(true, 200), 48000, 600, 1f, timbre = timbre)
+            assertEquals(sine.size, pcm.size)
+            val peak = pcm.maxOf { abs(it.toInt()) }
+            assertTrue("$timbre peak=$peak", peak <= 0.8 * Short.MAX_VALUE + 1 && peak >= 0.7 * Short.MAX_VALUE)
+            assertTrue("$timbre first=${pcm.first()}", abs(pcm.first().toInt()) < 200)
+            assertTrue("$timbre last=${pcm.last()}", abs(pcm.last().toInt()) < 200)
+            val diff = pcm.indices.sumOf { abs(pcm[it] - sine[it]).toLong() }
+            assertTrue("$timbre diff=$diff", diff > pcm.size * 300L)
+        }
+    }
+
+    @Test fun timbre_samples_are_bounded() {
+        for (timbre in Timbre.entries) {
+            var p = 0.0
+            repeat(10_000) {
+                val v = timbre.sample(p)
+                assertTrue("$timbre $v", v in -1.0001..1.0001)
+                p += 0.01
+            }
+        }
+    }
 }
