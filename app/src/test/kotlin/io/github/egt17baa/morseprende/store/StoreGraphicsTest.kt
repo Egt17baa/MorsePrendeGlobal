@@ -61,6 +61,9 @@ import org.junit.Assert.assertEquals
 import org.junit.Assume.assumeTrue
 import org.junit.Before
 import org.junit.Rule
+import org.junit.rules.RuleChain
+import org.junit.runners.model.Statement
+import androidx.compose.foundation.layout.requiredWidth
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -77,24 +80,37 @@ import java.io.File
 @Config(qualifiers = "w360dp-h640dp-night-xxhdpi")
 class StoreGraphicsTest {
 
-    @get:Rule val compose = createAndroidComposeRule<ComponentActivity>()
     private val dir = System.getProperty("graficos.dir").orEmpty()
+    private val compose = createAndroidComposeRule<ComponentActivity>()
+
+    /** Sin -PgraficosDir se salta antes de abrir la actividad (si no, cada omisión cuesta ~1 s). */
+    @get:Rule val rules: RuleChain = RuleChain.outerRule { base, _ ->
+        object : Statement() {
+            override fun evaluate() {
+                assumeTrue("sin -PgraficosDir no se generan los gráficos", dir.isNotEmpty())
+                base.evaluate()
+            }
+        }
+    }.around(compose)
     private val content = AssetContentSource(ApplicationProvider.getApplicationContext<android.content.Context>())
 
-    @Before fun setUp() {
-        assumeTrue("sin -PgraficosDir no se generan los gráficos", dir.isNotEmpty())
-        Dispatchers.setMain(UnconfinedTestDispatcher())
-    }
+    @Before fun setUp() = Dispatchers.setMain(UnconfinedTestDispatcher())
 
     @After fun tearDown() = Dispatchers.resetMain()
 
-    private fun save(name: String, width: Int, height: Int) {
+    private fun save(name: String, width: Int, height: Int, alpha: Boolean = false) {
         compose.waitForIdle()
         val view = compose.activity.window.decorView
         val bitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
         view.draw(Canvas(bitmap))
+        // Play pide el gráfico destacado y las capturas en PNG de 24 bits sin transparencia (solo el
+        // icono puede llevarla).
+        bitmap.setHasAlpha(alpha)
         val file = File(dir, name).apply { parentFile?.mkdirs() }
         file.outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
+        // Tipo de color de la cabecera PNG (byte 25): 2 = RGB, 6 = RGBA.
+        val colorType = file.readBytes()[25].toInt()
+        if (!alpha) assertEquals("$name sin canal alfa", 2, colorType)
         // Play rechaza los gráficos con otras medidas.
         val written = BitmapFactory.decodeFile(file.path)
         assertEquals("$name ancho", width, written.width)
@@ -122,19 +138,25 @@ class StoreGraphicsTest {
                 Image(painterResource(R.drawable.ic_launcher_foreground), null, Modifier.requiredSize(size))
             }
         }
-        save("icono-512.png", 512, 512)
+        save("icono-512.png", 512, 512, alpha = true)
+        org.junit.Assert.assertTrue("icono < 1024 KB", File(dir, "icono-512.png").length() < 1024 * 1024)
     }
 
     @Test @Config(qualifiers = "w512dp-h250dp-night-xhdpi")
     fun feature() {
         compose.setContent {
-            Row(Modifier.fillMaxSize().background(SeaNight), verticalAlignment = Alignment.CenterVertically) {
-                LighthouseScene(0.8f, Modifier.weight(1f).fillMaxHeight())
+            Box(Modifier.fillMaxSize().background(SeaNight)) {
+                // Una sola escena de lado a lado (sin cortes), desplazada para que el faro quede a la izquierda.
+                LighthouseScene(0.8f, Modifier.align(Alignment.Center).requiredWidth(820.dp).fillMaxHeight().offset(x = (-130).dp))
+            }
+            Row(Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
+                androidx.compose.foundation.layout.Spacer(Modifier.weight(1f))
                 Column(Modifier.weight(1.1f).padding(horizontal = 24.dp)) {
                     Text("MorsePrende", color = BeamCream, fontSize = 34.sp, fontFamily = Atkinson, fontWeight = FontWeight.Bold, softWrap = false, maxLines = 1)
                     Text("El Faro", color = BeamCream, fontSize = 30.sp, fontFamily = Atkinson)
                     Text("Aprende Morse jugando", color = androidx.compose.ui.graphics.Color(0xFFFF7A5C), fontSize = 20.sp, fontFamily = Atkinson, modifier = Modifier.padding(top = 12.dp))
-                    Text("•  —  •  —", color = BeamCream.copy(alpha = 0.7f), fontSize = 18.sp, modifier = Modifier.padding(top = 8.dp))
+                    // SOS en Morse.
+                    Text("• • •   — — —   • • •", color = BeamCream.copy(alpha = 0.7f), fontSize = 18.sp, modifier = Modifier.padding(top = 8.dp))
                 }
             }
         }

@@ -15,7 +15,9 @@ La app guarda **solo en tu dispositivo**:
 - las fichas de la biblioteca que has leído;
 - tus ajustes (velocidad, tono, volumen, accesibilidad y aspecto).
 
-Estos datos no contienen tu nombre, tu correo, tu ubicación ni ningún identificador personal.
+Estos datos no contienen tu nombre, tu correo, tu ubicación ni ningún identificador personal. Se
+guardan en el almacenamiento privado de la app, al que otras apps no pueden acceder, y se conservan
+hasta que los borres o desinstales la app.
 
 ## Qué no hace la app
 
@@ -41,13 +43,14 @@ cambiar de móvil. Puedes desactivarla en los ajustes de Android.
 
 ## Borrar tus datos
 
-En Ajustes → Progreso → «Borrar progreso» puedes borrar todo lo jugado. Desinstalar la app borra
-todos sus datos del dispositivo.
+En Ajustes → Progreso → «Borrar progreso» puedes borrar todo lo jugado (tus ajustes de velocidad,
+sonido y accesibilidad se mantienen). Desinstalar la app borra todos sus datos del dispositivo; si
+tenías activada la copia de seguridad de Android, la copia de tu cuenta de Google se conserva y se
+restaura si vuelves a instalarla (puedes borrarla desde los ajustes de copia de seguridad de Android).
 
 ## Menores
 
-La app es apta para todas las edades. Como no recoge datos personales de nadie, tampoco recoge datos
-de menores.
+La app no recoge datos personales de nadie, tampoco de menores de 13 años.
 
 ## Cambios
 
@@ -66,5 +69,6 @@ device.** The app stores your game progress, learning statistics, records, cosme
 achievements, read library cards and settings only on your phone. It has no internet permission, no
 accounts, no ads, no in-app purchases, no analytics and no third-party services, and it shares no
 data with anyone. The only permission is VIBRATE (Morse by vibration and keyer feedback). Android's
-own backup may include the app's data in your Google backup if you enable it. You can erase all
-progress in Settings or by uninstalling the app. Contact: ‹your contact e-mail›.
+own backup may include the app's data in your Google backup if you enable it (that copy survives
+uninstalling and is restored on reinstall). You can erase all progress in Settings or by
+uninstalling the app. Contact: ‹your contact e-mail›.

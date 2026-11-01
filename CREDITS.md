@@ -15,6 +15,8 @@ Ajustes → Acerca de → «Licencias de código abierto» (textos en `app/src/m
 - Kotlin (biblioteca estándar), kotlinx.coroutines y kotlinx.serialization, de JetBrains.
 - AndroidX Activity, Lifecycle, Navigation, Room y DataStore, y Jetpack Compose (UI, Foundation,
   Material 3 e iconos de Material), de Google / Android Open Source Project.
+- Dependencias de las anteriores: Okio (Square), kotlinx atomicfu (JetBrains), Guava
+  listenablefuture (Google), JSpecify y anotaciones de JetBrains.
 
 Solo para pruebas (no van en el APK): JUnit (EPL 1.0), Robolectric (MIT), AndroidX Test (Apache 2.0).
 

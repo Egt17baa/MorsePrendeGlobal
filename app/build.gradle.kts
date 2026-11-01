@@ -7,6 +7,36 @@ plugins {
     alias(libs.plugins.ksp)
 }
 
+/**
+ * Copia la política de privacidad (docs/publicacion/politica-privacidad.md) a los assets de la app:
+ * un solo texto para la web y para la pantalla «Política de privacidad» de Ajustes.
+ */
+abstract class CopyPrivacyPolicy : DefaultTask() {
+    @get:InputFile
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val policy: RegularFileProperty
+
+    @get:OutputDirectory
+    abstract val outputDir: DirectoryProperty
+
+    @TaskAction
+    fun copy() {
+        val target = outputDir.get().asFile.resolve("legal")
+        target.mkdirs()
+        policy.get().asFile.copyTo(target.resolve("politica-privacidad.md"), overwrite = true)
+    }
+}
+
+val copyPrivacyPolicy = tasks.register<CopyPrivacyPolicy>("copyPrivacyPolicy") {
+    policy.set(rootProject.layout.projectDirectory.file("docs/publicacion/politica-privacidad.md"))
+}
+
+androidComponents {
+    onVariants { variant ->
+        variant.sources.assets?.addGeneratedSourceDirectory(copyPrivacyPolicy, CopyPrivacyPolicy::outputDir)
+    }
+}
+
 val sideloadKeyAvailable: Boolean =
     !System.getenv("MORSEPRENDE_KEYSTORE_B64").isNullOrBlank() &&
         !System.getenv("MORSEPRENDE_KEYSTORE_PASSWORD").isNullOrBlank()
@@ -118,11 +148,11 @@ dependencies {
 
 // El APK de entrega debe ir siempre firmado con la clave permanente: sin ella, mejor fallar que
 // entregar un APK que no se podría instalar encima del anterior.
-tasks.matching { it.name == "assembleRelease" || it.name == "packageRelease" }.configureEach {
+tasks.matching { it.name in setOf("assembleRelease", "packageRelease", "bundleRelease", "signReleaseBundle") }.configureEach {
     doFirst {
         if (!sideloadKeyAvailable) {
             throw GradleException(
-                "Faltan MORSEPRENDE_KEYSTORE_B64 / MORSEPRENDE_KEYSTORE_PASSWORD: no se puede firmar el APK de entrega",
+                "Faltan MORSEPRENDE_KEYSTORE_B64 / MORSEPRENDE_KEYSTORE_PASSWORD: no se puede firmar el APK o AAB de entrega",
             )
         }
     }

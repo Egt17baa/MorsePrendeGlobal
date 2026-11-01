@@ -227,6 +227,9 @@
     <string name="settings_reset_cancel">Cancelar</string>
     <string name="settings_about_section">Acerca de</string>
     <string name="settings_licenses">Licencias de código abierto</string>
+    <string name="settings_privacy">Política de privacidad</string>
+    <string name="privacy_title">Privacidad</string>
+    <string name="document_missing">No se ha podido abrir este documento.</string>
     <string name="licenses_title">Licencias</string>
     <string name="licenses_libraries">Bibliotecas</string>
     <string name="licenses_font">Tipografía Atkinson Hyperlegible (SIL OFL 1.1)</string>

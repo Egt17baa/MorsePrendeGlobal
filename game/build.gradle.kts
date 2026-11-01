@@ -14,6 +14,13 @@ kotlin {
     }
 }
 
+// La prueba de la ficha de Play lee este fichero: se declara como entrada para que se repita al cambiarlo.
+tasks.test {
+    val ficha = rootProject.file("docs/publicacion/ficha-google-play.md")
+    inputs.file(ficha).withPathSensitivity(PathSensitivity.RELATIVE).withPropertyName("ficha")
+    systemProperty("ficha.path", ficha.absolutePath)
+}
+
 dependencies {
     implementation(project(":morse-core"))
     api(libs.kotlinx.serialization.json)

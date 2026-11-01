@@ -44,6 +44,7 @@ object Routes {
     const val TRANSLATOR = "translator"
     const val SETTINGS = "settings"
     const val LICENSES = "licenses"
+    const val PRIVACY = "privacy"
     const val MISSION = "mission/{id}"
 
     fun mission(id: String) = "mission/$id"
@@ -136,7 +137,12 @@ fun AppNavHost(container: AppContainer) {
             val vm: SettingsViewModel = viewModel(
                 factory = viewModelFactory { initializer { SettingsViewModel(container.settings, container.outputs, container.progressReset) } },
             )
-            SettingsScreen(vm, onBack = dropUnlessResumed { nav.popBackStack() }, onLicenses = dropUnlessResumed { nav.navigate(Routes.LICENSES) })
+            SettingsScreen(vm, onBack = dropUnlessResumed { nav.popBackStack() }, onLicenses = dropUnlessResumed { nav.navigate(Routes.LICENSES) },
+                onPrivacy = dropUnlessResumed { nav.navigate(Routes.PRIVACY) },
+            )
+        }
+        composable(Routes.PRIVACY) {
+            io.github.egt17baa.morseprende.settings.PrivacyScreen(onBack = dropUnlessResumed { nav.popBackStack() })
         }
         composable(Routes.LICENSES) {
             io.github.egt17baa.morseprende.settings.LicensesScreen(onBack = dropUnlessResumed { nav.popBackStack() })

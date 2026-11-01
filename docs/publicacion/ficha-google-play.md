@@ -100,20 +100,29 @@ pueden usar destellos de linterna o pantalla; la app avisa antes y por defecto l
 
 - **Toda la funcionalidad está disponible sin restricciones** (no hay inicio de sesión).
 
-### Público objetivo y contenido
+### Público objetivo y contenido (decisión tuya al publicar)
 
-- Recomendación: **13-15, 16-17 y 18 o más.** Es lo más sencillo: no aplica la política de familias.
-- Alternativa: incluir también **9-12** (o menos). La app cumple de base (sin anuncios, sin datos,
-  sin compras), pero Play aplica la política de «Diseñado para familias», revisa la app con más
-  detalle y pide declararlo en el formulario. Se puede hacer más adelante.
-- ¿Podría atraer sin querer a niños? Respuesta honesta: **sí** (es un juego educativo con estética
-  amable); al no tener anuncios ni recoger datos no supone ningún problema.
+Play pregunta las edades a las que se dirige la app. Hay que elegir una de estas dos opciones; ser
+ambiguo no vale, porque si la ficha resulta atractiva para niños pero no se declaran menores de 13,
+Play puede rechazar la app.
+
+- **Opción A: solo 13 años o más** (13-15, 16-17, 18+). No aplica la política de familias, pero hay
+  que cuidar que la ficha no se dirija a niños (los textos y gráficos actuales no usan personajes
+  infantiles ni lenguaje para niños) y responder **No** a «¿podría atraer a niños?» solo si es
+  verdad. Si Play no está de acuerdo, pedirá cambiar la ficha o pasar a la opción B.
+- **Opción B: incluir también menores de 13** (por ejemplo, 9-12). Hay que cumplir la política de
+  «Diseñado para familias». La app ya cumple lo principal: sin anuncios, sin recogida de datos, sin
+  compras, sin enlaces fuera de la app y con aviso de destellos. Supone una revisión más detallada
+  de Google y declararlo en el formulario.
+- Para un juego educativo de Morse pensado para todo el mundo, la **opción B** es la más honesta si
+  quieres que lo jueguen niños; la **A**, la más sencilla si no.
 
 ### Otras declaraciones
 
 - App de noticias: **No.** · App de salud: **No.** · App financiera: **No.** · Gobierno: **No.**
 - Permisos sensibles: ninguno (solo `VIBRATE`, que es un permiso normal).
 - Acceso a la ubicación en segundo plano, servicios en primer plano, accesibilidad: **No.**
+- ID de publicidad: **No** (la app no usa el ID de publicidad ni declara el permiso `AD_ID`).
 
 ## Gráficos
 
