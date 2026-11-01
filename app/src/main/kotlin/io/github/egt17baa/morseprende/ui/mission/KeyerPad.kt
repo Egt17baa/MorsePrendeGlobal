@@ -39,7 +39,7 @@ import io.github.egt17baa.morseprende.settings.KeyerMode
 @Composable
 fun KeyerPad(
     mode: KeyerMode,
-    actions: MissionActions,
+    actions: KeyerActions,
     ring: androidx.compose.ui.graphics.Color = io.github.egt17baa.morseprende.ui.theme.Coral,
     haptics: Boolean = true,
 ) {
@@ -50,7 +50,7 @@ fun KeyerPad(
 }
 
 @Composable
-private fun StraightKey(actions: MissionActions, ring: androidx.compose.ui.graphics.Color, hapticsEnabled: Boolean) {
+private fun StraightKey(actions: KeyerActions, ring: androidx.compose.ui.graphics.Color, hapticsEnabled: Boolean) {
     val haptics = LocalHapticFeedback.current
     // pointerInput(Unit) no se reinicia: se lee siempre el valor actual del ajuste.
     val hapticsOn by androidx.compose.runtime.rememberUpdatedState(hapticsEnabled)
@@ -103,7 +103,7 @@ private fun StraightKey(actions: MissionActions, ring: androidx.compose.ui.graph
 }
 
 @Composable
-private fun TwoButtonKeys(actions: MissionActions) {
+private fun TwoButtonKeys(actions: KeyerActions) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             Button(onClick = actions::dot, modifier = Modifier.weight(1f).height(72.dp)) {

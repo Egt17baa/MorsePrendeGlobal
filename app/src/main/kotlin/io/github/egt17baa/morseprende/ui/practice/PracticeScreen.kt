@@ -38,14 +38,17 @@ import io.github.egt17baa.morseprende.ui.theme.BeamCream
 import io.github.egt17baa.morseprende.ui.theme.Coral
 
 @Composable
-fun PracticeScreen(viewModel: PracticeViewModel, onGame: (GameId) -> Unit, onBack: () -> Unit) {
+fun PracticeScreen(viewModel: PracticeViewModel, onGame: (GameId) -> Unit, onBack: () -> Unit, onWorkshop: (WorkshopTool) -> Unit = {}) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    PracticeContent(state, onGame, onBack)
+    PracticeContent(state, onGame, onBack, onWorkshop)
 }
+
+/** Herramientas del «Taller del farero»: práctica libre, sin puntos. */
+enum class WorkshopTool { SEND, LETTERS }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PracticeContent(state: PracticeUiState, onGame: (GameId) -> Unit, onBack: () -> Unit) {
+fun PracticeContent(state: PracticeUiState, onGame: (GameId) -> Unit, onBack: () -> Unit, onWorkshop: (WorkshopTool) -> Unit = {}) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -64,8 +67,26 @@ fun PracticeContent(state: PracticeUiState, onGame: (GameId) -> Unit, onBack: ()
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
+            Text(stringResource(R.string.workshop_title), style = MaterialTheme.typography.titleLarge)
+            Text(stringResource(R.string.workshop_intro), style = MaterialTheme.typography.bodyMedium)
+            WorkshopCard(stringResource(R.string.workshop_send), stringResource(R.string.workshop_send_desc), GameId.INTERCEPT) { onWorkshop(WorkshopTool.SEND) }
+            WorkshopCard(stringResource(R.string.workshop_letters), stringResource(R.string.workshop_letters_desc), GameId.STORM) { onWorkshop(WorkshopTool.LETTERS) }
+            Text(stringResource(R.string.practice_title), style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(top = 8.dp))
             Text(stringResource(R.string.practice_intro), style = MaterialTheme.typography.bodyMedium)
             state.games.forEach { GameCard(it, onGame) }
+        }
+    }
+}
+
+@Composable
+private fun WorkshopCard(title: String, description: String, icon: GameId, onOpen: () -> Unit) {
+    Card(Modifier.fillMaxWidth().clickable(onClick = onOpen)) {
+        Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+            GameIcon(icon)
+            Column(Modifier.weight(1f).padding(start = 16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text(title, style = MaterialTheme.typography.titleMedium)
+                Text(description, style = MaterialTheme.typography.bodySmall)
+            }
         }
     }
 }

@@ -38,17 +38,21 @@ import io.github.egt17baa.morseprende.R
 import io.github.egt17baa.morseprende.game.mission.Exercise
 
 /** Acciones que la pantalla de misión puede pedir. */
-interface MissionActions {
+/** Lo que hace el manipulador ([KeyerPad]): en las misiones y en el envío libre del Taller. */
+interface KeyerActions {
+    fun keyDown(atMs: Long)
+    fun keyUp(atMs: Long)
+    fun dot()
+    fun dash()
+    fun nextLetter()
+}
+
+interface MissionActions : KeyerActions {
     fun start()
     fun replay()
     fun continueListen()
     fun answer(text: String)
-    fun keyDown(atMs: Long)
-    fun keyUp(atMs: Long)
     fun tick()
-    fun dot()
-    fun dash()
-    fun nextLetter()
     fun deleteLast()
     fun submitSend()
     fun next()

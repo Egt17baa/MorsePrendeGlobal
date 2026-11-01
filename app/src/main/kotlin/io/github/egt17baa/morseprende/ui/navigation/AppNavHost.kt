@@ -46,6 +46,8 @@ object Routes {
     const val LICENSES = "licenses"
     const val PRIVACY = "privacy"
     const val DAILY = "daily"
+    const val WORKSHOP_SEND = "workshop_send"
+    const val WORKSHOP_LETTERS = "workshop_letters"
     const val MISSION = "mission/{id}"
 
     fun mission(id: String) = "mission/$id"
@@ -109,7 +111,36 @@ fun AppNavHost(container: AppContainer) {
             val vm: PracticeViewModel = viewModel(
                 factory = viewModelFactory { initializer { PracticeViewModel(container.content, container.progress, container.gameRecords) } },
             )
-            PracticeScreen(vm, onGame = { id -> nav.navigate(Routes.game(id)) { launchSingleTop = true } }, onBack = dropUnlessResumed { nav.popBackStack() })
+            PracticeScreen(
+                vm,
+                onGame = { id -> nav.navigate(Routes.game(id)) { launchSingleTop = true } },
+                onBack = dropUnlessResumed { nav.popBackStack() },
+                onWorkshop = { tool ->
+                    val route = when (tool) {
+                        io.github.egt17baa.morseprende.ui.practice.WorkshopTool.SEND -> Routes.WORKSHOP_SEND
+                        io.github.egt17baa.morseprende.ui.practice.WorkshopTool.LETTERS -> Routes.WORKSHOP_LETTERS
+                    }
+                    nav.navigate(route) { launchSingleTop = true }
+                },
+            )
+        }
+        composable(Routes.WORKSHOP_SEND) {
+            val vm: io.github.egt17baa.morseprende.ui.workshop.FreeSendViewModel = viewModel(
+                factory = viewModelFactory { initializer { io.github.egt17baa.morseprende.ui.workshop.FreeSendViewModel(container.settings, container.sidetone) } },
+            )
+            io.github.egt17baa.morseprende.ui.workshop.FreeSendScreen(vm, onBack = dropUnlessResumed { nav.popBackStack() })
+        }
+        composable(Routes.WORKSHOP_LETTERS) {
+            val vm: io.github.egt17baa.morseprende.ui.workshop.LetterDrillViewModel = viewModel(
+                factory = viewModelFactory {
+                    initializer {
+                        io.github.egt17baa.morseprende.ui.workshop.LetterDrillViewModel(
+                            container.content, container.progress, container.charStats, container.settings, container.outputs,
+                        )
+                    }
+                },
+            )
+            io.github.egt17baa.morseprende.ui.workshop.LetterDrillScreen(vm, onBack = dropUnlessResumed { nav.popBackStack() })
         }
         composable(Routes.GAME) { entry ->
             val id = GameId.entries.firstOrNull { it.name == entry.arguments?.getString("id") } ?: GameId.STORM

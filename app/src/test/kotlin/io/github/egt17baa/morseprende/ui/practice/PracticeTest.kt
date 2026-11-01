@@ -75,4 +75,13 @@ class PracticeTest {
         compose.onNodeWithText(context.getString(R.string.game_flash)).performScrollTo().performClick()
         assertEquals(listOf(GameId.STORM), opened)
     }
+
+    @Test fun practice_shows_workshop() {
+        val opened = mutableListOf<WorkshopTool>()
+        compose.setContent { PracticeContent(PracticeUiState(emptyList()), onGame = {}, onBack = {}, onWorkshop = { opened += it }) }
+        compose.onNodeWithText(context.getString(R.string.workshop_title)).performScrollTo()
+        compose.onNodeWithText(context.getString(R.string.workshop_send)).performScrollTo().performClick()
+        compose.onNodeWithText(context.getString(R.string.workshop_letters)).performScrollTo().performClick()
+        assertEquals(listOf(WorkshopTool.SEND, WorkshopTool.LETTERS), opened)
+    }
 }

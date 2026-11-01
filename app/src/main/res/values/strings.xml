@@ -287,4 +287,21 @@
     <string name="prosign_bt">BT · separación</string>
     <string name="prosign_ar">AR · fin de mensaje</string>
     <string name="output_failed_vibration">No se pudo vibrar: puede que el móvil no tenga vibrador o que el ahorro de batería esté activado.</string>
+
+    <!-- Taller del farero -->
+    <string name="workshop_title">Taller del farero</string>
+    <string name="workshop_intro">Práctica libre: sin puntos, sin prisas y sin vidas.</string>
+    <string name="workshop_send">Envío libre</string>
+    <string name="workshop_send_desc">Teclea lo que quieras con el manipulador y mira qué letras salen.</string>
+    <string name="workshop_send_hint">Pulsa el manipulador: aquí aparecerá lo que envíes.</string>
+    <string name="workshop_speed">Vas a unas %1$d PPM</string>
+    <string name="workshop_clear">Borrar todo</string>
+    <string name="workshop_letters">Letras a la carta</string>
+    <string name="workshop_letters_desc">Elige las letras que se te atascan y escúchalas hasta que salgan solas.</string>
+    <string name="workshop_letters_pick">Elige al menos dos letras:</string>
+    <string name="workshop_letters_locked">Completa la primera misión para tener letras con las que practicar.</string>
+    <string name="workshop_letters_start">Empezar</string>
+    <string name="workshop_letters_which">¿Qué letra ha sonado?</string>
+    <string name="workshop_letters_change">Cambiar letras</string>
+    <string name="workshop_letters_score">%1$s: %2$d de %3$d</string>
 </resources>
