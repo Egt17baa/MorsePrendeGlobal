@@ -43,6 +43,7 @@ fun achievementTitle(id: String): Int = when (id) {
     "steady" -> R.string.ach_steady
     "collector" -> R.string.ach_collector
     "mole_hunter" -> R.string.ach_mole_hunter
+    "stargazer" -> R.string.ach_stargazer
     else -> R.string.ach_reader
 }
 
@@ -58,5 +59,6 @@ fun achievementDescription(id: String): Int = when (id) {
     "steady" -> R.string.ach_steady_desc
     "collector" -> R.string.ach_collector_desc
     "mole_hunter" -> R.string.ach_mole_hunter_desc
+    "stargazer" -> R.string.ach_stargazer_desc
     else -> R.string.ach_reader_desc
 }

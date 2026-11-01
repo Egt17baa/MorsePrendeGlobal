@@ -111,3 +111,24 @@ omite.
 - QTH, QRZ, QSL (y tarjeta QSL); CQ adoptado en 1912 como llamada general; «seek you» es una reinterpretación
   posterior: ARRL https://www.arrl.org/amateur-radio-history · https://en.wikipedia.org/wiki/Q_code
 - El origen exacto de las letras CQ es discutido: no se afirma en la ficha.
+
+## lib-prosignos · AR, BT y SK
+- AR: fin del mensaje, mismo código que «+»; BT: separación, equivale a «=»; SK (también VA): fin de la
+  comunicación, y «silent key» para un operador fallecido; se transmiten sin hueco y se escriben con raya
+  encima: https://en.wikipedia.org/wiki/Prosigns_for_Morse_code
+- Señales de procedimiento en la norma UIT: Rec. UIT-R M.1677-1 (https://www.itu.int/rec/R-REC-M.1677-1-200910-I/)
+
+## lib-accesibilidad · Morse en Gboard
+- Escritura Morse en Gboard con Tania Finlayson (parálisis cerebral), primero en Android y en julio de 2018
+  en iOS; diseño del teclado, sugerencias y ajustes; juego de entrenamiento:
+  https://blog.google/products-and-platforms/products/search/making-morse-code-available-more-people-gboard/
+  · https://bgr.com/2018/07/12/gboard-ios-morse-code-typing-now-available/
+- Uso con Acceso con interruptores (Switch Access) en Android: ibid. (blog de Google).
+
+## lib-hoy · El Morse hoy
+- Fin del Morse obligatorio en el mar (GMDSS, 1999): https://en.wikipedia.org/wiki/Global_Maritime_Distress_and_Safety_System
+- Proyecto Internacional de Balizas NCDXF/IARU: 18 balizas, cada una 10 s, ciclo de 3 minutos, indicativo a
+  22 ppm y cuatro rayas a 100 W, 10 W, 1 W y 0,1 W: https://en.wikipedia.org/wiki/International_Beacon_Project
+  · https://www.ncdxf.org/beacon/
+- Identificadores Morse de VOR/NDB y su uso para comprobar la estación: FAA AIM, cap. 1, sec. 1
+  https://www.faa.gov/air_traffic/publications/atpubs/aim_html/chap1_section_1.html

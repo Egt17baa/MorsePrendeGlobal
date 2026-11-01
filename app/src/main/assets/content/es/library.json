@@ -83,5 +83,29 @@
     "unlockedBy": "c2f",
     "body": "Los radiotelegrafistas inventaron muchas abreviaturas para no transmitir frases enteras. Las más famosas son los códigos Q: grupos de tres letras que empiezan por Q y equivalen a una pregunta o a una respuesta completa. La conferencia radiotelegráfica de Londres de 1912 incluyó una lista de ellos para el servicio marítimo, y una revisión de 1947 fijó la mayoría de los que se usan hoy. Por ejemplo, QTH significa «mi posición es…» o «¿cuál es tu posición?»; QRZ, «¿quién me llama?»; y QSL, «acuso recibo». Entre radioaficionados, QSL también es la tarjeta postal que se envían para confirmar que han hablado. Otra señal muy conocida es CQ, la llamada general: quien transmite «CQ CQ CQ» está diciendo que busca a cualquiera que le escuche. La conferencia de 1912 la adoptó como llamada general, y aunque hoy mucha gente la lee como «seek you», «te busco» en inglés, esa interpretación llegó después. Gracias a estos códigos, operadores que no hablaban el mismo idioma podían entenderse.",
     "didYouKnow": "Dos radioaficionados que no comparten idioma pueden mantener una conversación básica solo con códigos Q y abreviaturas en Morse."
+  },
+  {
+    "id": "lib-prosignos",
+    "title": "AR, BT y SK: las órdenes del telegrafista",
+    "icon": "radio",
+    "unlockedBy": "c3m3",
+    "body": "Además de letras, números y signos, el Morse tiene prosignos: señales de procedimiento que no se leen como texto sino como órdenes para ordenar la conversación. Un prosigno se transmite como un solo bloque, sin el hueco habitual entre letras, y por eso se escribe con una raya encima de las dos letras que lo forman. Los tres más usados son AR, BT y SK. AR (punto, raya, punto, raya, punto) significa «fin del mensaje» y tiene el mismo código que el signo más (+); por eso muchos decodificadores lo muestran como «+». BT (raya, punto, punto, punto, raya) separa partes de un mensaje, como un punto y aparte, y coincide con el signo igual (=). SK (punto, punto, punto, raya, punto, raya), que también se escribe VA, indica el final de la comunicación: la frecuencia queda libre, como cuando alguien dice «cambio y corto». Entre radioaficionados, SK tiene además un sentido emotivo: se usa para recordar a un operador que ha fallecido, una «llave silenciosa». En esta campaña practicas AR y BT a través de + e =, y SK queda para que lo reconozcas cuando lo oigas en la radio.",
+    "didYouKnow": "Como un prosigno se envía sin pausas, AR suena distinto de la A seguida de la R: es una sola «palabra» rítmica."
+  },
+  {
+    "id": "lib-accesibilidad",
+    "title": "Escribir con dos botones",
+    "icon": "book",
+    "unlockedBy": "c3v",
+    "body": "El Morse no sirve solo para la radio. Como basta con dos señales, corta y larga, puede manejarse con muy poco movimiento: dos pulsadores junto a la cabeza, un soplido, un parpadeo o un pequeño gesto con la mano. Por eso algunas personas con movilidad muy reducida lo usan para escribir y comunicarse cada día. Una de ellas es Tania Finlayson, desarrolladora de tecnología de apoyo, que nació con parálisis cerebral y lleva toda la vida escribiendo en Morse. En 2018, Google trabajó con ella para añadir la escritura en Morse al teclado Gboard, primero en Android y después, en julio de ese año, también en iPhone. Finlayson ayudó a diseñar la distribución del teclado, añadió sugerencias que muestran el código de cada letra y creó ajustes para que cada persona lo adapte a su manera. En Android, el teclado puede usarse con funciones de accesibilidad como el Acceso con interruptores, que permite conectar pulsadores externos al móvil. Google publicó además un juego para aprender a escribir en Morse con Gboard. Lo que tú has aprendido con el oído, la vista y el tacto es, para otras personas, su voz.",
+    "didYouKnow": "Con solo dos pulsadores, uno para el punto y otro para la raya, se puede escribir cualquier mensaje en un móvil."
+  },
+  {
+    "id": "lib-hoy",
+    "title": "El Morse hoy",
+    "icon": "wave",
+    "unlockedBy": "c3f",
+    "body": "Los barcos dejaron de usar el Morse como sistema obligatorio de socorro en 1999, pero el código sigue vivo. Miles de radioaficionados de todo el mundo lo usan cada día, en lo que llaman telegrafía o «CW»: una señal tan sencilla atraviesa el ruido y llega lejos con muy poca potencia. Hay incluso balizas que trabajan solas. En el Proyecto Internacional de Balizas, coordinado por la Fundación DX del Norte de California y la IARU, dieciocho emisoras repartidas por el planeta se turnan cada tres minutos: cada una transmite su indicativo en Morse a 22 palabras por minuto y después cuatro rayas, cada una con menos potencia, de 100 vatios a una décima de vatio. Quien las escucha sabe al momento hacia qué partes del mundo se puede comunicar. En la aviación, las radioayudas a la navegación, como los VOR y los NDB, emiten sin parar un identificador de dos o tres letras en Morse, y los pilotos lo escuchan para comprobar que han sintonizado la estación correcta. Y, como has visto en este juego, el Morse también sirve para escribir con dos botones. Más de 180 años después del primer telegrama, sigue siendo una forma de hablar que cualquiera puede aprender.",
+    "didYouKnow": "Algunas radioayudas de los aeropuertos llevan décadas repitiendo su nombre en Morse, día y noche, para los pilotos que pasan."
   }
 ]
