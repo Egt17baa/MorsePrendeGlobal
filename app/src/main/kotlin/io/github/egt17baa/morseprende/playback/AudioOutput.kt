@@ -29,6 +29,8 @@ class AudioOutput(
         ?.toIntOrNull()
         ?: DEFAULT_SAMPLE_RATE
 
+    override val startLatencyMs: Long = LEAD_IN_MS
+
     private val lock = Any()
     private val silence = ShortArray(CHUNK_SAMPLES)
     private var track: AudioTrack? = null
@@ -39,7 +41,7 @@ class AudioOutput(
         var finishedNormally = false
         try {
             audioTrack.play()
-            for (signal in withTail(signals)) {
+            for (signal in withPadding(signals)) {
                 // Los silencios reutilizan un bloque de ceros: no se reserva memoria por pausa.
                 val pcm = if (signal.on) ToneSynth.render(signal, sampleRate, freqHz, volume, timbre = timbre) else null
                 val total = ToneSynth.samplesFor(signal.durationMs, sampleRate)
@@ -100,7 +102,8 @@ class AudioOutput(
             )
             .setBufferSizeInBytes(minBuffer)
             .setTransferMode(AudioTrack.MODE_STREAM)
-            .setPerformanceMode(AudioTrack.PERFORMANCE_MODE_LOW_LATENCY)
+            // Sin modo de baja latencia: al reproducir no hace falta (hay silencio inicial) y su búfer
+            // más justo puede cortar el arranque en algunos móviles.
             .build()
     }
 
@@ -108,10 +111,17 @@ class AudioOutput(
         const val TAIL_SILENCE_MS = 150L
 
         /**
-         * Añade un silencio final: así lo último que queda en el búfer al llamar a stop() es
-         * silencio y no se recorta el último punto o raya.
+         * Silencio inicial: muchos móviles tardan 100–300 ms en «despertar» el amplificador del
+         * altavoz y lo que suena en ese tiempo no se oye (una S, ···, se oía como un solo punto).
          */
-        fun withTail(signals: List<Signal>): List<Signal> = signals + Signal(false, TAIL_SILENCE_MS)
+        const val LEAD_IN_MS = 300L
+
+        /**
+         * Silencio al principio (ver [LEAD_IN_MS]) y al final: así lo último que queda en el búfer
+         * al llamar a stop() es silencio y no se recorta el último punto o raya.
+         */
+        fun withPadding(signals: List<Signal>): List<Signal> =
+            listOf(Signal(false, LEAD_IN_MS)) + signals + Signal(false, TAIL_SILENCE_MS)
 
         private const val DEFAULT_SAMPLE_RATE = 48_000
         private const val CHUNK_SAMPLES = 1_024

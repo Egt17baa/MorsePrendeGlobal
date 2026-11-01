@@ -102,10 +102,14 @@ class HardwareOutputsTest {
         assertFailsWith<IllegalArgumentException> { factory.create(OutputKind.SCREEN, settings) {} }
     }
 
-    @Test fun audio_adds_trailing_silence_so_last_element_is_not_cut() = kotlin.test.assertEquals(
-        listOf(Signal(true, 60), Signal(false, AudioOutput.TAIL_SILENCE_MS)),
-        AudioOutput.withTail(listOf(Signal(true, 60))),
+    @Test fun audio_pads_start_and_end_so_no_element_is_cut() = kotlin.test.assertEquals(
+        // Silencio inicial: el altavoz tarda en «despertar» y se comería los primeros puntos.
+        listOf(Signal(false, AudioOutput.LEAD_IN_MS), Signal(true, 60), Signal(false, AudioOutput.TAIL_SILENCE_MS)),
+        AudioOutput.withPadding(listOf(Signal(true, 60))),
     )
+
+    @Test fun audio_declares_its_start_latency() =
+        kotlin.test.assertEquals(AudioOutput.LEAD_IN_MS, AudioOutput(context, 600, 0.5f).startLatencyMs)
 
     @Test fun torch_reports_failure_when_unusable() = runTest {
         var failures = 0

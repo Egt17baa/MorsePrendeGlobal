@@ -6,6 +6,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -41,9 +42,13 @@ class SignalPlayer(private val scope: CoroutineScope) {
             previous?.join()
             try {
                 coroutineScope {
+                    val latency = outputs.maxOf { it.startLatencyMs }
                     outputs.forEach { output ->
                         launch {
                             try {
+                                // Las salidas sin retraso propio esperan al audio: así la luz no se adelanta al sonido.
+                                val wait = latency - output.startLatencyMs
+                                if (wait > 0) delay(wait)
                                 output.play(signals)
                             } catch (e: CancellationException) {
                                 throw e

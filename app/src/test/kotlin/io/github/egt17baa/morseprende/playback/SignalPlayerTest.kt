@@ -117,4 +117,29 @@ class SignalPlayerTest {
         assertEquals(false, b.lastState)
         assertEquals(false, player.isPlaying.value)
     }
+
+    @Test fun other_outputs_wait_for_audio_lead_in_to_stay_in_sync() = runTest {
+        val player = SignalPlayer(backgroundScope)
+        val light = RecordingOutput(this)
+        val audioLike = object : SignalOutput {
+            override val startLatencyMs: Long = 300
+            override suspend fun play(signals: List<Signal>) = delay(300 + signals.sumOf { it.durationMs })
+            override fun stop() = Unit
+        }
+        player.play(short, listOf(audioLike, light.output))
+        advanceTimeBy(299)
+        runCurrent()
+        assertEquals(emptyList<Pair<Long, Boolean>>(), light.events)
+        advanceTimeBy(2)
+        runCurrent()
+        assertEquals(listOf(300L to true), light.events)
+    }
+
+    @Test fun no_delay_without_audio() = runTest {
+        val player = SignalPlayer(backgroundScope)
+        val light = RecordingOutput(this)
+        player.play(short, listOf(light.output))
+        runCurrent()
+        assertEquals(listOf(0L to true), light.events)
+    }
 }
