@@ -22,6 +22,8 @@ tasks.test {
     val politica = rootProject.file("docs/publicacion/politica-privacidad.md")
     inputs.file(politica).withPathSensitivity(PathSensitivity.RELATIVE).withPropertyName("politica")
     systemProperty("politica.path", politica.absolutePath)
+    // RealContentTest lee los JSON de contenido de la app: si cambian, las pruebas se vuelven a ejecutar.
+    inputs.dir(rootProject.file("app/src/main/assets/content")).withPathSensitivity(PathSensitivity.RELATIVE).withPropertyName("contenido")
 }
 
 dependencies {

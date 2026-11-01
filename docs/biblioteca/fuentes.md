@@ -2,6 +2,7 @@
 
 Cada afirmación de las fichas (`app/src/main/assets/content/es/library.json`) con al menos una
 fuente. Consultadas el 31-10-2026. **Pendiente de revisión por el usuario.**
+Las ocho fichas añadidas en la etapa 8 (de `lib-chappe` a `lib-espana`) se consultaron el 01-11-2026.
 
 Criterio: preferir instituciones (Library of Congress, UIT, IEEE, Britannica, Encyclopedia
 Titanica, Guardia Costera de EE. UU.). Lo que las fuentes discuten se cuenta como discutido o se
@@ -132,3 +133,134 @@ omite.
   · https://www.ncdxf.org/beacon/
 - Identificadores Morse de VOR/NDB y su uso para comprobar la estación: FAA AIM, cap. 1, sec. 1
   https://www.faa.gov/air_traffic/publications/atpubs/aim_html/chap1_section_1.html
+
+## lib-chappe · Antes de la electricidad: el telégrafo óptico
+- Chappe presentó su sistema ante la Asamblea Legislativa el 22-3-1792; torres en puntos elevados a una
+  decena de kilómetros; tres brazos articulados en un mástil de unos 7 m, movidos desde abajo con manetas,
+  correas y poleas; pintado de negro; 196 figuras (4 × 7 × 7), 92 para los mensajes; código de dos
+  señales (página y palabra de un léxico de 92 × 92); los torreros no conocían el código, solo los
+  directores; uso de catalejo (lunette): Encyclopædia Universalis, «Télécommunications – Histoire: le
+  télégraphe optique» https://www.universalis.fr/encyclopedie/telecommunications-histoire/2-le-telegraphe-optique/
+- Modelo del Musée des arts et métiers (196 señales, primera línea en 1794): Google Arts & Culture
+  https://artsandculture.google.com/asset/the-optical-telegraph-claude-chappe/GgELTlCgklxe7w?hl=en
+  (el museo da 25 km entre semáforos; Universalis, una decena: por eso «una decena de kilómetros o más»).
+- Línea París–Lille abierta en julio de 1794; mensaje del 30-8-1794 sobre la victoria ante los
+  austriacos; más de 5000 km a finales de la década de 1840; reservado a la administración y superado por
+  el telégrafo eléctrico: Universalis, «Télégraphe optique» https://www.universalis.fr/encyclopedie/telegraphe-optique/
+- Noticia de la recuperación de Condé-sur-l'Escaut en menos de una hora (agosto de 1794): Lex, Danmarks
+  Nationalleksikon https://lex.dk/Claude_Chappe
+- Inútil de noche (las pruebas con lámparas fracasaron) y con mal tiempo; el eléctrico ganó por funcionar
+  de noche y con cualquier tiempo: https://en.wikipedia.org/wiki/Optical_telegraph ; la niebla como
+  inconveniente: Olivé Roig y Sánchez Miñana (Real Academia de Ingeniería), citado en `lib-espana`.
+- «Cincuenta años antes» del mensaje oficial de Morse: 1794 frente a 1844 (ver `lib-1844`).
+
+## lib-cables · Un cable bajo el Atlántico
+- Cyrus Field impulsó el proyecto; intento de 1857 (el cable se rompió); en 1858 el Niagara (EE. UU.) y el
+  Agamemnon (Royal Navy) empalmaron en mitad del océano el 29 de julio y llegaron a tierra el 5 de agosto;
+  el cable murió el 18 de septiembre; el Great Eastern, el mayor barco a flote, tendió el cable de 1866
+  (llegada a Heart's Content, Terranova, el 27-7-1866), recuperó y completó el de 1865 y el 8-9-1866 había
+  dos líneas: IEEE Milestone «Landing of the Transatlantic Cable, 1866»
+  https://ethw.org/Milestones:Landing_of_the_Transatlantic_Cable,_1866
+- Diez días por vapor; mensaje de la reina Victoria a Buchanan (16-8-1858) de 98 palabras y casi 16 horas;
+  culpa atribuida a los voltajes de Whitehouse (hasta 2000 V), pero un análisis posterior del cable (de
+  Cogan) encontró defectos de fabricación; 732 mensajes enviados: IEEE Spectrum
+  https://spectrum.ieee.org/tech-history/heroic-failures/the-first-transatlantic-telegraph-cable-was-a-bold-beautiful-failure
+- The Henry Ford da 17 horas para el mensaje de la reina (por eso «casi dieciséis», cifra del IEEE) y
+  atribuye el fallo al exceso de voltaje:
+  https://www.thehenryford.org/explore/blog/how-were-text-messages-sent-in-the-1800s/
+- Terranova forma parte hoy de Canadá: dato general (provincia de Terranova y Labrador).
+
+## lib-luces · Destellos en el mar: lámparas y heliógrafos
+- En 1858 el Almirantazgo encargó a Philip Colomb las señales nocturnas; su sistema aplicaba el de Morse
+  con destellos de lámpara de noche y toques de sirena o silbato de vapor con niebla; adoptado tras largas
+  pruebas en la escuadra: Dictionary of National Biography (1901), «Colomb, Philip Howard»
+  https://en.wikisource.org/wiki/Dictionary_of_National_Biography,_1901_supplement/Colomb,_Philip_Howard
+  (el DNB indica que su novedad se discutió; su código original no era idéntico al Morse actual:
+  https://en.wikipedia.org/wiki/Signal_lamp ; por eso «basado en», no «igual a»).
+- Heliógrafo: espejo movido con una llave según el código Morse; solo funciona con sol; alcance aproximado
+  de 10 millas por pulgada de espejo (espejo naval de 5 pulgadas ≈ 12,7 cm → unas 50 millas ≈ 80 km):
+  Royal Signals Museum, manual de señales de 1905 https://royal-signals.org.uk/Datasheets/THE_HELIOGRAPH.php
+- Lámpara de mano Aldis Bros, h. 1940, con gatillo que retira la pantalla de la bombilla y mira telescópica:
+  National Maritime Museum, Greenwich, NAV0955 https://www.rmg.co.uk/collections/objects/rmgc-object-43167 ;
+  lámpara «tipo Aldis»: https://www.rmg.co.uk/collections/objects/rmgc-object-17863
+- Uso actual para enviar Morse sin romper el silencio de radio; prueba de la Office of Naval Research en
+  junio de 2017 (cámara que convierte los destellos en texto, USS Monterey y USS Stout):
+  Route Fifty https://www.route-fifty.com/digital-government/2017/07/navy-applies-new-tools-to-old-signals-tech/304324 ;
+  U.S. Naval Institute, Proceedings (junio de 2023)
+  https://www.usni.org/magazines/proceedings/2023/june/drill-emission-control-main-battery
+- Omitido: la biografía y la fecha de patente de Arthur C. W. Aldis (las fuentes no coinciden).
+
+## lib-aviacion · Morse en el cielo: las radioayudas de los aviones
+- Todas en FAA, Aeronautical Information Manual, cap. 1, sec. 1
+  https://www.faa.gov/air_traffic/publications/atpubs/aim_html/chap1_section_1.html :
+  - NDB: identificación continua de tres letras en código (salvo los localizadores de brújula).
+  - VOR: identificador de tres letras; «la única forma segura» de identificarlo es su Morse o la voz grabada;
+    en mantenimiento puede emitir T-E-S-T o retirarse el código.
+  - Localizador ILS: tres letras precedidas de la I (··) en Morse internacional.
+  - 1-1-11: se retira la identificación durante el mantenimiento como aviso de que la señal puede no ser fiable.
+  - Las interferencias GPS son cada vez más comunes y la FAA exige a los operadores de las partes 121, 125,
+    129 y 135 conservar una capacidad de navegación sin GPS (por ejemplo, VOR).
+- Ver también `lib-hoy`.
+
+## lib-marte · Morse en Marte
+- Agujeros en las seis ruedas que forman «JPL» en Morse; primera prueba de conducción el 22-8-2012;
+  odometría visual para medir la distancia y detectar patinazos, útil en dunas sin rocas; precedente de
+  Spirit y Opportunity (agujeros de los pernos a la plataforma de aterrizaje): NASA/JPL, «Rover Leaves
+  Tracks in Morse Code» (29-8-2012) https://www.jpl.nasa.gov/news/rover-leaves-tracks-in-morse-code/ ;
+  imagen PIA16112 https://www.jpl.nasa.gov/images/pia16112-curiosity-tracks-its-tracks
+- «Curiosity no necesitaba esos pernos, pero quisimos conservar los agujeros» (Matt Heverly): Nautilus
+  https://nautil.us/19th_century-code-helps-21st_century-mars-rover-find-its-way-234612 ; Scientific American
+  https://www.scientificamerican.com/article/curiosity-rover-makes-morse-code-tracks-on-mars/
+- Explora el cráter Gale desde 2012, tamaño de un coche, misión activa en 2026: NASA
+  https://science.nasa.gov/mission/msl-curiosity/
+- Códigos de J, P y L: Rec. UIT-R M.1677-1.
+
+## lib-velocidad · ¿A qué velocidad se puede oír Morse?
+- McElroy, que no era radioaficionado, campeón durante décadas desde 1922 (récord de 1922); concurso de
+  Asheville de 1939 con 75,2 ppm sobre texto de prensa preparado por la FCC; Lavon McDonald escribió en 1940
+  que la copia de McElroy era «pretty ragged» y que con solo copia limpia habría sido un empate (marca
+  **discutida**); campeonato IARU de 1991: Oleg Buzubov (UA4FBP), 530 cifras por minuto con un error, en
+  pruebas de un minuto no comparables: William G. Pierpont, *The Art & Skill of Radio-Telegraphy*, cap. 26
+  https://www.qsl.net/ng3p/haminfo/pierpont/c26.htm
+- La consideración de récord oficial de los 75,2 ppm: https://en.wikipedia.org/wiki/Theodore_Roosevelt_McElroy
+  (no se afirma en la ficha que siga vigente).
+- Chuck Adams (K7QO): 140,9 ppm en un programa de indicativos de velocidad creciente; advierte de que la
+  cifra «probablemente engaña»: ARRL https://www.arrl.org/news/morse-code-at-140-wpm
+- Andrei Bindasov (Bielorrusia), 230 signos de texto mixto en un minuto, junio de 2005, 6.º Campeonato
+  Mundial IARU de Telegrafía de Alta Velocidad (Primorsko, Bulgaria): Guinness World Records
+  https://www.guinnessworldrecords.es/world-records/fastest-speed-for-a-morse-code-transmission
+- Omitido: la fecha exacta del concurso de 1939 y la cifra de 77 ppm (otra norma de cómputo).
+
+## lib-sms · Morse contra SMS
+- Concurso del Powerhouse Museum (Sídney), noticia del 6-5-2005, unos días antes del programa de Leno: Gordon
+  Hill, 93 años, telegrafista desde 1927, contra Brittany Devlin, 13 años y dos de experiencia con SMS; ganó
+  Hill, que envió la frase literal, mientras ella usó abreviaturas: Engadget https://www.engadget.com/2005/05/06/morse-code-trumps-sms-in-head-to-head-speed-texting-combat/ ;
+  ARRL Eastern Massachusetts https://ema.arrl.org/2005/05/13/morse-contest-on-jay-leno-tonight-show-may-13/
+- *The Tonight Show with Jay Leno* (13-5-2005): Chip Margelli (K7JA) envió y Ken Miller (K6CTW) copió de
+  oído; Ben Cook, adolescente que había ganado un concurso con 160 caracteres en 57 segundos; la frase era
+  un eslogan sobre el seguro del coche; el Morse ganó en la toma emitida y en otras dos: The Spokesman-Review
+  https://spokesman.com/stories/2005/jun/13/morse-code-vs-texting-guess-whos-faster ; ARRL (ibid.);
+  Engadget https://www.engadget.com/2005/05/25/morse-code-vs-sms-on-the-tonight-show/
+- «No fue un experimento científico»: valoración prudente (no había condiciones controladas).
+- El tono «Special» de Nokia es SMS en Morse; la melodía de Nokia procede de Francisco Tárrega:
+  Microsoft Devices Blog (antiguo blog de dispositivos Nokia), «10 things you didn't know about Nokia»
+  https://blogs.windows.com/devices/2011/01/24/10-things-you-didnt-know-about-nokia/
+- Omitido: que el tono «Ascending» diga «Connecting People» y que «Standard» sea la M (solo en foros).
+
+## lib-espana · El telégrafo llega a España
+- Fuente principal: S. Olivé Roig y J. Sánchez Miñana, «De las torres ópticas al teléfono: la telegrafía y
+  el Cuerpo de Telégrafos», en *Técnica e ingeniería en España*, vol. V, Real Academia de Ingeniería
+  https://raing.es/pdf/coleccion_tecnica_e_ingenieria/el_ochocientos_profesiones_e_instituciones_civiles/capitulos/cap%2010_El%20Cuerpo%20de%20Telegrafos.pdf :
+  - 1844: concurso de tres líneas ópticas (Irún, Cádiz, La Junquera) con el sistema del coronel Mathé;
+    Madrid–Irún con 52 puestos, completa a finales de 1846; la niebla podía interrumpirla días enteros.
+  - Mathé enviado a Francia, Bélgica, Inglaterra y Alemania; línea eléctrica Madrid–Irún en servicio de
+    extremo a extremo a finales de octubre de 1854; primer despacho al extranjero: discurso de Isabel II
+    (8-11-1854); aparato Wheatstone de dos agujas; servicio para particulares desde el 1-3-1855; ley del
+    22-4-1855; la nueva red usó aparatos Morse por el acuerdo europeo.
+  - Reglamento del 2-4-1856 (Gaceta del 5), en vigor en agosto de 1856, que establece el Cuerpo de Telégrafos.
+- Ley del 22-4-1855 como punto de arranque de la telegrafía eléctrica; telegrama de Isabel II hasta París;
+  1-3-1855 servicio público; 1865: más de 11 000 km de líneas y 215 oficinas: Correos, sello «150 aniversario
+  del telégrafo en España» (2005)
+  https://www.correos.es/es/es/particulares/filatelia/productos-filatelicos/sellos/espana/2005/150-aniversario-del-telegrafo-en-espana
+- Omitido: la fecha de creación del Cuerpo de Telégrafos como «1855» (las fuentes la sitúan en la ley de
+  1855 o en el reglamento de 1856; la ficha solo dice que el reglamento de 1856 lo organizó).

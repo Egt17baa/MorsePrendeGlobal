@@ -43,11 +43,16 @@ class RealContentTest {
             listOf(
                 "lib-que-es", "lib-morse-vail", "lib-aprender", "lib-1844", "lib-americano", "lib-sos", "lib-mar",
                 "lib-guerra", "lib-denton", "lib-numeros", "lib-q", "lib-prosignos", "lib-accesibilidad", "lib-hoy",
+                // Etapa 8
+                "lib-chappe", "lib-cables", "lib-luces", "lib-aviacion", "lib-marte", "lib-velocidad", "lib-sms", "lib-espana",
             ),
             cards.map { it.id },
         )
         assertEquals(
-            listOf(null, null, null, "c1m2", "c1m3", "c1m5", "c1f", "c2m3", "c2m6", "c2n5", "c2f", "c3m3", "c3v", "c3f"),
+            listOf(
+                null, null, null, "c1m2", "c1m3", "c1m5", "c1f", "c2m3", "c2m6", "c2n5", "c2f", "c3m3", "c3v", "c3f",
+                "c1r2", "c2m5", "c1m4", "c3m1", "c3l", "c2m1", "c2m8", "c2x",
+            ),
             cards.map { it.unlockedBy },
         )
         val icons = setOf("lighthouse", "telegraph", "ship", "radio", "book", "wave")

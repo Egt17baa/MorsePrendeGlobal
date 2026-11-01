@@ -9,7 +9,7 @@ recibir y a enviar. Totalmente gratis, sin anuncios y sin conexión a internet.
 > (todas las letras, números, la Ñ como extra, ruido de radio y contrarreloj) y «Señal Estelar»
 > (signos de puntuación, prosignos AR y BT, misiones de velocidad y señales solo de luz o solo de
 > vibración). También: repaso inteligente, «Mensaje del día» cada día, tres minijuegos con récords y la «Guardia nocturna» infinita tras la campaña, Destellos con tienda
-> estética, logros, racha suave, biblioteca con 14 fichas, traductor y ajustes con accesibilidad
+> estética, logros, racha suave, biblioteca con 22 fichas, traductor y ajustes con accesibilidad
 > (tamaño de texto, alto contraste, limitar destellos, vibración) y borrar progreso. Paleta propia por
 > capítulo y tipografía Atkinson Hyperlegible (OFL) incluida.
 
