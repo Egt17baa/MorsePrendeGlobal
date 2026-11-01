@@ -51,7 +51,7 @@ class StoreListingTest {
 
     private companion object {
         /** Palabras de los encabezados de sección de la descripción completa. */
-        val SECTION_WORDS = setOf("CAMPAÑA", "HISTORIA", "ESCUCHAR", "INTELIGENTE", "MINIJUEGOS", "BIBLIOTECA", "TRADUCTOR", "PRIVACIDAD", "RESPETA")
+        val SECTION_WORDS = setOf("CAMPAÑA", "HISTORIA", "ESCUCHAR", "INTELIGENTE", "MINIJUEGOS", "BIBLIOTECA", "TRADUCTOR", "PRIVACIDAD", "RESPETA", "MENSAJE")
     }
 
     @Test fun privacy_policy_is_complete() {

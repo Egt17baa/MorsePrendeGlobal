@@ -33,8 +33,11 @@ Reconoce letras y palabras de oído y transmítelas con un manipulador en pantal
 ✦ REPASO INTELIGENTE
 La app recuerda qué letras te cuestan y te las repasa más (repetición espaciada). Si sales de una misión a medias, sigues por donde la dejaste.
 
+✦ CADA DÍA, UN MENSAJE
+Cada noche llega al faro un mensaje nuevo, solo con las letras que ya conoces. Descífralo y gana Destellos.
+
 ✦ MINIJUEGOS
-Tormenta de señales, Destello rápido e Interceptación: practica con récords y sube de velocidad.
+Tormenta de señales, Destello rápido e Interceptación: practica con récords y sube de velocidad. Al terminar la campaña, la Guardia nocturna: mensajes sin fin por sonido, luz y vibración hasta el amanecer.
 
 ✦ BIBLIOTECA DEL FARO
 Fichas cortas y verificadas sobre la historia del Morse: Samuel Morse y Alfred Vail, el primer mensaje de 1844, el SOS y el Titanic, la radio en la guerra, las estaciones de números, los radioaficionados, el Morse en la accesibilidad y mucho más.
@@ -52,7 +55,7 @@ Sin anuncios, sin compras, sin cuentas y sin conexión a internet: la app ni siq
 **Novedades de esta versión** (máx. 500 caracteres)
 
 <!-- campo:novedades -->
-Primera versión: campaña completa en tres capítulos, minijuegos, biblioteca, traductor y ajustes de accesibilidad.
+Primera versión: campaña completa en tres capítulos, mensaje del día, Guardia nocturna, minijuegos, biblioteca, traductor y ajustes de accesibilidad.
 <!-- /campo -->
 
 ## Categoría y etiquetas

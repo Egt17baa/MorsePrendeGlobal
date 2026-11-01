@@ -4,11 +4,11 @@ Juego educativo para Android que enseña **código Morse jugando**. Eres el fare
 barcos, espías y señales del espacio te hablan en Morse, y para avanzar tienes que aprender a
 recibir y a enviar. Totalmente gratis, sin anuncios y sin conexión a internet.
 
-> Estado: **Etapa 6 (0.8.1)**, lista para publicar en Google Play cuando se quiera (ver
+> Estado: **Etapa 7 (0.9.0)**, lista para publicar en Google Play cuando se quiera (ver
 > [`docs/publicacion/`](docs/publicacion/como-publicar.md)): campaña completa en tres capítulos, «El Faro», «Operación Sombra»
 > (todas las letras, números, la Ñ como extra, ruido de radio y contrarreloj) y «Señal Estelar»
 > (signos de puntuación, prosignos AR y BT, misiones de velocidad y señales solo de luz o solo de
-> vibración). También: repaso inteligente, tres minijuegos con récords, Destellos con tienda
+> vibración). También: repaso inteligente, «Mensaje del día» cada día, tres minijuegos con récords y la «Guardia nocturna» infinita tras la campaña, Destellos con tienda
 > estética, logros, racha suave, biblioteca con 14 fichas, traductor y ajustes con accesibilidad
 > (tamaño de texto, alto contraste, limitar destellos, vibración) y borrar progreso. Paleta propia por
 > capítulo y tipografía Atkinson Hyperlegible (OFL) incluida.
@@ -22,8 +22,9 @@ recibir y a enviar. Totalmente gratis, sin anuncios y sin conexión a internet.
 - Plan de la etapa 4b: [`docs/superpowers/plans/2026-11-01-etapa-4b-senal-estelar.md`](docs/superpowers/plans/2026-11-01-etapa-4b-senal-estelar.md)
 - Plan de la etapa 5: [`docs/superpowers/plans/2026-11-01-etapa-5-pulido-accesibilidad.md`](docs/superpowers/plans/2026-11-01-etapa-5-pulido-accesibilidad.md)
 - Plan de la etapa 6: [`docs/superpowers/plans/2026-11-01-etapa-6-preparar-publicacion.md`](docs/superpowers/plans/2026-11-01-etapa-6-preparar-publicacion.md)
+- Plan de la etapa 7: [`docs/superpowers/plans/2026-11-01-etapa-7-mas-enganche.md`](docs/superpowers/plans/2026-11-01-etapa-7-mas-enganche.md)
 - Publicación: [`docs/publicacion/como-publicar.md`](docs/publicacion/como-publicar.md), ficha, política de privacidad y gráficos
-- Pruebas en el móvil: [`etapa-4`](docs/pruebas/etapa-4.md), [`etapa-5`](docs/pruebas/etapa-5.md) y [`etapa-6`](docs/pruebas/etapa-6.md)
+- Pruebas en el móvil: [`etapa-4`](docs/pruebas/etapa-4.md), [`etapa-5`](docs/pruebas/etapa-5.md) , [`etapa-6`](docs/pruebas/etapa-6.md) y [`etapa-7`](docs/pruebas/etapa-7.md)
 - Fuentes de la biblioteca: [`docs/biblioteca/fuentes.md`](docs/biblioteca/fuentes.md)
 
 ## Compilar
